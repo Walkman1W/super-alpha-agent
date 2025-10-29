@@ -1,0 +1,27 @@
+# robots.txt for www.superalphaagent.com
+
+User-agent: *
+Allow: /
+
+# AI Crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+# Sitemap
+Sitemap: https://www.superalphaagent.com/sitemap.xml
+
+# Disallow admin paths (if any in future)
+Disallow: /api/
+Disallow: /_next/
