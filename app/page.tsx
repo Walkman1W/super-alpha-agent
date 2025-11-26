@@ -1,5 +1,6 @@
 import { supabaseAdmin } from '@/lib/supabase'
 import Link from 'next/link'
+import { ExampleUI } from '@/components/ui/example'
 
 export const revalidate = 3600 // 每小时重新生成
 
@@ -334,6 +335,15 @@ export default async function HomePage() {
             </a>
           </div>
         </div>
+      </section>
+
+      {/* UI Components Section */}
+      <section className="container mx-auto px-4 py-16 bg-gray-50">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-1 h-8 bg-gradient-to-b from-blue-600 to-purple-600 rounded-full"></div>
+          <h2 className="text-3xl font-bold text-gray-900">UI 组件展示</h2>
+        </div>
+        <ExampleUI />
       </section>
     </div>
   )
