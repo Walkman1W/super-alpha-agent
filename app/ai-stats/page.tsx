@@ -1,15 +1,55 @@
-import { supabaseAdmin } from '@/lib/supabase'
+import { supabaseAdmin, mockSupabase, USE_MOCK_DATA } from '@/lib/supabase'
 import Link from 'next/link'
 
 export const revalidate = 3600
 
 export default async function AIStatsPage() {
-  // 获取 AI 搜索统计
-  const { data: aiVisits } = await supabaseAdmin
-    .from('ai_visits')
-    .select('ai_name, agent_id, visited_at, agents(name, slug)')
-    .order('visited_at', { ascending: false })
-    .limit(100)
+  let aiVisits = []
+  let totalAISearches = 0
+  let topAgents = []
+
+  if (USE_MOCK_DATA) {
+    // 使用虚拟数据
+    const agents = await mockSupabase.getAllAgents()
+    topAgents = agents.filter(agent => agent.ai_search_count > 0).sort((a, b) => b.ai_search_count - a.ai_search_count).slice(0, 20)
+    totalAISearches = agents.reduce((sum, agent) => sum + (agent.ai_search_count || 0), 0)
+    // 虚拟AI访问数据
+    aiVisits = [
+      { ai_name: 'ChatGPT', agent_id: '1', visited_at: new Date().toISOString(), agents: { name: '示例Agent', slug: 'example' } },
+      { ai_name: 'Claude', agent_id: '2', visited_at: new Date().toISOString(), agents: { name: '示例Agent2', slug: 'example2' } },
+      { ai_name: 'Perplexity', agent_id: '3', visited_at: new Date().toISOString(), agents: { name: '示例Agent3', slug: 'example3' } }
+    ]
+  } else if (supabaseAdmin) {
+    try {
+      // 获取 AI 搜索统计
+      const { data: visitsData } = await supabaseAdmin
+        .from('ai_visits')
+        .select('ai_name, agent_id, visited_at, agents(name, slug)')
+        .order('visited_at', { ascending: false })
+        .limit(100)
+      aiVisits = visitsData || []
+
+      // 获取总统计
+      const { data: totalStats } = await supabaseAdmin
+        .from('agents')
+        .select('ai_search_count')
+      totalAISearches = totalStats?.reduce((sum, agent) => sum + (agent.ai_search_count || 0), 0) || 0
+
+      // 获取 Top Agents
+      const { data: topAgentsData } = await supabaseAdmin
+        .from('agents')
+        .select('id, slug, name, short_description, ai_search_count, platform')
+        .gt('ai_search_count', 0)
+        .order('ai_search_count', { ascending: false })
+        .limit(20)
+      topAgents = topAgentsData || []
+    } catch (error) {
+      console.error('获取AI统计数据失败:', error)
+      aiVisits = []
+      totalAISearches = 0
+      topAgents = []
+    }
+  }
 
   // 按 AI 分组统计
   const aiStats = aiVisits?.reduce((acc, visit) => {
@@ -21,21 +61,6 @@ export default async function AIStatsPage() {
     acc[aiName].agents.add(visit.agent_id)
     return acc
   }, {} as Record<string, { count: number; agents: Set<string> }>)
-
-  // 获取总统计
-  const { data: totalStats } = await supabaseAdmin
-    .from('agents')
-    .select('ai_search_count')
-
-  const totalAISearches = totalStats?.reduce((sum, agent) => sum + (agent.ai_search_count || 0), 0) || 0
-
-  // 获取 Top Agents
-  const { data: topAgents } = await supabaseAdmin
-    .from('agents')
-    .select('id, slug, name, short_description, ai_search_count, platform')
-    .gt('ai_search_count', 0)
-    .order('ai_search_count', { ascending: false })
-    .limit(20)
 
   return (
     <div className="container mx-auto px-4 py-12">

@@ -1,7 +1,8 @@
-import { supabaseAdmin } from '@/lib/supabase'
+import { supabaseAdmin, mockSupabase, USE_MOCK_DATA } from '@/lib/supabase'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { AIVisitTracker } from '@/components/ai-visit-tracker'
+import Link from 'next/link'
 
 export const revalidate = 3600
 
@@ -10,11 +11,23 @@ type Props = {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { data: agent } = await supabaseAdmin
-    .from('agents')
-    .select('*')
-    .eq('slug', params.slug)
-    .single()
+  let agent = null
+
+  if (USE_MOCK_DATA) {
+    agent = await mockSupabase.getAgentBySlug(params.slug)
+  } else if (supabaseAdmin) {
+    try {
+      const { data: agentData } = await supabaseAdmin
+        .from('agents')
+        .select('*')
+        .eq('slug', params.slug)
+        .single()
+      agent = agentData
+    } catch (error) {
+      console.warn('获取Agent数据失败:', error)
+      agent = null
+    }
+  }
 
   if (!agent) return { title: 'Agent Not Found' }
 
@@ -31,28 +44,49 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function AgentDetailPage({ params }: Props) {
-  const { data: agent } = await supabaseAdmin
-    .from('agents')
-    .select('*, categories(name, slug, icon)')
-    .eq('slug', params.slug)
-    .single()
+  let agent = null
+  let similarAgents = []
+
+  if (USE_MOCK_DATA) {
+    agent = await mockSupabase.getAgentBySlug(params.slug)
+    if (agent) {
+      await mockSupabase.incrementViewCount(agent.id)
+      similarAgents = await mockSupabase.getSimilarAgents(agent.id, 3)
+    }
+  } else if (supabaseAdmin) {
+    try {
+      const { data: agentData } = await supabaseAdmin
+        .from('agents')
+        .select('*, categories(name, slug, icon)')
+        .eq('slug', params.slug)
+        .single()
+      agent = agentData
+
+      if (agent) {
+        // 增加浏览量
+        await supabaseAdmin
+          .from('agents')
+          .update({ view_count: agent.view_count + 1 })
+          .eq('id', agent.id)
+
+        // 获取相似 Agents
+        const { data: similarData } = await supabaseAdmin
+          .from('agents')
+          .select('id, slug, name, short_description, platform, ai_search_count')
+          .eq('category_id', agent.category_id)
+          .neq('id', agent.id)
+          .order('ai_search_count', { ascending: false })
+          .limit(3)
+        similarAgents = similarData || []
+      }
+    } catch (error) {
+      console.warn('获取Agent详情失败:', error)
+      agent = null
+      similarAgents = []
+    }
+  }
 
   if (!agent) notFound()
-
-  // 增加浏览量
-  await supabaseAdmin
-    .from('agents')
-    .update({ view_count: agent.view_count + 1 })
-    .eq('id', agent.id)
-
-  // 获取相似 Agents
-  const { data: similarAgents } = await supabaseAdmin
-    .from('agents')
-    .select('id, slug, name, short_description, platform, ai_search_count')
-    .eq('category_id', agent.category_id)
-    .neq('id', agent.id)
-    .order('ai_search_count', { ascending: false })
-    .limit(3)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900">

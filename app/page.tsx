@@ -1,26 +1,46 @@
-import { supabaseAdmin } from '@/lib/supabase'
+import { supabaseAdmin, mockSupabase, USE_MOCK_DATA } from '@/lib/supabase'
 import Link from 'next/link'
 
 export const revalidate = 3600 // 每小时重新生成
 
 export default async function HomePage() {
-  // 获取所有 Agents（按创建时间排序）
-  const { data: allAgents } = await supabaseAdmin
-    .from('agents')
-    .select('id, slug, name, short_description, platform, key_features, pros, cons, use_cases, pricing, official_url, created_at')
-    .order('created_at', { ascending: false })
-    .limit(100)
-  
-  // 获取统计数据
-  const { count: agentCount } = await supabaseAdmin
-    .from('agents')
-    .select('*', { count: 'exact', head: true })
-  
-  // 获取分类
-  const { data: categories } = await supabaseAdmin
-    .from('categories')
-    .select('*')
-    .order('name')
+  let allAgents = []
+  let agentCount = 0
+  let categories = []
+
+  if (USE_MOCK_DATA) {
+    // 使用虚拟数据
+    allAgents = await mockSupabase.getAllAgents()
+    agentCount = allAgents.length
+    categories = await mockSupabase.getCategories()
+  } else if (supabaseAdmin) {
+    // 使用真实数据库
+    try {
+      const { data: agentsData } = await supabaseAdmin
+        .from('agents')
+        .select('id, slug, name, short_description, platform, key_features, pros, cons, use_cases, pricing, official_url, created_at')
+        .order('created_at', { ascending: false })
+        .limit(100)
+      
+      const { count } = await supabaseAdmin
+        .from('agents')
+        .select('*', { count: 'exact', head: true })
+      
+      const { data: categoriesData } = await supabaseAdmin
+        .from('categories')
+        .select('*')
+        .order('name')
+
+      allAgents = agentsData || []
+      agentCount = count || 0
+      categories = categoriesData || []
+    } catch (error) {
+      console.warn('真实数据库查询失败，使用空数据:', error)
+      allAgents = []
+      agentCount = 0
+      categories = []
+    }
+  }
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">

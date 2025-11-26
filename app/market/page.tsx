@@ -1,29 +1,44 @@
-import { createClient } from '@/lib/supabase/server'
+import { supabaseAdmin, mockSupabase, USE_MOCK_DATA } from '@/lib/supabase'
 import Link from 'next/link'
 
 async function getMarketAgents() {
-  const supabase = createClient()
-  
-  const { data: agents, error } = await supabase
-    .from('agents')
-    .select(`
-      *,
-      categories (
-        id,
-        name,
-        icon
-      )
-    `)
-    .eq('status', 'published')
-    .order('ai_search_count', { ascending: false })
-    .limit(50)
+  if (USE_MOCK_DATA) {
+    // 使用虚拟数据
+    const agents = await mockSupabase.getAllAgents()
+    return agents.map(agent => ({
+      ...agent,
+      categories: mockSupabase.getCategories().then(cats => cats.find(cat => cat.id === agent.category_id))
+    }))
+  } else if (supabaseAdmin) {
+    // 使用真实数据库
+    try {
+      const { data: agents, error } = await supabaseAdmin
+        .from('agents')
+        .select(`
+          *,
+          categories (
+            id,
+            name,
+            icon
+          )
+        `)
+        .eq('status', 'published')
+        .order('ai_search_count', { ascending: false })
+        .limit(50)
 
-  if (error) {
-    console.error('Error fetching market agents:', error)
-    return []
+      if (error) {
+        console.error('Error fetching market agents:', error)
+        return []
+      }
+
+      return agents || []
+    } catch (error) {
+      console.error('获取市场Agents失败:', error)
+      return []
+    }
   }
-
-  return agents || []
+  
+  return []
 }
 
 export default async function MarketPage() {
