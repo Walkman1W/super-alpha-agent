@@ -10,7 +10,11 @@
     "db:init": "node scripts/init-categories.js",
     "crawler": "node crawler/run.js",
     "sitemap": "node scripts/generate-sitemap.js",
-    "deploy": "npm run sitemap && vercel --prod"
+    "deploy": "npm run sitemap && vercel --prod",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "test:run": "vitest run"
   },
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.9.0",
@@ -29,14 +33,23 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@fast-check/vitest": "^0.2.3",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
     "@types/node": "^20.11.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^5.1.1",
+    "@vitest/coverage-v8": "^4.0.14",
+    "@vitest/ui": "^4.0.14",
     "autoprefixer": "^10.4.0",
     "eslint": "^8.56.0",
     "eslint-config-next": "14.2.0",
+    "fast-check": "^4.3.0",
+    "jsdom": "^27.2.0",
     "postcss": "^8.4.0",
     "tailwindcss": "^3.4.0",
-    "typescript": "^5.3.0"
+    "typescript": "^5.3.0",
+    "vitest": "^4.0.14"
   }
 }
