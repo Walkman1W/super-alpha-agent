@@ -1,10 +1,10 @@
-# Requirements Document
+# 需求文档
 
-## Introduction
+## 简介
 
 本文档定义了Agent服务品牌展示页面的需求。该系统旨在创建一个专业的Agent发现和展示平台，主要功能包括监控和展示各个Agent被AI机器人搜索的次数，提供Agent市场浏览功能，以及允许用户发布自己的Agent。该平台需要同时服务于真实用户浏览和AI机器人索引两个目标。
 
-## Glossary
+## 术语表
 
 - **Agent**: 一个AI应用程序或服务，具有特定功能和用途
 - **Agent Market**: Agent市场，展示所有可用Agent的列表页面
@@ -16,124 +16,124 @@
 - **Hero Section**: 主页的首屏展示区域
 - **System**: 指Agent品牌展示平台系统
 
-## Requirements
+## 需求
 
-### Requirement 1
+### 需求 1
 
-**User Story:** 作为一个访问者，我想看到一个具有科技感和吸引力的主页，以便对平台产生良好的第一印象并了解平台价值。
+**用户故事:** 作为一个访问者，我想看到一个具有科技感和吸引力的主页，以便对平台产生良好的第一印象并了解平台价值。
 
-#### Acceptance Criteria
+#### 验收标准
 
-1. WHEN a user visits the homepage THEN the System SHALL display a hero section with modern, tech-inspired visual design
-2. WHEN the homepage loads THEN the System SHALL render gradient backgrounds and visual effects within 2 seconds
-3. WHEN a user views the homepage on any device THEN the System SHALL adapt the layout responsively to the screen size
-4. WHEN the hero section is displayed THEN the System SHALL include a clear value proposition statement and call-to-action buttons
-5. WHEN a user scrolls the homepage THEN the System SHALL provide smooth transitions between sections
+1. 当用户访问主页时，系统应展示具有现代科技感视觉设计的主屏区域
+2. 当主页加载时，系统应在2秒内渲染渐变背景和视觉效果
+3. 当用户在任何设备上查看主页时，系统应根据屏幕尺寸自适应布局
+4. 当主屏区域展示时，系统应包含清晰的价值主张声明和行动号召按钮
+5. 当用户滚动主页时，系统应在各部分之间提供流畅的过渡效果
 
-### Requirement 2
+### 需求 2
 
-**User Story:** 作为一个用户，我想在Agent市场和发布Agent功能之间切换，以便根据我的需求浏览或提交Agent。
+**用户故事:** 作为一个用户，我想在Agent市场和发布Agent功能之间切换，以便根据我的需求浏览或提交Agent。
 
-#### Acceptance Criteria
+#### 验收标准
 
-1. WHEN a user is on the homepage THEN the System SHALL display navigation controls to switch between Agent Market and Publish Agent modes
-2. WHEN a user clicks the Agent Market option THEN the System SHALL navigate to the Agent Market view without page reload
-3. WHEN a user clicks the Publish Agent option THEN the System SHALL navigate to the Publish Agent view without page reload
-4. WHEN switching between modes THEN the System SHALL maintain the current scroll position or reset to top based on context
-5. WHEN a mode is active THEN the System SHALL highlight the corresponding navigation control
+1. 当用户在主页时，系统应显示导航控件以在Agent市场和发布Agent模式之间切换
+2. 当用户点击Agent市场选项时，系统应在不重新加载页面的情况下导航到Agent市场视图
+3. 当用户点击发布Agent选项时，系统应在不重新加载页面的情况下导航到发布Agent视图
+4. 当在模式之间切换时，系统应根据上下文保持当前滚动位置或重置到顶部
+5. 当某个模式处于活动状态时，系统应高亮显示相应的导航控件
 
-### Requirement 3
+### 需求 3
 
-**User Story:** 作为一个用户，我想浏览Agent市场中的热门Agent列表，以便发现和了解可用的Agent服务。
+**用户故事:** 作为一个用户，我想浏览Agent市场中的热门Agent列表，以便发现和了解可用的Agent服务。
 
-#### Acceptance Criteria
+#### 验收标准
 
-1. WHEN a user enters the Agent Market THEN the System SHALL display a grid of Agent cards sorted by popularity or search count
-2. WHEN displaying Agent cards THEN the System SHALL show Agent name, one-line description, and search statistics for each Agent
-3. WHEN the Agent list contains more than 20 items THEN the System SHALL implement pagination or infinite scroll
-4. WHEN a user hovers over an Agent card THEN the System SHALL provide visual feedback with hover effects
-5. WHEN Agent data is loading THEN the System SHALL display loading indicators or skeleton screens
+1. 当用户进入Agent市场时，系统应显示按热度或搜索次数排序的Agent卡片网格
+2. 当显示Agent卡片时，系统应为每个Agent显示名称、一行描述和搜索统计信息
+3. 当Agent列表包含超过20个项目时，系统应实现分页或无限滚动
+4. 当用户悬停在Agent卡片上时，系统应通过悬停效果提供视觉反馈
+5. 当Agent数据正在加载时，系统应显示加载指示器或骨架屏
 
-### Requirement 4
+### 需求 4
 
-**User Story:** 作为一个用户，我想查看单个Agent的详细信息，以便深入了解该Agent的功能、特点和使用情况。
+**用户故事:** 作为一个用户，我想查看单个Agent的详细信息，以便深入了解该Agent的功能、特点和使用情况。
 
-#### Acceptance Criteria
+#### 验收标准
 
-1. WHEN a user clicks on an Agent card THEN the System SHALL navigate to the Agent Detail Page for that specific Agent
-2. WHEN the Agent Detail Page loads THEN the System SHALL display comprehensive information including name, full description, features, use cases, and search statistics
-3. WHEN the Agent Detail Page renders THEN the System SHALL include structured data markup for GEO optimization
-4. WHEN the Agent Detail Page is accessed THEN the System SHALL generate SEO-optimized meta tags including title, description, and Open Graph tags
-5. WHEN displaying search statistics THEN the System SHALL show a breakdown by different AI Search Engines with visual charts or graphs
+1. 当用户点击Agent卡片时，系统应导航到该特定Agent的详情页
+2. 当Agent详情页加载时，系统应显示全面的信息，包括名称、完整描述、功能特性、使用场景和搜索统计
+3. 当Agent详情页渲染时，系统应包含用于GEO优化的结构化数据标记
+4. 当访问Agent详情页时，系统应生成SEO优化的元标签，包括标题、描述和Open Graph标签
+5. 当显示搜索统计时，系统应通过可视化图表展示不同AI搜索引擎的细分数据
 
-### Requirement 5
+### 需求 5
 
-**User Story:** 作为一个用户，我想提交我自己的Agent链接，以便将我的Agent添加到市场中展示。
+**用户故事:** 作为一个用户，我想提交我自己的Agent链接，以便将我的Agent添加到市场中展示。
 
-#### Acceptance Criteria
+#### 验收标准
 
-1. WHEN a user accesses the Publish Agent section THEN the System SHALL display a form to submit an Agent URL
-2. WHEN a user submits a valid Agent URL THEN the System SHALL validate the URL format before processing
-3. WHEN a valid URL is submitted THEN the System SHALL initiate automated analysis of the Agent webpage
-4. WHEN the analysis completes successfully THEN the System SHALL extract Agent information including name, description, and features
-5. WHEN Agent information is extracted THEN the System SHALL create a new Agent entry in the database and generate an Agent card
+1. 当用户访问发布Agent部分时，系统应显示一个提交Agent URL的表单
+2. 当用户提交有效的Agent URL时，系统应在处理前验证URL格式
+3. 当提交有效URL时，系统应启动对Agent网页的自动分析
+4. 当分析成功完成时，系统应提取Agent信息，包括名称、描述和功能特性
+5. 当Agent信息被提取后，系统应在数据库中创建新的Agent条目并生成Agent卡片
 
-### Requirement 6
+### 需求 6
 
-**User Story:** 作为系统管理员，我想自动分析用户提交的Agent链接，以便提取结构化信息并生成Agent卡片。
+**用户故事:** 作为系统管理员，我想自动分析用户提交的Agent链接，以便提取结构化信息并生成Agent卡片。
 
-#### Acceptance Criteria
+#### 验收标准
 
-1. WHEN the System receives an Agent URL THEN the System SHALL fetch the webpage content using a web crawler
-2. WHEN webpage content is retrieved THEN the System SHALL parse HTML structure to extract relevant information
-3. WHEN parsing is complete THEN the System SHALL use AI analysis to generate a one-line description and identify key features
-4. WHEN AI analysis produces results THEN the System SHALL validate the extracted data against required schema
-5. WHEN data validation passes THEN the System SHALL store the Agent information in the Supabase database
+1. 当系统接收到Agent URL时，系统应使用网页爬虫获取网页内容
+2. 当网页内容被检索后，系统应解析HTML结构以提取相关信息
+3. 当解析完成时，系统应使用AI分析生成一行描述并识别关键功能
+4. 当AI分析产生结果时，系统应根据所需模式验证提取的数据
+5. 当数据验证通过时，系统应将Agent信息存储到Supabase数据库
 
-### Requirement 7
+### 需求 7
 
-**User Story:** 作为一个AI搜索引擎，我想访问结构化的Agent详情页面，以便准确索引和推荐Agent给用户。
+**用户故事:** 作为一个AI搜索引擎，我想访问结构化的Agent详情页面，以便准确索引和推荐Agent给用户。
 
-#### Acceptance Criteria
+#### 验收标准
 
-1. WHEN an AI Search Engine crawls an Agent Detail Page THEN the System SHALL provide Schema.org structured data in JSON-LD format
-2. WHEN the page is rendered THEN the System SHALL include semantic HTML5 elements with appropriate ARIA labels
-3. WHEN meta tags are generated THEN the System SHALL include relevant keywords based on Agent category and features
-4. WHEN the page loads THEN the System SHALL achieve a Lighthouse SEO score above 90
-5. WHEN the page is accessed THEN the System SHALL serve content with server-side rendering for optimal crawlability
+1. 当AI搜索引擎爬取Agent详情页时，系统应提供JSON-LD格式的Schema.org结构化数据
+2. 当页面渲染时，系统应包含带有适当ARIA标签的语义化HTML5元素
+3. 当生成元标签时，系统应根据Agent类别和功能包含相关关键词
+4. 当页面加载时，系统应达到90分以上的Lighthouse SEO评分
+5. 当访问页面时，系统应通过服务端渲染提供内容以实现最佳可爬取性
 
-### Requirement 8
+### 需求 8
 
-**User Story:** 作为一个用户，我想看到每个Agent被不同AI搜索引擎推荐的次数统计，以便了解Agent的受欢迎程度和可信度。
+**用户故事:** 作为一个用户，我想看到每个Agent被不同AI搜索引擎推荐的次数统计，以便了解Agent的受欢迎程度和可信度。
 
-#### Acceptance Criteria
+#### 验收标准
 
-1. WHEN an Agent card is displayed THEN the System SHALL show aggregated search count across all AI Search Engines
-2. WHEN an Agent Detail Page is viewed THEN the System SHALL display a breakdown of search counts by individual AI Search Engine
-3. WHEN an AI bot visits an Agent Detail Page THEN the System SHALL detect the bot and increment the corresponding search count
-4. WHEN search counts are updated THEN the System SHALL persist the changes to the database immediately
-5. WHEN displaying statistics THEN the System SHALL format numbers with appropriate separators for readability
+1. 当显示Agent卡片时，系统应显示所有AI搜索引擎的聚合搜索次数
+2. 当查看Agent详情页时，系统应显示各个AI搜索引擎的搜索次数细分
+3. 当AI机器人访问Agent详情页时，系统应检测该机器人并增加相应的搜索次数
+4. 当搜索次数更新时，系统应立即将更改持久化到数据库
+5. 当显示统计数据时，系统应使用适当的分隔符格式化数字以提高可读性
 
-### Requirement 9
+### 需求 9
 
-**User Story:** 作为系统管理员，我想确保平台性能优秀，以便提供快速流畅的用户体验。
+**用户故事:** 作为系统管理员，我想确保平台性能优秀，以便提供快速流畅的用户体验。
 
-#### Acceptance Criteria
+#### 验收标准
 
-1. WHEN a user navigates to any page THEN the System SHALL achieve First Contentful Paint within 1.5 seconds
-2. WHEN images are loaded THEN the System SHALL use Next.js Image optimization with lazy loading
-3. WHEN data is fetched from Supabase THEN the System SHALL implement caching with appropriate revalidation intervals
-4. WHEN the homepage is accessed THEN the System SHALL use Incremental Static Regeneration with 3600 second revalidation
-5. WHEN API routes are called THEN the System SHALL respond within 500 milliseconds for 95% of requests
+1. 当用户导航到任何页面时，系统应在1.5秒内实现首次内容绘制
+2. 当加载图片时，系统应使用Next.js图片优化和懒加载
+3. 当从Supabase获取数据时，系统应实现具有适当重新验证间隔的缓存
+4. 当访问主页时，系统应使用3600秒重新验证的增量静态再生成
+5. 当调用API路由时，系统应在95%的请求中在500毫秒内响应
 
-### Requirement 10
+### 需求 10
 
-**User Story:** 作为一个移动设备用户，我想在手机上流畅使用平台的所有功能，以便随时随地浏览和提交Agent。
+**用户故事:** 作为一个移动设备用户，我想在手机上流畅使用平台的所有功能，以便随时随地浏览和提交Agent。
 
-#### Acceptance Criteria
+#### 验收标准
 
-1. WHEN a user accesses the platform on a mobile device THEN the System SHALL render a mobile-optimized layout
-2. WHEN touch interactions occur THEN the System SHALL provide appropriate touch targets with minimum 44x44 pixel size
-3. WHEN forms are displayed on mobile THEN the System SHALL use appropriate input types for mobile keyboards
-4. WHEN the Agent Market is viewed on mobile THEN the System SHALL display cards in a single column layout
-5. WHEN navigation occurs on mobile THEN the System SHALL provide a hamburger menu or bottom navigation bar
+1. 当用户在移动设备上访问平台时，系统应渲染移动优化的布局
+2. 当发生触摸交互时，系统应提供最小44x44像素的适当触摸目标
+3. 当在移动设备上显示表单时，系统应为移动键盘使用适当的输入类型
+4. 当在移动设备上查看Agent市场时，系统应以单列布局显示卡片
+5. 当在移动设备上导航时，系统应提供汉堡菜单或底部导航栏

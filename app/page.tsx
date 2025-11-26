@@ -1,5 +1,4 @@
 import { supabaseAdmin } from '@/lib/supabase'
-import Link from 'next/link'
 
 export const revalidate = 3600 // 每小时重新生成
 
@@ -24,46 +23,77 @@ export default async function HomePage() {
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      {/* Hero Section - 超大气的渐变背景 */}
-      <section className="relative overflow-hidden">
+      {/* Hero Section - 增强的渐变背景和视觉效果 */}
+      <section className="relative overflow-hidden min-h-[600px] md:min-h-[700px]">
+        {/* 多层渐变背景 */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700"></div>
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDQgMS43OSA0IDQgNCA0LTEuNzkgNC00em0wLTEwYzAtMi4yMS0xLjc5LTQtNC00cy00IDEuNzktNCA0IDEuNzkgNCA0IDQgNC0xLjc5IDQtNHptMC0xMGMwLTIuMjEtMS43OS00LTQtNHMtNCAxLjc5LTQgNCAxLjc5IDQgNCA0IDQtMS43OSA0LTR6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-20"></div>
         
-        <div className="relative container mx-auto px-4 py-24 text-center text-white">
-          <div className="inline-block mb-6 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">
+        {/* 动画渐变叠加层 */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-purple-600/50 via-transparent to-blue-600/50 animate-pulse"></div>
+        
+        {/* SVG 图案叠加层 - 圆点网格 */}
+        <div className="absolute inset-0 opacity-20">
+          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="dots" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+                <circle cx="30" cy="30" r="2" fill="white" opacity="0.3"/>
+                <circle cx="30" cy="10" r="1.5" fill="white" opacity="0.2"/>
+                <circle cx="10" cy="30" r="1.5" fill="white" opacity="0.2"/>
+                <circle cx="50" cy="30" r="1.5" fill="white" opacity="0.2"/>
+                <circle cx="30" cy="50" r="1.5" fill="white" opacity="0.2"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#dots)"/>
+          </svg>
+        </div>
+        
+        {/* 浮动装饰元素 - 响应式尺寸 */}
+        <div className="absolute top-20 left-5 md:left-10 w-48 h-48 md:w-72 md:h-72 bg-white/10 rounded-full blur-3xl animate-blob"></div>
+        <div className="absolute top-40 right-5 md:right-10 w-64 h-64 md:w-96 md:h-96 bg-purple-300/10 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-20 left-1/4 md:left-1/3 w-56 h-56 md:w-80 md:h-80 bg-indigo-300/10 rounded-full blur-3xl animate-blob animation-delay-4000"></div>
+        
+        <div className="relative container mx-auto px-4 py-20 md:py-28 text-center text-white">
+          <div className="inline-block mb-6 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium animate-fade-in-down">
             🤖 AI 搜索引擎优化平台
           </div>
           
-          <h1 className="text-6xl md:text-7xl font-black mb-6 leading-tight">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-black mb-6 leading-tight animate-fade-in-up">
             发现最强大的
             <br />
-            <span className="bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent animate-gradient">
               AI Agents
             </span>
           </h1>
           
-          <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-blue-100 leading-relaxed">
+          <p className="text-base md:text-lg lg:text-xl xl:text-2xl mb-10 max-w-3xl mx-auto text-blue-100 leading-relaxed animate-fade-in">
             精选 <span className="font-bold text-white">{agentCount || 0}+</span> 个 AI 智能助手
             <br />
             深度分析 · 实时更新 · 为 AI 搜索优化
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-up animation-delay-300">
             <a 
               href="#agents" 
-              className="bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-all shadow-2xl hover:shadow-3xl hover:scale-105 transform"
+              className="w-full sm:w-auto bg-white text-blue-600 px-6 md:px-8 py-3 md:py-4 rounded-xl font-bold text-base md:text-lg hover:bg-blue-50 transition-all duration-300 shadow-2xl hover:shadow-3xl hover:scale-105 transform text-center"
             >
-              🚀 浏览全部 Agents
+              🚀 浏览 Agent 市场
             </a>
-            <div className="text-blue-100 text-sm">
-              ⚡ 每日自动更新 · 完全免费
-            </div>
+            <a 
+              href="#publish" 
+              className="w-full sm:w-auto bg-purple-500 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl font-bold text-base md:text-lg hover:bg-purple-600 transition-all duration-300 shadow-2xl hover:shadow-3xl hover:scale-105 transform border-2 border-white/30 text-center"
+            >
+              ✨ 发布你的 Agent
+            </a>
+          </div>
+          
+          <div className="mt-6 text-blue-100 text-xs md:text-sm animate-fade-in animation-delay-500">
+            ⚡ 每日自动更新 · 完全免费 · AI 搜索引擎友好
           </div>
         </div>
         
-        {/* 波浪分隔 */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        {/* 波浪分隔 - 增强动画效果 */}
+        <div className="absolute bottom-0 left-0 right-0 animate-wave">
+          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
             <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="rgb(248 250 252)"/>
           </svg>
         </div>
@@ -316,19 +346,75 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* 发布 Agent 区域 */}
+      <section id="publish" className="container mx-auto px-4 py-16">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-600 rounded-3xl p-8 md:p-12 text-center text-white shadow-2xl">
+            <div className="text-5xl md:text-6xl mb-6">🚀</div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              发布你的 AI Agent
+            </h2>
+            <p className="text-base md:text-lg lg:text-xl text-blue-100 mb-8 max-w-2xl mx-auto leading-relaxed">
+              让更多人发现你的 AI 智能助手！我们会自动分析你的 Agent 并生成专业的展示页面，
+              帮助你获得更多曝光和用户。
+            </p>
+            
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 md:p-8 mb-8 text-left max-w-2xl mx-auto">
+              <h3 className="text-lg md:text-xl font-bold mb-4 text-center">📝 提交流程</h3>
+              <div className="space-y-4">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-8 h-8 bg-white/20 rounded-full flex items-center justify-center font-bold text-sm">1</div>
+                  <div>
+                    <div className="font-semibold mb-1">提交 Agent URL</div>
+                    <div className="text-sm text-blue-100">提供你的 Agent 链接（支持 GPT Store、Poe 等平台）</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-8 h-8 bg-white/20 rounded-full flex items-center justify-center font-bold text-sm">2</div>
+                  <div>
+                    <div className="font-semibold mb-1">自动分析</div>
+                    <div className="text-sm text-blue-100">我们的 AI 系统会自动抓取和分析你的 Agent 信息</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-8 h-8 bg-white/20 rounded-full flex items-center justify-center font-bold text-sm">3</div>
+                  <div>
+                    <div className="font-semibold mb-1">生成展示页</div>
+                    <div className="text-sm text-blue-100">自动生成专业的 Agent 详情页，优化 AI 搜索引擎收录</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="text-sm md:text-base text-blue-100 mb-6">
+              🎯 即将推出提交功能，敬请期待！
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a 
+                href="#agents"
+                className="bg-white text-purple-600 px-6 md:px-8 py-3 md:py-4 rounded-xl font-bold text-base md:text-lg hover:bg-blue-50 transition-all inline-block"
+              >
+                先浏览现有 Agents
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 底部 CTA */}
       <section className="container mx-auto px-4 py-16">
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-12 text-center text-white shadow-2xl">
-          <h2 className="text-4xl font-bold mb-4">
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-8 md:p-12 text-center text-white shadow-2xl">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
             发现更多 AI Agents
           </h2>
-          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+          <p className="text-base md:text-lg lg:text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
             我们持续收录和分析最新的 AI 智能助手，帮助你找到最适合的工具
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a 
               href="#agents"
-              className="bg-white text-blue-600 px-8 py-4 rounded-xl font-bold hover:bg-blue-50 transition-all inline-block"
+              className="w-full sm:w-auto bg-white text-blue-600 px-6 md:px-8 py-3 md:py-4 rounded-xl font-bold text-base md:text-lg hover:bg-blue-50 transition-all inline-block"
             >
               浏览全部 Agents
             </a>
