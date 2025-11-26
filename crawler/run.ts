@@ -4,7 +4,7 @@ import { crawlGPTStore, getGPTStoreSeedData } from './sources/gpt-store'
 import { batchEnrichAgents } from './enricher'
 
 async function main() {
-  console.log('🤖 Shopo Alpha Agent Crawler\n')
+  console.log('🤖 Super Alpha Agent Crawler\n')
   
   const maxAgents = parseInt(process.env.CRAWLER_MAX_AGENTS_PER_RUN || '50')
   

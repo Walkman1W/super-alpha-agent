@@ -68,7 +68,7 @@ npm run dev
 ## 项目结构
 
 ```
-shopo-alpha-mvp/
+Super-alpha-mvp/
 ├── app/                      # Next.js App Router
 │   ├── (main)/              # 主站页面
 │   │   ├── page.tsx         # 首页

@@ -2,55 +2,55 @@
 inclusion: always
 ---
 
-# Technology Stack
+# 技术栈
 
-## Core Technologies
+## 核心技术
 
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript (strict mode enabled)
-- **Styling**: Tailwind CSS 3.4
-- **Database**: Supabase (PostgreSQL + Auth + API)
-- **AI**: OpenAI GPT-4 for content analysis
-- **Crawler**: Playwright for web scraping
-- **Deployment**: Vercel with automatic CI/CD
+- **框架**: Next.js 14 (App Router)
+- **语言**: TypeScript (启用严格模式)
+- **样式**: Tailwind CSS 3.4
+- **数据库**: Supabase (PostgreSQL + Auth + API)
+- **AI**: 采用Openrouter 的多款模型 用于内容分析，主推qwen
+- **爬虫**: Playwright 用于网页抓取
+- **部署**: Vercel 自动 CI/CD
 
-## Key Libraries
+## 关键库
 
-- `@supabase/supabase-js` - Database client
-- `@supabase/auth-helpers-nextjs` - Authentication
-- `openai` - AI analysis
-- `playwright` - Web crawling
-- `zod` - Schema validation
-- `lucide-react` - Icons
-- `date-fns` - Date utilities
-- `class-variance-authority`, `clsx`, `tailwind-merge` - Styling utilities
+- `@supabase/supabase-js` - 数据库客户端
+- `@supabase/auth-helpers-nextjs` - 身份验证
+- `openai` - AI 分析
+- `playwright` - 网页爬取
+- `zod` - Schema 验证
+- `lucide-react` - 图标
+- `date-fns` - 日期工具
+- `class-variance-authority`, `clsx`, `tailwind-merge` - 样式工具
 
-## Path Aliases
+## 路径别名
 
-- `@/*` maps to project root (e.g., `@/lib/supabase`)
+- `@/*` 映射到项目根目录 (例如: `@/lib/supabase`)
 
-## Common Commands
+## 常用命令
 
 ```bash
-# Development
-npm run dev              # Start dev server (localhost:3000)
-npm run build            # Build for production
-npm run start            # Start production server
-npm run lint             # Run ESLint
+# 开发
+npm run dev              # 启动开发服务器 (localhost:3000)
+npm run build            # 生产环境构建
+npm run start            # 启动生产服务器
+npm run lint             # 运行 ESLint
 
-# Database
-npm run db:setup         # Initialize database schema
+# 数据库
+npm run db:setup         # 初始化数据库 schema
 
-# Crawler
-npm run crawler          # Run web crawler and AI analysis
+# 爬虫
+npm run crawler          # 运行网页爬虫和 AI 分析
 
-# Utilities
-npm run generate:sitemap # Generate sitemap for SEO
+# 工具
+npm run generate:sitemap # 生成 SEO sitemap
 ```
 
-## Environment Variables
+## 环境变量
 
-Required in `.env.local`:
+在 `.env.local` 中必需:
 
 ```env
 # Supabase
@@ -58,25 +58,26 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 
-# OpenAI
+# OpenAI/openrouter
+
 OPENAI_API_KEY=
 
-# Site
+# 站点
 NEXT_PUBLIC_SITE_URL=
 ```
 
-## Build Configuration
+## 构建配置
 
 - **Target**: ES2017
 - **Module Resolution**: bundler
-- **JSX**: preserve (Next.js handles transformation)
-- **Strict Mode**: Enabled
+- **JSX**: preserve (Next.js 处理转换)
+- **Strict Mode**: 启用
 - **Image Domains**: chatgpt.com, poe.com
-- **Server Actions**: Enabled (experimental)
-- **Revalidation**: Pages use ISR with 3600s (1 hour) revalidation
+- **Server Actions**: 启用 (实验性)
+- **Revalidation**: 页面使用 ISR，3600秒 (1小时) 重新验证
 
-## Database Client Usage
+## 数据库客户端使用
 
-- **Server-side**: Use `supabaseAdmin` from `@/lib/supabase` (service role key)
-- **Client-side**: Use `createSupabaseClient()` for client components
-- Service role key bypasses RLS policies for admin operations
+- **服务端**: 使用 `@/lib/supabase` 中的 `supabaseAdmin` (service role key)
+- **客户端**: 在客户端组件中使用 `createSupabaseClient()`
+- Service role key 绕过 RLS 策略用于管理操作

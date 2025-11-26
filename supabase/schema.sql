@@ -1,4 +1,4 @@
--- Shopo Alpha Agent 数据库结构
+-- Super Alpha Agent 数据库结构
 
 -- 启用 UUID 扩展
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
