@@ -86,6 +86,9 @@ export default function RootLayout({
                 <a href="/#agents" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
                   Agents
                 </a>
+                <a href="/market" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                  Agent 市场
+                </a>
                 <a 
                   href="https://github.com/yourusername/super-alpha-agent" 
                   target="_blank"
