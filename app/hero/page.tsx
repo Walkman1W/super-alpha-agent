@@ -1,220 +1,264 @@
 import { supabaseAdmin } from '@/lib/supabase'
+import Link from 'next/link'
 
 export const revalidate = 3600 // 每小时重新生成
 
 export default async function HeroPage() {
-  // 获取所有 Agents（按创建时间排序）
-  const { data: allAgents } = await supabaseAdmin
+  // 获取热门 Agents（按AI搜索次数排序）
+  const { data: hotAgents } = await supabaseAdmin
     .from('agents')
-    .select('id, slug, name, short_description, platform, key_features, pros, cons, use_cases, pricing, official_url, created_at')
-    .order('created_at', { ascending: false })
-    .limit(100)
+    .select('id, slug, name, short_description, platform, ai_search_count, key_features, pricing, official_url')
+    .gt('ai_search_count', 0)
+    .order('ai_search_count', { ascending: false })
+    .limit(6)
 
   // 获取统计数据
-  const { count: agentCount } = await supabaseAdmin
+  const { count: totalAgents } = await supabaseAdmin
     .from('agents')
     .select('*', { count: 'exact', head: true })
 
-  // 获取分类
-  const { data: categories } = await supabaseAdmin
-    .from('categories')
-    .select('*')
-    .order('name')
+  const { data: totalAISearches } = await supabaseAdmin
+    .from('agents')
+    .select('ai_search_count')
+
+  const totalSearches = totalAISearches?.reduce((sum, agent) => sum + (agent.ai_search_count || 0), 0) || 0
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      {/* 新 Hero Section - 结合中英双语文案 */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700"></div>
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDQgMS43OSA0IDQgNCA0LTEuNzkgNC00em0wLTEwYzAtMi4yMS0xLjc5LTQtNC00cy00IDEuNzktNCA0IDEuNzkgNCA0IDQgNC0xLjc5IDQtNHptMC0xMGMwLTIuMjEtMS43OS00LTQtNHMtNCAxLjc5LTQgNCAxLjc5IDQgNCA0IDQtMS43OSA0LTR6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-20"></div>
-
-        <div className="relative container mx-auto px-4 py-24 text-center text-white">
-          <div className="inline-block mb-6 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">
-            🤖 GEO 数据基座 · AI 搜索 & Agent 发现
-          </div>
-
-          <h1 className="text-5xl md:text-6xl font-black mb-6 leading-tight">
-            <span className="block mb-2">
-              赢下每一次 AI Agent 搜索
-            </span>
-            <span className="block text-2xl md:text-3xl text-blue-100">
-              Win Every AI Agent Search
-            </span>
-          </h1>
-
-          <p className="text-lg md:text-2xl mb-6 max-w-4xl mx-auto text-blue-100 leading-relaxed">
-            <span className="block mb-3">
-              Superalphaagent 是面向 AI 搜索引擎和 Agent 开发者的 GEO 数据基座，
-              让你的 Agent 在 ChatGPT、Claude、Perplexity 等生成式引擎中被准确发现、深度理解，并持续被推荐。
-            </span>
-            <span className="block text-base md:text-lg text-blue-100/90">
-              Superalphaagent is the GEO data layer for AI search engines and agent builders,
-              making your agents easier to discover, understand, and recommend across ChatGPT,
-              Claude, Perplexity, and beyond.
-            </span>
-          </p>
-
-          <p className="text-sm md:text-base mb-10 max-w-2xl mx-auto text-blue-100/90">
-            当前已收录{' '}
-            <span className="font-bold text-white">
-              {agentCount || 0}+
-            </span>{' '}
-            个 AI Agents · 深度分析 · 实时更新 · 为 AI 搜索优化
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a
-              href="#agents"
-              className="bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-all shadow-2xl hover:shadow-3xl hover:scale-105 transform"
-            >
-              🚀 浏览 Agent 目录
-            </a>
-            <a
-              href="/ai-stats"
-              className="px-8 py-4 rounded-xl font-semibold text-sm md:text-base border border-white/60 text-white/90 hover:bg-white/10 transition-all"
-            >
-              📊 查看 AI 搜索信号 / View AI Signals
-            </a>
-          </div>
+    <div className="min-h-screen bg-black overflow-hidden">
+      {/* 科技感背景动画 */}
+      <div className="fixed inset-0 z-0">
+        {/* 渐变背景 */}
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-blue-900 to-black opacity-90"></div>
+        
+        {/* 网格线 */}
+        <div className="absolute inset-0" style={{
+          backgroundImage: `
+            linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: '50px 50px'
+        }}></div>
+        
+        {/* 粒子效果 */}
+        <div className="absolute inset-0">
+          {[...Array(50)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-1 h-1 bg-white rounded-full opacity-30 animate-pulse"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 3}s`,
+                animationDuration: `${2 + Math.random() * 3}s`
+              }}
+            />
+          ))}
         </div>
-
-        {/* 波浪分隔 */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="rgb(248 250 252)" />
-          </svg>
+        
+        {/* 光束效果 */}
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <div className="w-96 h-96 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full opacity-20 blur-3xl animate-pulse"></div>
         </div>
-      </section>
+      </div>
 
-      {/* 分类快速导航（复用主页面结构） */}
-      {categories && categories.length > 0 && (
-        <section className="container mx-auto px-4 py-12">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-1 h-8 bg-gradient-to-b from-blue-600 to-purple-600 rounded-full"></div>
-            <h2 className="text-3xl font-bold text-gray-900">按分类浏览</h2>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {categories.map((category) => (
-              <div
-                key={category.id}
-                className="bg-white rounded-xl p-6 hover:shadow-xl transition-all cursor-pointer border-2 border-transparent hover:border-blue-500 group"
-              >
-                <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">
-                  {category.icon || '📦'}
+      {/* 主要内容 */}
+      <div className="relative z-10">
+        {/* 导航栏 */}
+        <nav className="fixed top-0 w-full bg-black/20 backdrop-blur-md border-b border-white/10 z-50">
+          <div className="container mx-auto px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                  <span className="text-white font-bold text-xl">S</span>
                 </div>
-                <h3 className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                  {category.name}
-                </h3>
-                <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-                  {category.description}
-                </p>
+                <div className="text-white">
+                  <div className="font-bold text-xl">Super Alpha Agent</div>
+                  <div className="text-xs text-gray-300">AI Agent 发现平台</div>
+                </div>
               </div>
-            ))}
+              
+              <div className="flex items-center gap-4">
+                <Link href="/market" className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:shadow-lg transition-all hover:scale-105">
+                  🛒 Agent市场
+                </Link>
+                <Link href="/submit" className="px-6 py-2 border border-white/30 text-white rounded-lg font-medium hover:bg-white/10 transition-all">
+                  🚀 发布Agent
+                </Link>
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        {/* Hero Section */}
+        <section className="pt-32 pb-20 px-6">
+          <div className="container mx-auto text-center">
+            <div className="mb-8">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-6">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-white text-sm">AI 搜索引擎优化平台</span>
+              </div>
+              
+              <h1 className="text-7xl md:text-8xl font-black mb-6 bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent">
+                发现最强
+                <br />
+                <span className="bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+                  AI Agents
+                </span>
+              </h1>
+              
+              <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+                专为 AI 搜索引擎优化的 Agent 聚合平台
+                <br />
+                深度分析 · 实时更新 · 结构化数据
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+                <Link href="/market" className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold text-lg hover:shadow-2xl transition-all hover:scale-110 transform flex items-center gap-3">
+                  <span>🛒</span>
+                  浏览 Agent 市场
+                  <span className="group-hover:translate-x-1 transition-transform">→</span>
+                </Link>
+                <Link href="/submit" className="group px-8 py-4 border-2 border-white/50 text-white rounded-xl font-bold text-lg hover:bg-white/10 transition-all flex items-center gap-3">
+                  <span>🚀</span>
+                  发布我的 Agent
+                  <span className="group-hover:translate-x-1 transition-transform">→</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* 统计数据 */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+              <div className="text-center">
+                <div className="text-4xl md:text-5xl font-black text-white mb-2">
+                  {totalAgents || 0}
+                </div>
+                <div className="text-gray-400">精选 Agents</div>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl md:text-5xl font-black text-blue-400 mb-2">
+                  {totalSearches}
+                </div>
+                <div className="text-gray-400">AI 搜索量</div>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl md:text-5xl font-black text-purple-400 mb-2">24/7</div>
+                <div className="text-gray-400">实时更新</div>
+              </div>
+            </div>
           </div>
         </section>
-      )}
 
-      {/* 主要 Agents 展示区 - 结构化数据（复用主页面结构） */}
-      <section id="agents" className="container mx-auto px-4 py-12">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-1 h-8 bg-gradient-to-b from-blue-600 to-purple-600 rounded-full"></div>
-            <h2 className="text-3xl font-bold text-gray-900">全部 AI Agents</h2>
-          </div>
-          <div className="text-sm text-gray-500">
-            共 {allAgents?.length || 0} 个
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {allAgents?.map((agent) => (
-            <article
-              key={agent.id}
-              className="bg-white rounded-2xl p-6 hover:shadow-2xl transition-all border border-gray-100 hover:border-blue-300 group"
-              itemScope
-              itemType="https://schema.org/SoftwareApplication"
-            >
-              {/* 标题和平台 */}
-              <div className="flex items-start justify-between mb-4">
-                <h3
-                  className="font-bold text-xl text-gray-900 group-hover:text-blue-600 transition-colors flex-1"
-                  itemProp="name"
-                >
-                  {agent.name}
-                </h3>
-                {agent.platform && (
-                  <span className="text-xs bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 px-3 py-1 rounded-full font-medium ml-2">
-                    {agent.platform}
-                  </span>
-                )}
+        {/* 热门 Agents 预览 */}
+        {hotAgents && hotAgents.length > 0 && (
+          <section className="py-20 px-6 bg-gradient-to-b from-transparent to-black/50">
+            <div className="container mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-4xl font-bold text-white mb-4">🔥 热门 Agents</h2>
+                <p className="text-gray-400 text-lg">被 AI 搜索引擎频繁推荐的顶级 Agents</p>
               </div>
-
-              {/* 描述 */}
-              <p
-                className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed"
-                itemProp="description"
-              >
-                {agent.short_description}
-              </p>
-
-              {/* 核心功能 */}
-              {agent.key_features && Array.isArray(agent.key_features) && agent.key_features.length > 0 && (
-                <div className="mb-4">
-                  <div className="text-xs font-semibold text-gray-500 mb-2">✨ 核心功能</div>
-                  <div className="flex flex-wrap gap-2">
-                    {agent.key_features.slice(0, 3).map((feature, idx) => (
-                      <span
-                        key={idx}
-                        className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-lg"
-                        itemProp="featureList"
-                      >
-                        {feature}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* 优点 */}
-              {agent.pros && Array.isArray(agent.pros) && agent.pros.length > 0 && (
-                <div className="mb-4">
-                  <div className="text-xs font-semibold text-green-600 mb-2">✅ 优势</div>
-                  <ul className="text-xs text-gray-600 space-y-1">
-                    {agent.pros.slice(0, 2).map((pro, idx) => (
-                      <li key={idx} className="flex items-start gap-1">
-                        <span className="text-green-500 mt-0.5">•</span>
-                        <span className="line-clamp-1">{pro}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* 适用场景 */}
-              {agent.use_cases && Array.isArray(agent.use_cases) && agent.use_cases.length > 0 && (
-                <div className="mb-4">
-                  <div className="text-xs font-semibold text-purple-600 mb-2">🎯 适用场景</div>
-                  <div className="text-xs text-gray-600">
-                    {agent.use_cases.slice(0, 2).join(' · ')}
-                  </div>
-                </div>
-              )}
-
-              {/* 底部信息 */}
-              <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                {agent.pricing && (
-                  <span
-                    className="text-xs font-semibold text-gray-700"
-                    itemProp="offers"
-                    itemScope
-                    itemType="https://schema.org/Offer"
+              
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {hotAgents.map((agent) => (
+                  <Link
+                    key={agent.id}
+                    href={`/agents/${agent.slug}`}
+                    className="group block bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-white/20 transition-all hover:scale-105 transform"
                   >
-                    <span itemProp="price">💰 {agent.pricing}</span>
-                  </span>
-                )}
-                {agent.official_url && (
-                  <a
+                    <div className="flex items-start justify-between mb-4">
+                      <h3 className="font-bold text-xl text-white group-hover:text-blue-300 transition-colors">
+                        {agent.name}
+                      </h3>
+                      {agent.platform && (
+                        <span className="text-xs bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-300 px-3 py-1 rounded-full font-medium">
+                          {agent.platform}
+                        </span>
+                      )}
+                    </div>
+                    
+                    <p className="text-gray-400 text-sm mb-4 line-clamp-2">
+                      {agent.short_description}
+                    </p>
+                    
+                    {agent.key_features && Array.isArray(agent.key_features) && agent.key_features.length > 0 && (
+                      <div className="mb-4">
+                        <div className="flex flex-wrap gap-2">
+                          {agent.key_features.slice(0, 2).map((feature, idx) => (
+                            <span
+                              key={idx}
+                              className="text-xs bg-white/10 text-white px-2 py-1 rounded-lg"
+                            >
+                              {feature}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="flex items-center justify-between pt-4 border-t border-white/10">
+                      {agent.pricing && (
+                        <span className="text-sm font-semibold text-green-400">
+                          {agent.pricing}
+                        </span>
+                      )}
+                      <div className="flex items-center gap-2">
+                        <span className="text-2xl">🤖</span>
+                        <span className="text-sm font-bold text-purple-400">
+                          {agent.ai_search_count}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+              
+              <div className="text-center mt-12">
+                <Link href="/market" className="inline-flex items-center gap-2 px-6 py-3 border border-white/30 text-white rounded-lg hover:bg-white/10 transition-all">
+                  查看全部 Agents
+                  <span>→</span>
+                </Link>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* 特色功能 */}
+        <section className="py-20 px-6">
+          <div className="container mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-white mb-4">✨ 平台特色</h2>
+              <p className="text-gray-400 text-lg">专为 AI 时代设计的 Agent 发现平台</p>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">🤖</span>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">AI 搜索优化</h3>
+                <p className="text-gray-400">专为 ChatGPT、Claude、Perplexity 等 AI 搜索引擎优化</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">📊</span>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">深度分析</h3>
+                <p className="text-gray-400">提供详细的优缺点分析、使用场景和功能对比</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">🔄</span>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">实时更新</h3>
+                <p className="text-gray-400">24/7 自动爬取和更新，确保信息最新</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  )
                     href={agent.official_url}
                     target="_blank"
                     rel="noopener noreferrer"
