@@ -1,26 +1,92 @@
-import { supabaseAdmin } from '@/lib/supabase'
 import { AnimatedGrid } from '@/components/ui/animated-grid'
 import { GradientText } from '@/components/ui/gradient-text'
 import { EnhancedButton } from '@/components/ui/enhanced-button'
 import { GlassCard } from '@/components/ui/glass-card'
+import ModeSwitcher from '@/components/ui/mode-switcher'
 
 export const revalidate = 3600
 
 export default async function HomePage() {
-  const { data: allAgents } = await supabaseAdmin
-    .from('agents')
-    .select('id, slug, name, short_description, platform, key_features, pros, cons, use_cases, pricing, official_url, created_at')
-    .order('created_at', { ascending: false })
-    .limit(100)
+  // 模拟数据，暂时屏蔽Supabase数据获取
+  const allAgents = [
+    {
+      id: '1',
+      slug: 'code-assistant',
+      name: '代码助手',
+      short_description: '帮助你编写代码的AI助手',
+      platform: 'ChatGPT',
+      key_features: ['代码生成', '代码解释', '错误修复'],
+      pros: ['准确率高', '支持多种语言', '实时反馈'],
+      cons: ['需要网络连接', '有时会生成错误代码'],
+      use_cases: ['开发新功能', '调试代码', '学习编程'],
+      pricing: '免费',
+      official_url: 'https://example.com',
+      created_at: new Date().toISOString(),
+    },
+    {
+      id: '2',
+      slug: 'writing-assistant',
+      name: '写作助手',
+      short_description: '帮助你写作的AI助手',
+      platform: 'Claude',
+      key_features: ['文章生成', '内容优化', '语法检查'],
+      pros: ['写作质量高', '支持长文本', '创意丰富'],
+      cons: ['速度较慢', '有时会重复内容'],
+      use_cases: ['写博客', '写论文', '写小说'],
+      pricing: '免费',
+      official_url: 'https://example.com',
+      created_at: new Date().toISOString(),
+    },
+    {
+      id: '3',
+      slug: 'design-assistant',
+      name: '设计助手',
+      short_description: '帮助你设计的AI助手',
+      platform: 'MidJourney',
+      key_features: ['图片生成', '设计建议', '风格转换'],
+      pros: ['图片质量高', '风格多样', '创意丰富'],
+      cons: ['需要描述清楚', '有时会生成不符合要求的图片'],
+      use_cases: ['设计logo', '设计海报', '设计产品'],
+      pricing: '免费',
+      official_url: 'https://example.com',
+      created_at: new Date().toISOString(),
+    },
+  ]
   
-  const { count: agentCount } = await supabaseAdmin
-    .from('agents')
-    .select('*', { count: 'exact', head: true })
+  const agentCount = allAgents.length
   
-  const { data: categories } = await supabaseAdmin
-    .from('categories')
-    .select('*')
-    .order('name')
+  const categories = [
+    {
+      id: '1',
+      name: '开发',
+      description: '开发相关的AI助手',
+      icon: '💻',
+    },
+    {
+      id: '2',
+      name: '写作',
+      description: '写作相关的AI助手',
+      icon: '✍️',
+    },
+    {
+      id: '3',
+      name: '设计',
+      description: '设计相关的AI助手',
+      icon: '🎨',
+    },
+    {
+      id: '4',
+      name: '学习',
+      description: '学习相关的AI助手',
+      icon: '📚',
+    },
+    {
+      id: '5',
+      name: '生活',
+      description: '生活相关的AI助手',
+      icon: '🏠',
+    },
+  ]
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -66,6 +132,11 @@ export default async function HomePage() {
             <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="rgb(248 250 252)"/>
           </svg>
         </div>
+      </section>
+
+      {/* 模式切换器 */}
+      <section className="container mx-auto px-4 py-6">
+        <ModeSwitcher />
       </section>
 
       {/* 分类导航 */}
