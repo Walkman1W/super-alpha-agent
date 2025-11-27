@@ -2,16 +2,115 @@ import { supabaseAdmin } from '@/lib/supabase'
 import { AnimatedGrid } from '@/components/ui/animated-grid'
 import { GradientText } from '@/components/ui/gradient-text'
 import { EnhancedButton } from '@/components/ui/enhanced-button'
+import { AgentCard } from '@/components/ui/agent-card'
+import { ModeSwitcher } from '@/components/ui/mode-switcher'
 import { GlassCard } from '@/components/ui/glass-card'
 
 export const revalidate = 3600
 
 export default async function HomePage() {
-  const { data: allAgents } = await supabaseAdmin
+  // 从Supabase获取数据，如果失败则使用虚拟数据
+  let { data: allAgents } = await supabaseAdmin
     .from('agents')
     .select('id, slug, name, short_description, platform, key_features, pros, cons, use_cases, pricing, official_url, created_at')
     .order('created_at', { ascending: false })
     .limit(100)
+
+  // 如果没有数据，使用虚拟数据
+  if (!allAgents || allAgents.length === 0) {
+    allAgents = [
+      {
+        id: 1,
+        slug: 'chatgpt',
+        name: 'ChatGPT',
+        short_description: 'OpenAI开发的先进语言模型，能够进行自然语言对话、内容生成和问题解答。',
+        platform: 'web',
+        key_features: ['自然语言理解', '内容生成', '多轮对话', '代码编写'],
+        pros: ['功能强大', '易于使用', '支持多种语言', '不断更新'],
+        cons: ['有时会产生错误信息', '需要网络连接', '免费版有使用限制'],
+        use_cases: ['内容创作', '编程辅助', '学习教育', '创意写作'],
+        pricing: '免费基础版，Plus版$20/月',
+        official_url: 'https://openai.com/chatgpt',
+        created_at: new Date().toISOString(),
+        ai_search_count: 12500
+      },
+      {
+        id: 2,
+        slug: 'claude',
+        name: 'Claude',
+        short_description: 'Anthropic开发的AI助手，以安全性和长篇文本处理能力著称。',
+        platform: 'web',
+        key_features: ['长篇文本处理', '安全可靠', '透明解释', '多任务处理'],
+        pros: ['擅长处理长文档', '安全性高', '解释详细', 'API稳定'],
+        cons: ['功能相对较少', '界面简单', '价格较高'],
+        use_cases: ['文档分析', '合同审查', '报告生成', '研究助理'],
+        pricing: '按使用量计费，$0.015-$0.03/千tokens',
+        official_url: 'https://www.anthropic.com/claude',
+        created_at: new Date().toISOString(),
+        ai_search_count: 8200
+      },
+      {
+        id: 3,
+        slug: 'gemini',
+        name: 'Gemini',
+        short_description: 'Google开发的多模态AI模型，支持文本、图像、音频和视频处理。',
+        platform: 'web',
+        key_features: ['多模态支持', '实时信息', '代码执行', '视觉理解'],
+        pros: ['多模态能力强', '实时数据', '免费使用', '集成Google服务'],
+        cons: ['某些功能有限', '响应速度不稳定', '隐私问题'],
+        use_cases: ['创意设计', '数据分析', '教育学习', '日常助手'],
+        pricing: '免费基础版，Advanced版$19.99/月',
+        official_url: 'https://gemini.google.com',
+        created_at: new Date().toISOString(),
+        ai_search_count: 9800
+      },
+      {
+        id: 4,
+        slug: 'qwen',
+        name: '通义千问',
+        short_description: '阿里巴巴开发的大规模语言模型，专为中文场景优化。',
+        platform: 'web',
+        key_features: ['中文优化', '多轮对话', '知识问答', '创意写作'],
+        pros: ['中文理解准确', '本地化服务', '免费使用', '支持多种应用'],
+        cons: ['英文能力较弱', '功能更新较慢', '某些领域知识有限'],
+        use_cases: ['中文内容创作', '智能客服', '教育辅导', '企业应用'],
+        pricing: '免费基础版，Plus版¥99/月',
+        official_url: 'https://tongyi.aliyun.com',
+        created_at: new Date().toISOString(),
+        ai_search_count: 7600
+      },
+      {
+        id: 5,
+        slug: 'doubao',
+        name: '豆包',
+        short_description: '字节跳动开发的AI助手，提供智能对话和内容生成服务。',
+        platform: 'web',
+        key_features: ['自然语言对话', '内容生成', '个性化推荐', '多模态支持'],
+        pros: ['响应速度快', '界面友好', '免费使用', '移动端支持'],
+        cons: ['功能相对简单', '知识库更新较慢', '某些领域专业性不足'],
+        use_cases: ['日常对话', '内容创作', '学习辅助', '娱乐互动'],
+        pricing: '免费使用',
+        official_url: 'https://www.doubao.com',
+        created_at: new Date().toISOString(),
+        ai_search_count: 6300
+      },
+      {
+        id: 6,
+        slug: 'copilot',
+        name: 'GitHub Copilot',
+        short_description: 'GitHub和OpenAI合作开发的AI编程助手，帮助开发者编写代码。',
+        platform: 'IDE插件',
+        key_features: ['代码补全', '函数生成', '错误修复', '多语言支持'],
+        pros: ['编程效率高', '支持多种IDE', '代码质量好', '学习资源丰富'],
+        cons: ['需要订阅', '有时会生成错误代码', '依赖网络'],
+        use_cases: ['软件开发', '代码学习', '快速原型', '自动化脚本'],
+        pricing: '$19/月或$190/年',
+        official_url: 'https://github.com/features/copilot',
+        created_at: new Date().toISOString(),
+        ai_search_count: 15400
+      }
+    ]
+  }
   
   const { count: agentCount } = await supabaseAdmin
     .from('agents')
@@ -97,74 +196,22 @@ export default async function HomePage() {
           <div className="text-sm text-gray-500">共 {allAgents?.length || 0} 款</div>
         </div>
         
+        {/* 模式切换器 */}
+        <div className="mb-8">
+          <ModeSwitcher
+            modes={[
+              { value: 'all', label: '全部', icon: '📋' },
+              { value: 'popular', label: '热门', icon: '🔥' },
+              { value: 'new', label: '最新', icon: '🆕' },
+              { value: 'ai-favorite', label: 'AI推荐', icon: '🤖' },
+            ]}
+            defaultValue="all"
+          />
+        </div>
+
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {allAgents?.map((agent) => (
-            <GlassCard key={agent.id}>
-              <article itemScope itemType="https://schema.org/SoftwareApplication">
-                <div className="flex items-start justify-between mb-4">
-                  <h3 className="font-bold text-xl text-gray-900 group-hover:text-blue-600 transition-colors flex-1" itemProp="name">
-                    {agent.name}
-                  </h3>
-                  {agent.platform && (
-                    <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium ml-2">
-                      {agent.platform}
-                    </span>
-                  )}
-                </div>
-                
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed" itemProp="description">
-                  {agent.short_description}
-                </p>
-                
-                {agent.key_features && Array.isArray(agent.key_features) && agent.key_features.length > 0 && (
-                  <div className="mb-4">
-                    <div className="text-xs font-semibold text-gray-500 mb-2">✔ 核心功能</div>
-                    <div className="flex flex-wrap gap-2">
-                      {agent.key_features.slice(0, 3).map((feature, idx) => (
-                        <span key={idx} className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-lg" itemProp="featureList">
-                          {feature}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                {agent.pros && Array.isArray(agent.pros) && agent.pros.length > 0 && (
-                  <div className="mb-4">
-                    <div className="text-xs font-semibold text-green-600 mb-2">✅ 优势</div>
-                    <ul className="text-xs text-gray-600 space-y-1">
-                      {agent.pros.slice(0, 2).map((pro, idx) => (
-                        <li key={idx} className="flex items-start gap-1">
-                          <span className="text-green-500 mt-0.5">•</span>
-                          <span className="line-clamp-1">{pro}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                
-                {agent.use_cases && Array.isArray(agent.use_cases) && agent.use_cases.length > 0 && (
-                  <div className="mb-4">
-                    <div className="text-xs font-semibold text-purple-600 mb-2">🎯 适用场景</div>
-                    <div className="text-xs text-gray-600">{agent.use_cases.slice(0, 2).join(' · ')}</div>
-                  </div>
-                )}
-                
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  {agent.pricing && (
-                    <span className="text-xs font-semibold text-gray-700" itemProp="offers" itemScope itemType="https://schema.org/Offer">
-                      <span itemProp="price">💰 {agent.pricing}</span>
-                    </span>
-                  )}
-                  {agent.official_url && (
-                    <a href={agent.official_url} target="_blank" rel="noopener noreferrer" 
-                       className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1" itemProp="url">
-                      访问 →
-                    </a>
-                  )}
-                </div>
-              </article>
-            </GlassCard>
+            <AgentCard key={agent.id} agent={agent} />
           ))}
         </div>
         
