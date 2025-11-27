@@ -5,8 +5,8 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Super Alpha Agent - 发现最强大的 AI Agents | AI 智能助手聚合平台',
-  description: '精选 100+ AI Agents，深度分析功能、优缺点和使用场景。专为 AI 搜索引擎优化，帮助你快速找到最适合的 AI 智能助手。每日自动更新，完全免费。',
+  title: 'Super Alpha Agent - 发现最强大的 AI Agents | AI 智能助手整合平台',
+  description: '精选 100+ AI Agents，深度分析功能、优缺点与使用门槛。专为 AI 搜索引擎优化，每日自动更新，完全免费。',
   keywords: [
     'AI Agent',
     'AI 智能助手',
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   publisher: 'Super Alpha Agent',
   openGraph: {
     title: 'Super Alpha Agent - 发现最强大的 AI Agents',
-    description: '精选 100+ AI 智能助手，深度分析、实时更新、为 AI 搜索优化',
+    description: '精选 100+ AI 智能助手，深度分析 · 实时更新 · 为 AI 搜索优化',
     type: 'website',
     locale: 'zh_CN',
     url: 'https://www.superalphaagent.com',
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Super Alpha Agent - 发现最强大的 AI Agents',
-    description: '精选 100+ AI 智能助手，深度分析、实时更新',
+    description: '精选 100+ AI 智能助手，深度分析 · 实时更新 · AI 搜索优化',
   },
   robots: {
     index: true,
@@ -92,7 +92,7 @@ export default function RootLayout({
                   rel="noopener noreferrer"
                   className="text-gray-700 hover:text-blue-600 font-medium transition-colors flex items-center gap-1"
                 >
-                  <span>⭐</span>
+                  <span>🐱</span>
                   <span className="hidden sm:inline">GitHub</span>
                 </a>
               </div>
@@ -119,8 +119,8 @@ export default function RootLayout({
               <div>
                 <h3 className="font-bold mb-4">关于</h3>
                 <ul className="space-y-2 text-sm text-gray-400">
-                  <li>🤖 AI 优先设计</li>
-                  <li>🔄 每日自动更新</li>
+                  <li>🚀 AI 优先设计</li>
+                  <li>⏱️ 每日自动更新</li>
                   <li>📊 深度分析对比</li>
                   <li>💯 完全免费使用</li>
                 </ul>
@@ -132,13 +132,13 @@ export default function RootLayout({
                   <li>Next.js 14 + TypeScript</li>
                   <li>Supabase + PostgreSQL</li>
                   <li>OpenRouter AI</li>
-                  <li>Playwright 爬虫</li>
+                  <li>Playwright 抓取</li>
                 </ul>
               </div>
             </div>
             
             <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
-              <p>© 2025 Super Alpha Agent. 为 AI 搜索引擎优化 · 开源项目</p>
+              <p>© 2025 Super Alpha Agent. 面向 AI 搜索引擎优化 · 开源项目</p>
               <p className="mt-2">
                 Built with ❤️ for the AI community
               </p>

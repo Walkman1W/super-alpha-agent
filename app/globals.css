@@ -29,18 +29,18 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+  background: linear-gradient(to bottom, #0066FF, #7C3AED);
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(to bottom, #2563eb, #7c3aed);
+  background: linear-gradient(to bottom, #0052CC, #5B21B6);
 }
 
-/* 文本选择颜色 */
+/* 文本选择颜色 - 使用品牌色 */
 ::selection {
-  background-color: #ddd6fe;
-  color: #5b21b6;
+  background-color: #A78BFA;
+  color: #0F172A;
 }
 
 /* 卡片悬停效果 */
@@ -54,8 +54,30 @@ html {
   }
   
   .gradient-text {
-    @apply bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-brand-primary via-brand-secondary to-brand-accent bg-clip-text text-transparent;
   }
+}
+
+/* 品牌色渐变背景 */
+.bg-brand-gradient {
+  background: linear-gradient(135deg, #0066FF 0%, #7C3AED 50%, #5B21B6 100%);
+}
+
+/* 发光效果 */
+.glow-primary {
+  box-shadow: 0 0 20px rgba(0, 102, 255, 0.5);
+}
+
+.glow-secondary {
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.5);
+}
+
+/* 玻璃态效果 */
+.glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* Hero Section 动画 */
