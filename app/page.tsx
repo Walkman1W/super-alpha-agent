@@ -1,15 +1,20 @@
+import { Suspense } from 'react'
 import { supabaseAdmin } from '@/lib/supabase'
 import { AnimatedGrid } from '@/components/ui/animated-grid'
 import { GradientText } from '@/components/ui/gradient-text'
 import { EnhancedButton } from '@/components/ui/enhanced-button'
 import { GlassCard } from '@/components/ui/glass-card'
+import { ModeSwitcher } from '@/components/mode-switcher'
+import { AgentMarketGrid } from '@/components/agent-market-grid'
+import { AgentGridSkeleton } from '@/components/agent-card-skeleton'
 
 export const revalidate = 3600
 
 export default async function HomePage() {
   const { data: allAgents } = await supabaseAdmin
     .from('agents')
-    .select('id, slug, name, short_description, platform, key_features, pros, cons, use_cases, pricing, official_url, created_at')
+    .select('id, slug, name, short_description, platform, key_features, pros, cons, use_cases, pricing, official_url, ai_search_count, created_at')
+    .order('ai_search_count', { ascending: false, nullsFirst: false })
     .order('created_at', { ascending: false })
     .limit(100)
   
@@ -56,7 +61,16 @@ export default async function HomePage() {
             <EnhancedButton href="#publish" variant="secondary" icon="✍️">发布你的 Agent</EnhancedButton>
           </div>
           
-          <div className="mt-8 text-white/60 text-xs md:text-sm animate-fade-in">
+          {/* Mode Switcher - Tab navigation for Market/Publish modes */}
+          <div className="mt-8 flex justify-center animate-fade-in">
+            <Suspense fallback={
+              <div className="inline-flex items-center gap-1 p-1 bg-white/20 backdrop-blur-sm rounded-xl border border-white/30 h-[52px] w-[200px] animate-pulse" />
+            }>
+              <ModeSwitcher />
+            </Suspense>
+          </div>
+          
+          <div className="mt-6 text-white/60 text-xs md:text-sm animate-fade-in">
             ⚡ 每日自动更新 · 完全免费 · AI 搜索引擎友好
           </div>
         </div>
@@ -89,93 +103,31 @@ export default async function HomePage() {
 
       {/* Agents 展示区 */}
       <section id="agents" className="container mx-auto px-4 py-12">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-1 h-8 bg-gradient-to-b from-blue-600 to-purple-600 rounded-full"></div>
-            <h2 className="text-3xl font-bold text-gray-900">全部 AI Agents</h2>
-          </div>
-          <div className="text-sm text-gray-500">共 {allAgents?.length || 0} 款</div>
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-1 h-8 bg-gradient-to-b from-blue-600 to-purple-600 rounded-full"></div>
+          <h2 className="text-3xl font-bold text-gray-900">全部 AI Agents</h2>
         </div>
         
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {allAgents?.map((agent) => (
-            <GlassCard key={agent.id}>
-              <article itemScope itemType="https://schema.org/SoftwareApplication">
-                <div className="flex items-start justify-between mb-4">
-                  <h3 className="font-bold text-xl text-gray-900 group-hover:text-blue-600 transition-colors flex-1" itemProp="name">
-                    {agent.name}
-                  </h3>
-                  {agent.platform && (
-                    <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium ml-2">
-                      {agent.platform}
-                    </span>
-                  )}
-                </div>
-                
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed" itemProp="description">
-                  {agent.short_description}
-                </p>
-                
-                {agent.key_features && Array.isArray(agent.key_features) && agent.key_features.length > 0 && (
-                  <div className="mb-4">
-                    <div className="text-xs font-semibold text-gray-500 mb-2">✔ 核心功能</div>
-                    <div className="flex flex-wrap gap-2">
-                      {agent.key_features.slice(0, 3).map((feature, idx) => (
-                        <span key={idx} className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-lg" itemProp="featureList">
-                          {feature}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                {agent.pros && Array.isArray(agent.pros) && agent.pros.length > 0 && (
-                  <div className="mb-4">
-                    <div className="text-xs font-semibold text-green-600 mb-2">✅ 优势</div>
-                    <ul className="text-xs text-gray-600 space-y-1">
-                      {agent.pros.slice(0, 2).map((pro, idx) => (
-                        <li key={idx} className="flex items-start gap-1">
-                          <span className="text-green-500 mt-0.5">•</span>
-                          <span className="line-clamp-1">{pro}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                
-                {agent.use_cases && Array.isArray(agent.use_cases) && agent.use_cases.length > 0 && (
-                  <div className="mb-4">
-                    <div className="text-xs font-semibold text-purple-600 mb-2">🎯 适用场景</div>
-                    <div className="text-xs text-gray-600">{agent.use_cases.slice(0, 2).join(' · ')}</div>
-                  </div>
-                )}
-                
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  {agent.pricing && (
-                    <span className="text-xs font-semibold text-gray-700" itemProp="offers" itemScope itemType="https://schema.org/Offer">
-                      <span itemProp="price">💰 {agent.pricing}</span>
-                    </span>
-                  )}
-                  {agent.official_url && (
-                    <a href={agent.official_url} target="_blank" rel="noopener noreferrer" 
-                       className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1" itemProp="url">
-                      访问 →
-                    </a>
-                  )}
-                </div>
-              </article>
-            </GlassCard>
-          ))}
-        </div>
-        
-        {(!allAgents || allAgents.length === 0) && (
-          <div className="text-center py-20">
-            <div className="text-6xl mb-4">🤖</div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">暂无 Agent 数据</h3>
-            <p className="text-gray-600 mb-6">运行爬虫来获取 Agent 信息</p>
-            <code className="bg-gray-100 px-4 py-2 rounded-lg text-sm font-mono">npm run crawler</code>
-          </div>
-        )}
+        <Suspense fallback={<AgentGridSkeleton count={12} />}>
+          <AgentMarketGrid 
+            agents={(allAgents || []).map((agent) => ({
+              id: agent.id,
+              slug: agent.slug,
+              name: agent.name,
+              short_description: agent.short_description,
+              platform: agent.platform,
+              key_features: agent.key_features,
+              pros: agent.pros,
+              use_cases: agent.use_cases,
+              pricing: agent.pricing,
+              official_url: agent.official_url,
+              ai_search_count: agent.ai_search_count ?? 0
+            }))}
+            initialSortBy="ai_search_count"
+            pageSize={12}
+            showAIStats={true}
+          />
+        </Suspense>
       </section>
 
 
