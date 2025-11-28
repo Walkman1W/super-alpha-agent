@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 
 const textareaVariants = cva(
   // Base styles - ensuring minimum 44px height for touch target
-  'flex w-full rounded-lg border bg-white px-4 py-3 text-base transition-colors placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 min-h-[88px] resize-y',
+  'flex w-full rounded-lg border bg-white px-4 py-3 text-base text-gray-900 transition-colors placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 min-h-[88px] resize-y',
   {
     variants: {
       variant: {
@@ -34,7 +34,8 @@ export interface TextareaProps
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, variant, error, label, helperText, id, ...props }, ref) => {
-    const textareaId = id || React.useId()
+    const generatedId = React.useId()
+    const textareaId = id || generatedId
     const errorId = `${textareaId}-error`
     const helperId = `${textareaId}-helper`
     
