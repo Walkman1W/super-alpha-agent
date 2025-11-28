@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Eye, TrendingUp, ExternalLink, Sparkles, Target, ThumbsUp } from 'lucide-react'
+import { Eye, ExternalLink, Sparkles, Target, ThumbsUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 /**
