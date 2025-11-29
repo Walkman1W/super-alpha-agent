@@ -2,6 +2,7 @@ import { supabaseAdmin } from '@/lib/supabase'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { AIVisitTracker } from '@/components/ai-visit-tracker'
+import { AISearchStats } from '@/components/ai-search-stats'
 
 export const revalidate = 3600
 
@@ -12,20 +13,43 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { data: agent } = await supabaseAdmin
     .from('agents')
-    .select('*')
+    .select('*, categories(name, slug)')
     .eq('slug', params.slug)
     .single()
 
   if (!agent) return { title: 'Agent Not Found' }
 
+  // 从类别和特性派生出关键词
+  const keywords = [
+    agent.name,
+    agent.categories?.name || '',
+    ...(agent.key_features || []),
+    ...(agent.use_cases || []),
+    agent.platform,
+    agent.pricing
+  ].filter(Boolean).join(', ')
+
   return {
-    title: `${agent.name} - AI Agent 详细分析`,
+    title: `${agent.name} - AI Agent 详细分析 | Super Alpha Agent`,
     description: agent.short_description,
-    keywords: agent.keywords,
+    keywords,
+    authors: [{ name: 'Super Alpha Agent' }],
+    publisher: 'Super Alpha Agent',
     openGraph: {
-      title: agent.name,
+      title: `${agent.name} - AI Agent 详细分析`,
       description: agent.short_description,
-      type: 'article',
+      type: 'software',
+      url: `${process.env.NEXT_PUBLIC_SITE_URL}/agents/${params.slug}`,
+      images: agent.image_url ? [agent.image_url] : undefined,
+      site_name: 'Super Alpha Agent',
+      softwareVersion: agent.version || '1.0',
+      applicationCategory: agent.categories?.name,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${agent.name} - AI Agent 详细分析`,
+      description: agent.short_description,
+      images: agent.image_url ? [agent.image_url] : undefined,
     },
   }
 }
@@ -53,6 +77,24 @@ export default async function AgentDetailPage({ params }: Props) {
     .neq('id', agent.id)
     .limit(3)
 
+  // 获取 AI 搜索统计数据
+  const { data: aiVisits } = await supabaseAdmin
+    .from('ai_visits')
+    .select('ai_name, COUNT(*) as count')
+    .eq('agent_id', agent.id)
+    .groupBy('ai_name')
+    .order('count', { ascending: false })
+
+  // 计算总计和百分比
+  const totalAISearches = aiVisits?.reduce((sum, visit) => sum + visit.count, 0) || 0
+  const aiSearchStats = aiVisits?.map(visit => ({
+    engine: visit.ai_name,
+    count: visit.count,
+    percentage: totalAISearches > 0 ? (visit.count / totalAISearches) * 100 : 0,
+    trend: 'stable', // 这里可以根据实际数据计算趋势
+    trendValue: 0 // 这里可以根据实际数据计算趋势值
+  })) || []
+
   return (
     <div className="container mx-auto px-4 py-12">
       {/* 结构化数据（AI 友好） */}
@@ -68,18 +110,41 @@ export default async function AgentDetailPage({ params }: Props) {
             offers: {
               '@type': 'Offer',
               price: agent.pricing === '免费' ? '0' : 'varies',
+              priceCurrency: 'CNY',
             },
+            author: {
+              '@type': 'Organization',
+              name: 'Super Alpha Agent'
+            },
+            publisher: {
+              '@type': 'Organization',
+              name: 'Super Alpha Agent',
+              url: process.env.NEXT_PUBLIC_SITE_URL
+            },
+            softwareVersion: agent.version || '1.0',
+            operatingSystem: agent.platform,
+            url: `${process.env.NEXT_PUBLIC_SITE_URL}/agents/${params.slug}`,
+            image: agent.image_url,
+            keywords: agent.keywords,
+            datePublished: agent.created_at,
+            dateModified: agent.updated_at,
           }),
         }}
       />
 
       {/* 面包屑 */}
-      <nav className="text-sm text-gray-600 mb-6">
-        <a href="/" className="hover:text-blue-600">首页</a>
-        {' / '}
-        <a href="/agents" className="hover:text-blue-600">Agents</a>
-        {' / '}
-        <span>{agent.name}</span>
+      <nav aria-label="面包屑导航" className="text-sm text-gray-600 mb-6">
+        <ol className="flex items-center space-x-2">
+          <li>
+            <a href="/" className="hover:text-blue-600" aria-label="首页">首页</a>
+          </li>
+          <li className="text-gray-400">/</li>
+          <li>
+            <a href="/agents" className="hover:text-blue-600" aria-label="Agents列表">Agents</a>
+          </li>
+          <li className="text-gray-400">/</li>
+          <li className="font-medium" aria-current="page">{agent.name}</li>
+        </ol>
       </nav>
 
       {/* 🆕 AI 访问追踪 */}
@@ -90,7 +155,7 @@ export default async function AgentDetailPage({ params }: Props) {
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <h1 className="text-4xl font-bold mb-3">{agent.name}</h1>
-            <p className="text-xl text-gray-600 mb-4">
+            <p className="text-xl text-gray-600 mb-4" aria-label="简短描述">
               {agent.short_description}
             </p>
             
@@ -127,44 +192,46 @@ export default async function AgentDetailPage({ params }: Props) {
       <div className="grid lg:grid-cols-3 gap-8">
         {/* 主要内容 */}
         <div className="lg:col-span-2 space-y-8">
+          {/* AI 搜索统计细分 */}
+          <AISearchStats stats={aiSearchStats} total={totalAISearches} />
           {/* 快速概览 */}
-          <section className="border rounded-lg p-6">
-            <h2 className="text-2xl font-bold mb-4">快速概览</h2>
-            <dl className="grid grid-cols-2 gap-4">
+          <section className="border rounded-lg p-6" aria-labelledby="quick-overview-heading">
+            <h2 id="quick-overview-heading" className="text-2xl font-bold mb-4">快速概览</h2>
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <dt className="text-gray-600 text-sm">分类</dt>
-                <dd className="font-semibold">{agent.categories?.name}</dd>
+                <span className="text-gray-600 text-sm">分类:</span>
+                <span className="font-semibold ml-1">{agent.categories?.name}</span>
               </div>
               <div>
-                <dt className="text-gray-600 text-sm">平台</dt>
-                <dd className="font-semibold">{agent.platform}</dd>
+                <span className="text-gray-600 text-sm">平台:</span>
+                <span className="font-semibold ml-1">{agent.platform}</span>
               </div>
               <div>
-                <dt className="text-gray-600 text-sm">定价</dt>
-                <dd className="font-semibold">{agent.pricing}</dd>
+                <span className="text-gray-600 text-sm">定价:</span>
+                <span className="font-semibold ml-1">{agent.pricing}</span>
               </div>
               <div>
-                <dt className="text-gray-600 text-sm">浏览量</dt>
-                <dd className="font-semibold">{agent.view_count}</dd>
+                <span className="text-gray-600 text-sm">浏览量:</span>
+                <span className="font-semibold ml-1">{agent.view_count}</span>
               </div>
               <div>
-                <dt className="text-gray-600 text-sm">🤖 AI 搜索</dt>
-                <dd className="font-semibold text-purple-600">{agent.ai_search_count}</dd>
+                <span className="text-gray-600 text-sm">🤖 AI 搜索:</span>
+                <span className="font-semibold ml-1 text-purple-600">{agent.ai_search_count}</span>
               </div>
-            </dl>
+            </div>
           </section>
 
           {/* 详细介绍 */}
-          <section>
-            <h2 className="text-2xl font-bold mb-4">详细介绍</h2>
+          <section aria-labelledby="detailed-intro-heading">
+            <h2 id="detailed-intro-heading" className="text-2xl font-bold mb-4">详细介绍</h2>
             <p className="text-gray-700 leading-relaxed">
               {agent.detailed_description}
             </p>
           </section>
 
           {/* 核心功能 */}
-          <section>
-            <h2 className="text-2xl font-bold mb-4">核心功能</h2>
+          <section aria-labelledby="key-features-heading">
+            <h2 id="key-features-heading" className="text-2xl font-bold mb-4">核心功能</h2>
             <ul className="space-y-2">
               {agent.key_features?.map((feature: string, i: number) => (
                 <li key={i} className="flex items-start">
@@ -176,8 +243,8 @@ export default async function AgentDetailPage({ params }: Props) {
           </section>
 
           {/* 适用场景 */}
-          <section>
-            <h2 className="text-2xl font-bold mb-4">适用场景</h2>
+          <section aria-labelledby="use-cases-heading">
+            <h2 id="use-cases-heading" className="text-2xl font-bold mb-4">适用场景</h2>
             <ul className="space-y-2">
               {agent.use_cases?.map((useCase: string, i: number) => (
                 <li key={i} className="flex items-start">
@@ -189,8 +256,8 @@ export default async function AgentDetailPage({ params }: Props) {
           </section>
 
           {/* 优缺点对比 */}
-          <section>
-            <h2 className="text-2xl font-bold mb-4">优缺点分析</h2>
+          <section aria-labelledby="pros-cons-heading">
+            <h2 id="pros-cons-heading" className="text-2xl font-bold mb-4">优缺点分析</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="border rounded-lg p-4 bg-green-50">
                 <h3 className="font-semibold text-green-800 mb-3">优点</h3>
