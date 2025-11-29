@@ -5,16 +5,16 @@ CREATE TABLE IF NOT EXISTS agent_submissions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     email VARCHAR(255) NOT NULL,
     url TEXT NOT NULL,
-    agent_data JSONB NOT NULL,
+    agent_data JSONB,  -- 验证前为null
     verification_code VARCHAR(6) NOT NULL,
     expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
     verified BOOLEAN DEFAULT FALSE,
     agent_id UUID REFERENCES agents(id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
     
-    -- 同一邮箱+URL组合唯一
-    UNIQUE(email, url)
+    -- 移除UNIQUE约束，允许同一邮箱提交多个URL
+    -- 同一邮箱可以提交多个不同的Agent
 );
 
 -- 索引

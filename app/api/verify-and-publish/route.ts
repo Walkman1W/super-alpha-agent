@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { supabaseAdmin } from '@/lib/supabase'
 import { analyzeURL } from '@/lib/url-analyzer'
 import { sendPublishSuccessEmail } from '@/lib/email'
+
+/**
+ * 检查是否为管理员邮箱
+ */
+function isAdminEmail(email: string): boolean {
+  const adminEmails = process.env.ADMIN_EMAILS?.split(',').map(e => e.trim().toLowerCase()) || []
+  return adminEmails.includes(email.toLowerCase())
+}
 
 const RequestSchema = z.object({
   email: z.string().email('无效的邮箱'),
@@ -172,6 +181,19 @@ export async function POST(request: NextRequest) {
       })
       .eq('id', submission.id)
     
+    // 管理员立即清除缓存，普通用户等待ISR
+    const isAdmin = isAdminEmail(email)
+    if (isAdmin) {
+      try {
+        revalidatePath(`/agents/${agent.slug}`)
+        revalidatePath('/agents')
+        revalidatePath('/')
+        console.log('Admin submission: cache cleared immediately for', agent.slug)
+      } catch (error) {
+        console.error('Revalidate path error:', error)
+      }
+    }
+    
     // 发送成功通知邮件（异步）
     sendPublishSuccessEmail(email, agent.name, agent.slug).catch(err => {
       console.error('Send success email failed:', err)
@@ -179,13 +201,19 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({
       success: true,
-      message: '🎉 Agent已成功上架！',
+      message: isAdmin 
+        ? '🎉 Agent已成功上架！（管理员实时上线）' 
+        : '🎉 Agent已成功上架！',
       agent: {
         id: agent.id,
         name: agent.name,
         slug: agent.slug,
         url: `/agents/${agent.slug}`
-      }
+      },
+      isAdmin,
+      note: isAdmin 
+        ? '管理员提交，立即可访问' 
+        : '约1小时后可正常访问（首页已显示）'
     })
     
   } catch (error) {

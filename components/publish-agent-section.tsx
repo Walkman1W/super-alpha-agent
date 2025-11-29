@@ -24,6 +24,10 @@ export function PublishAgentSection() {
   const [agentName, setAgentName] = useState('')
   const [agentUrl, setAgentUrl] = useState('')
   
+  // 管理员和提示信息
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [note, setNote] = useState('')
+  
   // 同意条款
   const [agreed, setAgreed] = useState(false)
   
@@ -121,6 +125,8 @@ export function PublishAgentSection() {
 
       setAgentName(data.agent?.name || agentName)
       setAgentUrl(data.agent?.url || '')
+      setIsAdmin(data.isAdmin || false)
+      setNote(data.note || '')
       setStep('success')
       setStatus('idle')
     } catch (error) {
@@ -323,20 +329,52 @@ export function PublishAgentSection() {
             {step === 'success' && (
               <div className="max-w-sm mx-auto text-center">
                 <div className="text-6xl mb-4">🎉</div>
-                <h3 className="text-xl font-bold mb-2">上架成功！</h3>
-                <p className="text-white/80 mb-4">
+                <h3 className="text-xl font-bold mb-2">
+                  {isAdmin ? '上架成功！（管理员）' : '上架成功！'}
+                </h3>
+                <p className="text-white/80 mb-2">
                   你的Agent <strong>{agentName}</strong> 已上架
                 </p>
+                
+                {/* 提示信息 */}
+                {note && (
+                  <div className={cn(
+                    "text-sm mb-4 p-3 rounded-lg",
+                    isAdmin 
+                      ? "bg-green-500/20 text-green-100 border border-green-400/30" 
+                      : "bg-yellow-500/20 text-yellow-100 border border-yellow-400/30"
+                  )}>
+                    {isAdmin ? '✅ ' : '⏰ '}{note}
+                  </div>
+                )}
+                
                 {agentUrl && (
                   <a
                     href={agentUrl}
-                    className="inline-block bg-white text-indigo-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block bg-white text-indigo-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition mb-2"
                   >
-                    查看Agent页面
+                    {isAdmin ? '立即查看' : '查看Agent页面'}
                   </a>
                 )}
+                
+                {!isAdmin && (
+                  <p className="text-xs text-white/60 mb-4">
+                    💡 首页已显示小卡片，详情页约1小时后可访问
+                  </p>
+                )}
+                
                 <button
-                  onClick={() => { setStep('form'); setUrl(''); setEmail(''); setCode(''); setAgreed(false) }}
+                  onClick={() => { 
+                    setStep('form'); 
+                    setUrl(''); 
+                    setEmail(''); 
+                    setCode(''); 
+                    setAgreed(false);
+                    setIsAdmin(false);
+                    setNote('');
+                  }}
                   className="block mx-auto mt-4 text-sm text-white/70 hover:text-white"
                 >
                   继续发布其他Agent

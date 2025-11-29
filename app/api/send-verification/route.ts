@@ -27,6 +27,14 @@ function checkRateLimit(key: string, maxRequests = 3, windowMs = 60000): boolean
 }
 
 /**
+ * 检查是否为管理员邮箱
+ */
+function isAdminEmail(email: string): boolean {
+  const adminEmails = process.env.ADMIN_EMAILS?.split(',').map(e => e.trim().toLowerCase()) || []
+  return adminEmails.includes(email.toLowerCase())
+}
+
+/**
  * POST /api/send-verification
  * 
  * 新流程：先验证邮箱，再分析URL
@@ -47,8 +55,11 @@ export async function POST(request: NextRequest) {
     
     const { url, email } = validation.data
     
-    // 速率限制（每邮箱每分钟3次）
-    if (!checkRateLimit(email)) {
+    // 检查是否为管理员
+    const isAdmin = isAdminEmail(email)
+    
+    // 速率限制（管理员不受限制）
+    if (!isAdmin && !checkRateLimit(email)) {
       return NextResponse.json(
         { error: '请求过于频繁，请稍后重试' },
         { status: 429 }
@@ -78,22 +89,43 @@ export async function POST(request: NextRequest) {
       )
     }
     
+    // 检查提交数量限制（普通用户最多2个，管理员无限制）
+    if (!isAdmin) {
+      const { count } = await supabaseAdmin
+        .from('agents')
+        .select('id', { count: 'exact', head: true })
+        .eq('submitter_email', email)
+      
+      if (count !== null && count >= 2) {
+        return NextResponse.json(
+          { error: '每个邮箱最多提交2个Agent，如需提交更多请联系管理员' },
+          { status: 403 }
+        )
+      }
+    }
+    
     // 生成验证码
     const code = generateVerificationCode()
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000) // 10分钟后过期
     
     // 存储待验证的提交（只存URL和邮箱，不做分析）
+    // 先删除该邮箱+URL的旧记录（如果存在）
+    await supabaseAdmin
+      .from('agent_submissions')
+      .delete()
+      .eq('email', email)
+      .eq('url', urlValidation.url)
+    
+    // 插入新记录
     const { error: insertError } = await supabaseAdmin
       .from('agent_submissions')
-      .upsert({
+      .insert({
         email,
         url: urlValidation.url,
         verification_code: code,
         expires_at: expiresAt.toISOString(),
         verified: false,
         agent_data: null // 验证后再分析
-      }, {
-        onConflict: 'email,url'
       })
     
     if (insertError) {
