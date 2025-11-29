@@ -1,9 +1,18 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import './performance.css'
 import { ToastProvider } from '@/components/toast-provider'
 
-const inter = Inter({ subsets: ['latin'] })
+// 优化字体加载：使用 display: 'swap' 避免阻塞渲染
+// 预加载字体以减少 CLS
+const inter = Inter({ 
+  subsets: ['latin'],
+  display: 'swap', // 立即显示后备字体，字体加载完成后切换
+  preload: true, // 预加载字体文件
+  variable: '--font-inter', // CSS 变量
+  fallback: ['system-ui', 'arial'], // 后备字体
+})
 
 export const metadata: Metadata = {
   title: 'Super Alpha Agent - 发现最强大的 AI Agents | AI 智能助手整合平台',
@@ -66,6 +75,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh-CN">
+      <head>
+        {/* 预连接到关键域名以减少 DNS 查询和连接时间 */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {process.env.NEXT_PUBLIC_SUPABASE_URL && (
+          <link rel="preconnect" href={process.env.NEXT_PUBLIC_SUPABASE_URL} />
+        )}
+        {/* DNS 预取 */}
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+      </head>
       <body className={inter.className}>
         <ToastProvider>
         <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 shadow-sm">

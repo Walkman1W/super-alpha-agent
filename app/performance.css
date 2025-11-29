@@ -1,0 +1,52 @@
+/**
+ * 性能优化 CSS
+ * 使用 CSS containment 和 will-change 优化渲染性能
+ */
+
+/* 使用 CSS containment 隔离渲染 */
+.agent-card {
+  contain: layout style paint;
+}
+
+/* 优化动画性能 */
+.animate-smooth {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* 减少重绘 */
+.no-repaint {
+  contain: strict;
+}
+
+/* 优化滚动性能 */
+.smooth-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* 使用 GPU 加速 */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* 优化文本渲染 */
+.optimized-text {
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 减少布局抖动 */
+.stable-layout {
+  content-visibility: auto;
+  contain-intrinsic-size: 300px;
+}
+
+/* 优化图片加载 */
+.lazy-image {
+  content-visibility: auto;
+  contain-intrinsic-size: 200px 200px;
+}

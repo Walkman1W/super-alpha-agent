@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import dynamic from 'next/dynamic'
-import { supabaseAdmin } from '@/lib/supabase'
+import { getHomePageData } from '@/lib/data-fetcher'
 import { AnimatedGrid } from '@/components/ui/animated-grid'
 import { GradientText } from '@/components/ui/gradient-text'
 import { EnhancedButton } from '@/components/ui/enhanced-button'
@@ -34,34 +34,15 @@ const PublishAgentSection = dynamic(() => import('@/components/publish-agent-sec
   ssr: false, // 发布表单不需要 SSR
 })
 
-// ISR 重新验证时间：1小时
-export const revalidate = 3600
+// ISR 重新验证时间：5分钟 - 需求: 9.4
+export const revalidate = 300
+
+// 预渲染页面以减少首次加载时间
+export const fetchCache = 'force-cache'
 
 export default async function HomePage() {
-  // 优化：并行获取数据，减少总查询时间
-  const [allAgents, agentCount, categories] = await Promise.all([
-    // 只获取首屏必需的字段，减少数据传输和序列化开销
-    supabaseAdmin
-      .from('agents')
-      .select('id, slug, name, short_description, platform, pricing, ai_search_count')
-      .order('ai_search_count', { ascending: false, nullsFirst: false })
-      .limit(12) // 首屏只显示12个，其余通过客户端API加载
-      .then(({ data }) => data || []),
-    
-    // 只获取计数，不获取数据
-    supabaseAdmin
-      .from('agents')
-      .select('*', { count: 'exact', head: true })
-      .then(({ count }) => count || 0),
-    
-    // 只获取必需的分类字段
-    supabaseAdmin
-      .from('categories')
-      .select('id, name, icon, description')
-      .order('name')
-      .limit(8) // 减少到8个分类
-      .then(({ data }) => data || [])
-  ])
+  // 使用优化的数据获取层，带内存缓存
+  const { agents: allAgents, agentCount, categories } = await getHomePageData()
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">

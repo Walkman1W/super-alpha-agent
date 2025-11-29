@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { memo } from 'react'
 import { Eye, ExternalLink, Sparkles, Target, ThumbsUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -83,9 +84,9 @@ export function formatNumberWithSeparator(num: number): string {
 
 
 /**
- * AI 搜索统计徽章组件
+ * AI 搜索统计徽章组件 - 使用 memo 优化
  */
-function AIStatsBadge({ count }: { count: number }) {
+const AIStatsBadge = memo(({ count }: { count: number }) => {
   return (
     <div className="flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 rounded-full text-xs font-semibold">
       <Eye className="w-3.5 h-3.5" aria-hidden="true" />
@@ -93,15 +94,19 @@ function AIStatsBadge({ count }: { count: number }) {
       <span className="text-purple-500">AI 搜索</span>
     </div>
   )
-}
+})
+
+AIStatsBadge.displayName = 'AIStatsBadge'
 
 /**
  * AgentCard 组件
  * 展示单个 Agent 的摘要信息，包含 AI 搜索统计
  * 
  * 需求: 3.2, 3.4, 8.1, 8.5
+ * 
+ * 性能优化：使用 memo 避免不必要的重渲染
  */
-export function AgentCard({ agent, showAIStats = true, className }: AgentCardProps) {
+const AgentCardComponent = ({ agent, showAIStats = true, className }: AgentCardProps) => {
   const hasAIStats = showAIStats && typeof agent.ai_search_count === 'number' && agent.ai_search_count > 0
   
   return (
@@ -242,5 +247,18 @@ export function AgentCard({ agent, showAIStats = true, className }: AgentCardPro
     </Link>
   )
 }
+
+// 使用 memo 优化，只在 props 变化时重新渲染
+export const AgentCard = memo(AgentCardComponent, (prevProps, nextProps) => {
+  // 自定义比较函数：只比较关键属性
+  return (
+    prevProps.agent.id === nextProps.agent.id &&
+    prevProps.agent.ai_search_count === nextProps.agent.ai_search_count &&
+    prevProps.showAIStats === nextProps.showAIStats &&
+    prevProps.className === nextProps.className
+  )
+})
+
+AgentCard.displayName = 'AgentCard'
 
 export default AgentCard

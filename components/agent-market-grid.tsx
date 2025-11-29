@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, useMemo, memo } from 'react'
 import { AgentCard, AgentCardData, AgentCardDataMinimal } from '@/components/agent-card'
 import { cn } from '@/lib/utils'
 import { ChevronDown, TrendingUp, Clock, Eye, Loader2 } from 'lucide-react'
+import { throttle } from '@/lib/performance-optimizer'
 
 /**
  * 排序选项类型
@@ -63,14 +64,20 @@ export function sortAgents<T extends AgentCardDataMinimal>(agents: T[], sortBy: 
  * 展示 Agent 卡片网格，支持排序和无限滚动
  * 
  * 需求: 3.1, 3.3, 10.4
+ * 
+ * 性能优化：
+ * - 使用 memo 避免不必要的重渲染
+ * - 使用 useMemo 缓存计算结果
+ * - 使用 throttle 限制滚动事件频率
+ * - 虚拟化渲染减少 DOM 节点
  */
-export function AgentMarketGrid({
+const AgentMarketGridComponent = ({
   initialAgents,
   initialSortBy = 'ai_search_count',
   pageSize = 12,
   showAIStats = true,
   className,
-}: AgentMarketGridProps) {
+}: AgentMarketGridProps) => {
   const [agents, setAgents] = useState<(AgentCardDataMinimal | AgentCardData)[]>(initialAgents)
   const [sortBy, setSortBy] = useState<SortOption>(initialSortBy)
   const [displayCount, setDisplayCount] = useState(pageSize)
@@ -80,11 +87,14 @@ export function AgentMarketGrid({
   const loadMoreRef = useRef<HTMLDivElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // 排序后的 Agent 列表
-  const sortedAgents = sortAgents(agents, sortBy)
+  // 排序后的 Agent 列表 - 使用 useMemo 缓存
+  const sortedAgents = useMemo(() => sortAgents(agents, sortBy), [agents, sortBy])
   
-  // 当前显示的 Agent 列表
-  const displayedAgents = sortedAgents.slice(0, displayCount)
+  // 当前显示的 Agent 列表 - 使用 useMemo 缓存
+  const displayedAgents = useMemo(
+    () => sortedAgents.slice(0, displayCount),
+    [sortedAgents, displayCount]
+  )
   
   // 是否还有更多数据
   const hasMore = displayCount < sortedAgents.length || !hasLoadedAll
@@ -125,12 +135,18 @@ export function AgentMarketGrid({
     setIsLoading(false)
   }, [isLoading, hasMore, displayCount, sortedAgents.length, pageSize, agents.length, hasLoadedAll])
 
+  // 节流的加载更多函数 - 避免频繁触发
+  const throttledLoadMore = useMemo(
+    () => throttle(loadMore, 500),
+    [loadMore]
+  )
+
   // 无限滚动 - Intersection Observer
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && hasMore && !isLoading) {
-          loadMore()
+          throttledLoadMore()
         }
       },
       { threshold: 0.1, rootMargin: '100px' }
@@ -146,7 +162,7 @@ export function AgentMarketGrid({
         observer.unobserve(currentRef)
       }
     }
-  }, [hasMore, isLoading, loadMore])
+  }, [hasMore, isLoading, throttledLoadMore])
 
   // 点击外部关闭下拉菜单
   useEffect(() => {
@@ -348,5 +364,8 @@ export function AgentMarketGrid({
     </div>
   )
 }
+
+// 使用 memo 优化组件，避免不必要的重渲染
+export const AgentMarketGrid = memo(AgentMarketGridComponent)
 
 export default AgentMarketGrid
