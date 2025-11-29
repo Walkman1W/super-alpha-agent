@@ -1,12 +1,13 @@
 /**
  * Next.js 中间件
  * 添加全局缓存头和安全头
- * 需求: 9.3
+ * 需求: 9.3, 15.3
  */
 
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { CACHE_STRATEGIES } from './lib/cache-utils'
+import { generateCSPHeader, DEFAULT_CSP_DIRECTIVES, DEFAULT_SECURITY_HEADERS } from './lib/security'
 
 export function middleware(request: NextRequest) {
   const response = NextResponse.next()
@@ -31,17 +32,22 @@ export function middleware(request: NextRequest) {
     }
   }
   
-  // 添加安全头
-  response.headers.set('X-Content-Type-Options', 'nosniff')
-  response.headers.set('X-Frame-Options', 'DENY')
-  response.headers.set('X-XSS-Protection', '1; mode=block')
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+  // 添加安全响应头（需求 15.3）
+  Object.entries(DEFAULT_SECURITY_HEADERS).forEach(([key, value]) => {
+    response.headers.set(key, value)
+  })
   
-  // 添加 Permissions-Policy
-  response.headers.set(
-    'Permissions-Policy',
-    'camera=(), microphone=(), geolocation=()'
-  )
+  // 添加内容安全策略（CSP）头部（需求 15.3）
+  const cspHeader = generateCSPHeader(DEFAULT_CSP_DIRECTIVES)
+  response.headers.set('Content-Security-Policy', cspHeader)
+  
+  // 仅在生产环境添加 HSTS（Strict-Transport-Security）
+  if (process.env.NODE_ENV === 'production') {
+    response.headers.set(
+      'Strict-Transport-Security',
+      'max-age=31536000; includeSubDomains; preload'
+    )
+  }
   
   return response
 }

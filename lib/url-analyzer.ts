@@ -389,23 +389,12 @@ export function parseHTML(html: string): ExtractedContent {
 // Data Validation Schema (Task 10.9)
 // ============================================================================
 
+import { SafeAgentDataSchema } from './security'
+
 /**
- * Zod schema for validated Agent data
+ * Zod schema for validated Agent data (使用安全增强版本)
  */
-export const AgentDataSchema = z.object({
-  name: z.string().min(1, 'Agent名称不能为空'),
-  short_description: z.string().min(10, '简短描述至少需要10个字符'),
-  detailed_description: z.string().optional(),
-  key_features: z.array(z.string()).min(1, '至少需要一个核心功能'),
-  use_cases: z.array(z.string()).optional().default([]),
-  pros: z.array(z.string()).optional().default([]),
-  cons: z.array(z.string()).optional().default([]),
-  platform: z.string().optional(),
-  pricing: z.string().optional(),
-  category: z.string().optional(),
-  keywords: z.array(z.string()).optional().default([]),
-  how_to_use: z.string().optional()
-})
+export const AgentDataSchema = SafeAgentDataSchema
 
 export type AgentData = z.infer<typeof AgentDataSchema>
 

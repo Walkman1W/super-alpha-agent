@@ -1,65 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { z } from 'zod'
 import { supabaseAdmin } from '@/lib/supabase'
 import { validateURL, analyzeURL, AgentData } from '@/lib/url-analyzer'
+import { 
+  SafeAgentSubmissionSchema, 
+  type SafeAgentSubmission,
+  DEFAULT_SECURITY_HEADERS
+} from '@/lib/security'
+import { 
+  agentSubmissionLimiter,
+  getClientIP,
+  createRateLimitHeaders
+} from '@/lib/rate-limiter'
 
 /**
- * 提交Agent请求的Schema验证
+ * 提交Agent请求的Schema验证（使用安全增强版本）
  */
-const SubmitAgentSchema = z.object({
-  url: z.string().min(1, 'URL不能为空'),
-  email: z.string().email('无效的邮箱格式').optional().or(z.literal('')),
-  notes: z.string().max(1000, '备注不能超过1000个字符').optional()
-})
+const SubmitAgentSchema = SafeAgentSubmissionSchema
 
-export type SubmitAgentRequest = z.infer<typeof SubmitAgentSchema>
-
-/**
- * 速率限制配置
- */
-const RATE_LIMIT = {
-  windowMs: 60 * 1000, // 1分钟
-  maxRequests: 5 // 每分钟最多5次请求
-}
-
-/**
- * 简单的内存速率限制器
- * 生产环境建议使用Redis
- */
-const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
-
-function checkRateLimit(ip: string): { allowed: boolean; retryAfter?: number } {
-  const now = Date.now()
-  const record = rateLimitMap.get(ip)
-  
-  if (!record || now > record.resetTime) {
-    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT.windowMs })
-    return { allowed: true }
-  }
-  
-  if (record.count >= RATE_LIMIT.maxRequests) {
-    const retryAfter = Math.ceil((record.resetTime - now) / 1000)
-    return { allowed: false, retryAfter }
-  }
-  
-  record.count++
-  return { allowed: true }
-}
-
-/**
- * 获取客户端IP
- */
-function getClientIP(request: NextRequest): string {
-  const forwarded = request.headers.get('x-forwarded-for')
-  if (forwarded) {
-    return forwarded.split(',')[0].trim()
-  }
-  const realIP = request.headers.get('x-real-ip')
-  if (realIP) {
-    return realIP
-  }
-  return '127.0.0.1'
-}
+export type SubmitAgentRequest = SafeAgentSubmission
 
 /**
  * 生成唯一的slug
@@ -136,6 +94,7 @@ async function createAgent(
   email?: string,
   notes?: string
 ): Promise<{ id: string; slug: string } | null> {
+  // 数据已经通过Zod schema验证和清理，可以安全使用
   const slug = generateSlug(data.name)
   const categoryId = await findOrCreateCategory(data.category)
   
@@ -220,21 +179,31 @@ export async function POST(request: NextRequest) {
     
     const { url, email, notes } = validation.data
     
-    // Step 3: 检查速率限制 - 需求 5.3
+    // Step 3: 检查速率限制 - 需求 5.3, 9.5
     const clientIP = getClientIP(request)
-    const rateLimit = checkRateLimit(clientIP)
     
-    if (!rateLimit.allowed) {
+    // Check rate limit (handle both sync and async limiters)
+    let rateLimitResult
+    if ('check' in agentSubmissionLimiter) {
+      const checkResult = agentSubmissionLimiter.check(clientIP)
+      rateLimitResult = checkResult instanceof Promise ? await checkResult : checkResult
+    } else {
+      throw new Error('Invalid rate limiter')
+    }
+    
+    if (!rateLimitResult.allowed) {
+      const rateLimitHeaders = createRateLimitHeaders(rateLimitResult)
+      
       return NextResponse.json(
         { 
           error: '请求过于频繁，请稍后重试',
-          retryAfter: rateLimit.retryAfter 
+          retryAfter: rateLimitResult.retryAfter,
+          limit: rateLimitResult.limit,
+          remaining: rateLimitResult.remaining
         },
         { 
           status: 429,
-          headers: {
-            'Retry-After': String(rateLimit.retryAfter)
-          }
+          headers: rateLimitHeaders
         }
       )
     }
@@ -293,8 +262,8 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    // Step 8: 返回成功结果
-    return NextResponse.json({
+    // Step 8: 返回成功结果（添加安全头部和速率限制头部）
+    const response = NextResponse.json({
       success: true,
       message: 'Agent提交成功',
       agent: {
@@ -304,6 +273,19 @@ export async function POST(request: NextRequest) {
         url: `/agents/${agent.slug}`
       }
     }, { status: 201 })
+    
+    // 添加安全响应头
+    Object.entries(DEFAULT_SECURITY_HEADERS).forEach(([key, value]) => {
+      response.headers.set(key, value)
+    })
+    
+    // 添加速率限制头部
+    const rateLimitHeaders = createRateLimitHeaders(rateLimitResult)
+    Object.entries(rateLimitHeaders).forEach(([key, value]) => {
+      response.headers.set(key, value)
+    })
+    
+    return response
     
   } catch (error) {
     console.error('Submit agent error:', error)
