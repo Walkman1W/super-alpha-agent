@@ -11,6 +11,7 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --run --coverage",
+    "test:perf": "node scripts/test-performance.js",
     "db:init": "node scripts/init-categories.js",
     "crawler": "node crawler/run.js",
     "sitemap": "node scripts/generate-sitemap.js",

@@ -5,7 +5,7 @@ import { Eye, ExternalLink, Sparkles, Target, ThumbsUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 /**
- * Agent 数据类型
+ * Agent 数据类型（完整版）
  */
 export interface AgentCardData {
   id: string
@@ -15,11 +15,25 @@ export interface AgentCardData {
   platform?: string | null
   key_features?: string[]
   pros?: string[]
+  cons?: string[]
   use_cases?: string[]
   pricing?: string | null
   official_url?: string | null
   ai_search_count?: number
   ai_search_breakdown?: Record<string, number>
+}
+
+/**
+ * Agent 数据类型（精简版，用于首屏加载）
+ */
+export interface AgentCardDataMinimal {
+  id: string
+  slug: string
+  name: string
+  short_description: string
+  platform?: string | null
+  pricing?: string | null
+  ai_search_count?: number
 }
 
 /**

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { AgentCard, AgentCardData } from '@/components/agent-card'
+import { AgentCard, AgentCardData, AgentCardDataMinimal } from '@/components/agent-card'
 import { cn } from '@/lib/utils'
 import { ChevronDown, TrendingUp, Clock, Eye, Loader2 } from 'lucide-react'
 
@@ -14,8 +14,8 @@ export type SortOption = 'popularity' | 'recent' | 'ai_search_count'
  * AgentMarketGrid 组件属性
  */
 export interface AgentMarketGridProps {
-  /** Agent 数据列表 */
-  agents: AgentCardData[]
+  /** 初始 Agent 数据列表（首屏数据，精简版） */
+  initialAgents: AgentCardDataMinimal[]
   /** 初始排序方式 */
   initialSortBy?: SortOption
   /** 每页显示数量 */
@@ -41,7 +41,7 @@ const SORT_OPTIONS: { value: SortOption; label: string; icon: React.ReactNode }[
  * @param sortBy 排序方式
  * @returns 排序后的列表
  */
-export function sortAgents(agents: AgentCardData[], sortBy: SortOption): AgentCardData[] {
+export function sortAgents<T extends AgentCardDataMinimal>(agents: T[], sortBy: SortOption): T[] {
   const sorted = [...agents]
   
   switch (sortBy) {
@@ -65,16 +65,18 @@ export function sortAgents(agents: AgentCardData[], sortBy: SortOption): AgentCa
  * 需求: 3.1, 3.3, 10.4
  */
 export function AgentMarketGrid({
-  agents,
+  initialAgents,
   initialSortBy = 'ai_search_count',
   pageSize = 12,
   showAIStats = true,
   className,
 }: AgentMarketGridProps) {
+  const [agents, setAgents] = useState<(AgentCardDataMinimal | AgentCardData)[]>(initialAgents)
   const [sortBy, setSortBy] = useState<SortOption>(initialSortBy)
   const [displayCount, setDisplayCount] = useState(pageSize)
   const [isLoading, setIsLoading] = useState(false)
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false)
+  const [hasLoadedAll, setHasLoadedAll] = useState(false)
   const loadMoreRef = useRef<HTMLDivElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -85,19 +87,43 @@ export function AgentMarketGrid({
   const displayedAgents = sortedAgents.slice(0, displayCount)
   
   // 是否还有更多数据
-  const hasMore = displayCount < sortedAgents.length
+  const hasMore = displayCount < sortedAgents.length || !hasLoadedAll
 
   // 加载更多
-  const loadMore = useCallback(() => {
+  const loadMore = useCallback(async () => {
     if (isLoading || !hasMore) return
     
     setIsLoading(true)
-    // 模拟加载延迟，提供更好的用户体验
-    setTimeout(() => {
-      setDisplayCount(prev => Math.min(prev + pageSize, sortedAgents.length))
-      setIsLoading(false)
-    }, 300)
-  }, [isLoading, hasMore, pageSize, sortedAgents.length])
+    
+    // 如果本地还有数据，直接显示
+    if (displayCount < sortedAgents.length) {
+      setTimeout(() => {
+        setDisplayCount(prev => Math.min(prev + pageSize, sortedAgents.length))
+        setIsLoading(false)
+      }, 200)
+      return
+    }
+    
+    // 如果本地数据已显示完，从服务器加载更多
+    if (!hasLoadedAll) {
+      try {
+        const response = await fetch(`/api/agents?offset=${agents.length}&limit=${pageSize}`)
+        if (response.ok) {
+          const newAgents = await response.json()
+          if (newAgents.length > 0) {
+            setAgents(prev => [...prev, ...newAgents])
+            setDisplayCount(prev => prev + newAgents.length)
+          } else {
+            setHasLoadedAll(true)
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load more agents:', error)
+      }
+    }
+    
+    setIsLoading(false)
+  }, [isLoading, hasMore, displayCount, sortedAgents.length, pageSize, agents.length, hasLoadedAll])
 
   // 无限滚动 - Intersection Observer
   useEffect(() => {
@@ -252,7 +278,14 @@ export function AgentMarketGrid({
             )}
           >
             <AgentCard 
-              agent={agent}
+              agent={{
+                ...agent,
+                key_features: 'key_features' in agent ? agent.key_features : [],
+                pros: 'pros' in agent ? agent.pros : [],
+                cons: 'cons' in agent ? agent.cons : [],
+                use_cases: 'use_cases' in agent ? agent.use_cases : [],
+                official_url: 'official_url' in agent ? agent.official_url : null
+              }}
               showAIStats={showAIStats}
               className={cn(
                 // 移动端优化：增加触摸反馈

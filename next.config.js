@@ -72,7 +72,7 @@ const nextConfig = {
   },
   
   // Webpack 配置
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, webpack }) => {
     // 优化 bundle 大小
     if (!isServer) {
       config.optimization = {
@@ -96,6 +96,15 @@ const nextConfig = {
         },
       }
     }
+    
+    // 忽略大字符串序列化警告（已通过减少数据传输优化）
+    config.ignoreWarnings = [
+      ...(config.ignoreWarnings || []),
+      {
+        module: /node_modules/,
+        message: /Serializing big strings/,
+      },
+    ]
     
     return config
   },
