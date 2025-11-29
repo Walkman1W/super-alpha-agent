@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { supabaseAdmin } from '@/lib/supabase'
+import { analyzeURL } from '@/lib/url-analyzer'
 import { sendPublishSuccessEmail } from '@/lib/email'
 
 const RequestSchema = z.object({
@@ -63,7 +64,8 @@ async function findOrCreateCategory(categoryName: string | undefined): Promise<s
 /**
  * POST /api/verify-and-publish
  * 
- * 步骤2: 验证验证码，创建Agent，发送成功通知
+ * 新流程：验证邮箱 → 分析URL → 上架
+ * 步骤2: 验证验证码，然后分析URL，最后创建Agent
  */
 export async function POST(request: NextRequest) {
   try {
@@ -103,7 +105,26 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    const agentData = submission.agent_data
+    // 邮箱验证通过，现在开始分析URL
+    const analysisResult = await analyzeURL(submission.url)
+    
+    if (!analysisResult.success || !analysisResult.data) {
+      // 更新提交状态，记录分析失败
+      await supabaseAdmin
+        .from('agent_submissions')
+        .update({ 
+          verified: true, 
+          agent_data: { error: analysisResult.error } 
+        })
+        .eq('id', submission.id)
+      
+      return NextResponse.json(
+        { error: analysisResult.error || '分析URL失败，请检查链接是否正确' },
+        { status: 422 }
+      )
+    }
+    
+    const agentData = analysisResult.data
     const slug = generateSlug(agentData.name)
     const categoryId = await findOrCreateCategory(agentData.category)
     
@@ -141,13 +162,17 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    // 标记提交为已验证
+    // 更新提交记录
     await supabaseAdmin
       .from('agent_submissions')
-      .update({ verified: true, agent_id: agent.id })
+      .update({ 
+        verified: true, 
+        agent_id: agent.id,
+        agent_data: agentData
+      })
       .eq('id', submission.id)
     
-    // 发送成功通知邮件（异步，不阻塞响应）
+    // 发送成功通知邮件（异步）
     sendPublishSuccessEmail(email, agent.name, agent.slug).catch(err => {
       console.error('Send success email failed:', err)
     })

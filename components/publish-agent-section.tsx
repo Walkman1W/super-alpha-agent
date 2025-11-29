@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback, FormEvent } from 'react'
-import { Send, Loader2, CheckCircle, AlertCircle, Sparkles, Mail, ArrowLeft } from 'lucide-react'
+import { Loader2, CheckCircle, AlertCircle, Sparkles, Mail, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
@@ -183,11 +183,11 @@ export function PublishAgentSection() {
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="w-7 h-7 bg-white/20 rounded-full flex items-center justify-center font-bold text-xs">2</div>
-                      <span>AI分析 + 邮箱验证</span>
+                      <span>验证邮箱</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="w-7 h-7 bg-white/20 rounded-full flex items-center justify-center font-bold text-xs">3</div>
-                      <span>自动上架，开始获客</span>
+                      <span>AI分析并自动上架</span>
                     </div>
                   </div>
                   <p className="text-xs text-white/60 mt-4">

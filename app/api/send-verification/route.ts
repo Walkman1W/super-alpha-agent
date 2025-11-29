@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { supabaseAdmin } from '@/lib/supabase'
-import { validateURL, analyzeURL } from '@/lib/url-analyzer'
+import { validateURL } from '@/lib/url-analyzer'
 import { generateVerificationCode, sendVerificationEmail } from '@/lib/email'
 
 const RequestSchema = z.object({
@@ -29,7 +29,8 @@ function checkRateLimit(key: string, maxRequests = 3, windowMs = 60000): boolean
 /**
  * POST /api/send-verification
  * 
- * 步骤1: 验证URL和邮箱，分析Agent，发送验证码
+ * 新流程：先验证邮箱，再分析URL
+ * 步骤1: 验证URL格式和邮箱，发送验证码（不做AI分析）
  */
 export async function POST(request: NextRequest) {
   try {
@@ -66,7 +67,7 @@ export async function POST(request: NextRequest) {
     // 检查URL是否已存在
     const { data: existingAgent } = await supabaseAdmin
       .from('agents')
-      .select('id, name, status')
+      .select('id, name')
       .eq('official_url', urlValidation.url)
       .single()
     
@@ -77,38 +78,26 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    // 分析URL获取Agent信息
-    const analysisResult = await analyzeURL(url)
-    if (!analysisResult.success || !analysisResult.data) {
-      return NextResponse.json(
-        { error: analysisResult.error || '无法分析该URL' },
-        { status: 422 }
-      )
-    }
-    
     // 生成验证码
     const code = generateVerificationCode()
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000) // 10分钟后过期
     
-    // 存储待验证的提交（使用临时表或直接存储）
-    const { data: submission, error: insertError } = await supabaseAdmin
+    // 存储待验证的提交（只存URL和邮箱，不做分析）
+    const { error: insertError } = await supabaseAdmin
       .from('agent_submissions')
       .upsert({
         email,
         url: urlValidation.url,
-        agent_data: analysisResult.data,
         verification_code: code,
         expires_at: expiresAt.toISOString(),
-        verified: false
+        verified: false,
+        agent_data: null // 验证后再分析
       }, {
         onConflict: 'email,url'
       })
-      .select('id')
-      .single()
     
     if (insertError) {
       console.error('Insert submission error:', insertError)
-      // 如果表不存在，返回友好提示
       if (insertError.code === '42P01') {
         return NextResponse.json(
           { error: '系统配置中，请稍后重试' },
@@ -122,11 +111,7 @@ export async function POST(request: NextRequest) {
     }
     
     // 发送验证邮件
-    const emailResult = await sendVerificationEmail(
-      email, 
-      code, 
-      analysisResult.data.name
-    )
+    const emailResult = await sendVerificationEmail(email, code)
     
     if (!emailResult.success) {
       return NextResponse.json(
@@ -137,9 +122,7 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({
       success: true,
-      message: '验证码已发送到你的邮箱',
-      agentName: analysisResult.data.name,
-      submissionId: submission?.id
+      message: '验证码已发送到你的邮箱'
     })
     
   } catch (error) {
