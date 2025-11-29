@@ -1,13 +1,38 @@
 import { Suspense } from 'react'
+import dynamic from 'next/dynamic'
 import { supabaseAdmin } from '@/lib/supabase'
 import { AnimatedGrid } from '@/components/ui/animated-grid'
 import { GradientText } from '@/components/ui/gradient-text'
 import { EnhancedButton } from '@/components/ui/enhanced-button'
 import { GlassCard } from '@/components/ui/glass-card'
-import { ModeSwitcher } from '@/components/mode-switcher'
-import { AgentMarketGrid } from '@/components/agent-market-grid'
 import { AgentGridSkeleton } from '@/components/agent-card-skeleton'
-import { PublishAgentSection } from '@/components/publish-agent-section'
+
+// 动态导入重型组件以实现代码分割 - 需求: 9.1
+const ModeSwitcher = dynamic(() => import('@/components/mode-switcher').then(mod => ({ default: mod.ModeSwitcher })), {
+  loading: () => (
+    <div className="inline-flex items-center gap-1 p-1 bg-white/20 backdrop-blur-sm rounded-xl border border-white/30 h-[52px] w-[200px] animate-pulse" />
+  ),
+  ssr: false, // 客户端组件，不需要 SSR
+})
+
+const AgentMarketGrid = dynamic(() => import('@/components/agent-market-grid').then(mod => ({ default: mod.AgentMarketGrid })), {
+  loading: () => <AgentGridSkeleton count={12} />,
+  ssr: true, // 保留 SSR 以优化 SEO
+})
+
+const PublishAgentSection = dynamic(() => import('@/components/publish-agent-section').then(mod => ({ default: mod.PublishAgentSection })), {
+  loading: () => (
+    <section className="container mx-auto px-4 py-16">
+      <div className="max-w-2xl mx-auto bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-gray-200/50 animate-pulse">
+        <div className="h-8 bg-gray-200 rounded w-1/2 mb-4"></div>
+        <div className="h-4 bg-gray-200 rounded w-3/4 mb-8"></div>
+        <div className="h-12 bg-gray-200 rounded mb-4"></div>
+        <div className="h-12 bg-gray-200 rounded"></div>
+      </div>
+    </section>
+  ),
+  ssr: false, // 发布表单不需要 SSR
+})
 
 export const revalidate = 3600
 

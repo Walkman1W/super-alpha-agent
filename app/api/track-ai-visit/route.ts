@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 import { extractAIBotFromHeaders, getClientIP, validateAIVisit, isKnownAIBot } from '@/lib/ai-detector'
+import { addCacheHeaders, CACHE_STRATEGIES } from '@/lib/cache-utils'
 
 /**
  * API 端点：追踪 AI 访问
@@ -213,11 +214,17 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({
+    // 创建响应并添加缓存头 - 验证: 需求 9.3
+    const response = NextResponse.json({
       success: true,
       total_count: agent.ai_search_count || 0,
       breakdown: countByAI
     })
+    
+    // 添加短期缓存（5分钟），因为统计数据会频繁更新
+    addCacheHeaders(response.headers, CACHE_STRATEGIES.short)
+    
+    return response
 
   } catch (error) {
     console.error('Get AI stats error:', error)
