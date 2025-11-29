@@ -15,6 +15,7 @@
     "db:init": "node scripts/init-categories.js",
     "crawler": "node crawler/run.js",
     "sitemap": "node scripts/generate-sitemap.js",
+    "verify:seo": "node scripts/verify-seo-setup.js",
     "deploy": "npm run sitemap && vercel --prod"
   },
   "dependencies": {

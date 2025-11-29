@@ -3,69 +3,117 @@
   <!-- 首页 -->
   <url>
     <loc>https://www.superalphaagent.com</loc>
-    <lastmod>2025-10-29T09:40:19.574Z</lastmod>
+    <lastmod>2025-11-29T09:02:17.394Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   
   <!-- Agent 页面 -->
   <url>
-    <loc>https://www.superalphaagent.com/agents/sql-query-helper</loc>
-    <lastmod>2025-10-29T09:23:14.938882+00:00</lastmod>
+    <loc>https://www.superalphaagent.com/agents/kiro-mijnqsli</loc>
+    <lastmod>2025-11-29T08:12:12.011395+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.superalphaagent.com/agents/productivity-coach</loc>
-    <lastmod>2025-10-29T09:23:03.50936+00:00</lastmod>
+    <loc>https://www.superalphaagent.com/agents/ai-voice-cloning-mijvjb5q</loc>
+    <lastmod>2025-11-29T08:01:15.121138+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.superalphaagent.com/agents/research-assistant</loc>
-    <lastmod>2025-10-29T09:22:50.549853+00:00</lastmod>
+    <loc>https://www.superalphaagent.com/agents/fast3d-mijurs9b</loc>
+    <lastmod>2025-11-29T07:43:26.4744+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.superalphaagent.com/agents/language-tutor</loc>
-    <lastmod>2025-10-29T09:22:38.022266+00:00</lastmod>
+    <loc>https://www.superalphaagent.com/agents/lovart-mijtyw6t</loc>
+    <lastmod>2025-11-29T07:31:17.134855+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.superalphaagent.com/agents/customer-support-bot</loc>
-    <lastmod>2025-10-29T09:22:20.709483+00:00</lastmod>
+    <loc>https://www.superalphaagent.com/agents/raphael-ai-miju9jqq</loc>
+    <lastmod>2025-11-29T07:23:15.953976+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.superalphaagent.com/agents/marketing-strategist</loc>
-    <lastmod>2025-10-29T09:22:01.654636+00:00</lastmod>
+    <loc>https://www.superalphaagent.com/agents/citely-mijulcyz</loc>
+    <lastmod>2025-11-29T06:32:57.048609+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.superalphaagent.com/agents/ui-ux-designer</loc>
-    <lastmod>2025-10-29T09:21:49.83968+00:00</lastmod>
+    <loc>https://www.superalphaagent.com/agents/灵光全模态ai助手-mijt9jha</loc>
+    <lastmod>2025-11-29T04:48:27.663774+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.superalphaagent.com/agents/data-analyst-expert</loc>
-    <lastmod>2025-10-29T09:21:36.848995+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.superalphaagent.com/agents/content-writer-ai</loc>
-    <lastmod>2025-10-29T09:21:24.04456+00:00</lastmod>
+    <loc>https://www.superalphaagent.com/agents/飞象老师-mij2w30q</loc>
+    <lastmod>2025-11-28T16:30:10.324414+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.superalphaagent.com/agents/code-reviewer-pro</loc>
-    <lastmod>2025-10-29T09:21:13.044361+00:00</lastmod>
+    <lastmod>2025-11-28T15:40:02.495864+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.superalphaagent.com/agents/sql-query-helper</loc>
+    <lastmod>2025-11-28T15:29:29.828402+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.superalphaagent.com/agents/content-writer-ai</loc>
+    <lastmod>2025-11-28T15:19:28.083168+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.superalphaagent.com/agents/productivity-coach</loc>
+    <lastmod>2025-11-28T15:10:38.790277+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.superalphaagent.com/agents/data-analyst-expert</loc>
+    <lastmod>2025-11-28T14:54:52.551024+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.superalphaagent.com/agents/research-assistant</loc>
+    <lastmod>2025-11-28T14:53:14.972003+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.superalphaagent.com/agents/customer-support-bot</loc>
+    <lastmod>2025-11-28T12:30:00.228144+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.superalphaagent.com/agents/language-tutor</loc>
+    <lastmod>2025-11-28T12:20:10.942725+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.superalphaagent.com/agents/marketing-strategist</loc>
+    <lastmod>2025-11-28T12:10:47.162773+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.superalphaagent.com/agents/ui-ux-designer</loc>
+    <lastmod>2025-11-28T11:51:06.411801+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -73,61 +121,61 @@
   <!-- 分类页面 -->
   <url>
     <loc>https://www.superalphaagent.com/category/development</loc>
-    <lastmod>2025-10-29T09:40:19.575Z</lastmod>
+    <lastmod>2025-11-29T09:02:17.408Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.superalphaagent.com/category/content</loc>
-    <lastmod>2025-10-29T09:40:19.575Z</lastmod>
+    <lastmod>2025-11-29T09:02:17.408Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.superalphaagent.com/category/data-analysis</loc>
-    <lastmod>2025-10-29T09:40:19.575Z</lastmod>
+    <lastmod>2025-11-29T09:02:17.408Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.superalphaagent.com/category/design</loc>
-    <lastmod>2025-10-29T09:40:19.575Z</lastmod>
+    <lastmod>2025-11-29T09:02:17.408Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.superalphaagent.com/category/marketing</loc>
-    <lastmod>2025-10-29T09:40:19.575Z</lastmod>
+    <lastmod>2025-11-29T09:02:17.408Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.superalphaagent.com/category/customer-service</loc>
-    <lastmod>2025-10-29T09:40:19.575Z</lastmod>
+    <lastmod>2025-11-29T09:02:17.408Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.superalphaagent.com/category/education</loc>
-    <lastmod>2025-10-29T09:40:19.575Z</lastmod>
+    <lastmod>2025-11-29T09:02:17.408Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.superalphaagent.com/category/research</loc>
-    <lastmod>2025-10-29T09:40:19.575Z</lastmod>
+    <lastmod>2025-11-29T09:02:17.408Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.superalphaagent.com/category/productivity</loc>
-    <lastmod>2025-10-29T09:40:19.575Z</lastmod>
+    <lastmod>2025-11-29T09:02:17.408Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://www.superalphaagent.com/category/other</loc>
-    <lastmod>2025-10-29T09:40:19.575Z</lastmod>
+    <lastmod>2025-11-29T09:02:17.408Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
