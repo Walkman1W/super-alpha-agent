@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import './performance.css'
 import { ToastProvider } from '@/components/toast-provider'
+import { Analytics } from '@vercel/analytics/next'
 
 // 优化字体加载：使用 display: 'swap' 避免阻塞渲染
 // 预加载字体以减少 CLS
@@ -168,6 +169,7 @@ export default function RootLayout({
           </div>
         </footer>
         </ToastProvider>
+        <Analytics />
       </body>
     </html>
   )
