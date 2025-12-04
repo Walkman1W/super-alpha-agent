@@ -189,7 +189,14 @@ const nextConfig = {
         module: /node_modules/,
         message: /Serializing big strings/,
       },
+      // 忽略 webpack 缓存策略警告
+      /Serializing big strings/,
     ]
+    
+    // 优化缓存策略以避免大字符串警告
+    if (config.cache && config.cache.type === 'filesystem') {
+      config.cache.compression = 'gzip' // 压缩缓存以减少大小
+    }
     
     // 性能优化：减少模块解析时间
     config.resolve = {
