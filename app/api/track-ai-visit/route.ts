@@ -1,25 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
-import { extractAIBotFromHeaders, getClientIP, validateAIVisit, isKnownAIBot } from '@/lib/ai-detector'
+import { extractAIBotFromHeaders, getClientIP, validateAIVisit, detectBotFromReferer } from '@/lib/ai-detector'
 import { addCacheHeaders, CACHE_STRATEGIES } from '@/lib/cache-utils'
 
 /**
- * API 端点：追踪 AI 访问
- * 验证: 需求 8.3, 8.4
+ * 访问类型
+ * - bot_crawl: AI Bot 在索引内容 (GPTBot, ClaudeBot 等 User-Agent)
+ * - ai_referral: 用户从 AI 对话跳转过来 (Referer 来自 chat.openai.com 等)
+ * - organic: 普通访问
+ */
+type VisitType = 'bot_crawl' | 'ai_referral' | 'organic'
+
+/**
+ * API 端点：智能追踪 AI 访问
  * 
- * 自动调用：当页面加载时，自动检测是否是 AI 访问
- * 手动调用：用户可以报告"我是从 AI 来的"
+ * 自动检测两种 AI 相关访问：
+ * 1. Bot 爬取 - AI 搜索引擎在索引你的内容
+ * 2. AI 引荐 - 用户从 AI 对话界面跳转过来
  * 
  * 关键特性：
- * - 检测ChatGPT、Claude、Perplexity等机器人
- * - 解析User-Agent和Referer
- * - 在机器人访问时增加计数器
- * - 立即持久化到数据库（在响应前完成）
+ * - 检测 ChatGPT、Claude、Perplexity 等机器人 (User-Agent)
+ * - 检测用户从 AI 跳转 (Referer)
+ * - 分别记录两种访问类型
+ * - 防刷机制
  */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { agent_slug, manual_report, ai_name: reportedAIName, search_query } = body
+    const { agent_slug, referrer: clientReferrer } = body
 
     if (!agent_slug) {
       return NextResponse.json({ error: 'agent_slug is required' }, { status: 400 })
@@ -38,131 +46,98 @@ export async function POST(request: NextRequest) {
 
     const headers = request.headers
     const ipAddress = getClientIP(headers)
+    const serverReferer = headers.get('referer') || ''
+    
+    // 优先使用客户端传来的 referrer (document.referrer)，因为更准确
+    const effectiveReferer = clientReferrer || serverReferer
 
-    // 情况 1：自动检测 AI Bot
-    if (!manual_report) {
-      const aiBot = extractAIBotFromHeaders(headers)
-      
-      if (aiBot) {
-        // 获取最近的访问记录用于防刷验证
-        const { data: recentVisits } = await supabaseAdmin
-          .from('ai_visits')
-          .select('ai_name, ip_address, visited_at')
-          .eq('agent_id', agent.id)
-          .gte('visited_at', new Date(Date.now() - 60 * 1000).toISOString())
+    // 检测 AI Bot (通过 User-Agent)
+    const aiBot = extractAIBotFromHeaders(headers)
+    
+    // 检测 AI 引荐 (通过 Referer)
+    const aiFromReferer = detectBotFromReferer(effectiveReferer)
 
-        // 验证访问合法性
-        const isValidVisit = validateAIVisit(
-          aiBot.name,
-          ipAddress,
-          recentVisits || []
-        )
+    let visitType: VisitType = 'organic'
+    let aiName: string | null = null
+    let detectionMethod: string | null = null
 
-        if (isValidVisit) {
-          // 记录 AI 访问 - 验证: 需求 8.3
-          const { error: insertError } = await supabaseAdmin.from('ai_visits').insert({
-            agent_id: agent.id,
-            ai_name: aiBot.name,
-            user_agent: aiBot.userAgent,
-            referer: aiBot.referer,
-            ip_address: ipAddress,
-            verified: true,
-            verification_method: aiBot.detectionMethod
-          })
+    // 优先级：Bot 爬取 > AI 引荐 > 普通访问
+    if (aiBot) {
+      visitType = 'bot_crawl'
+      aiName = aiBot.name
+      detectionMethod = 'user_agent'
+    } else if (aiFromReferer) {
+      visitType = 'ai_referral'
+      aiName = aiFromReferer
+      detectionMethod = 'referer'
+    }
 
-          if (insertError) {
-            console.error('Failed to insert AI visit:', insertError)
-          }
+    // 如果检测到 AI 相关访问，记录并更新计数
+    if (aiName && visitType !== 'organic') {
+      // 获取最近的访问记录用于防刷验证
+      const { data: recentVisits } = await supabaseAdmin
+        .from('ai_visits')
+        .select('ai_name, ip_address, visited_at')
+        .eq('agent_id', agent.id)
+        .gte('visited_at', new Date(Date.now() - 60 * 1000).toISOString())
 
-          // 更新 Agent 的 AI 搜索计数 - 验证: 需求 8.4
-          // 使用RPC函数确保原子性操作
-          const { error: rpcError } = await supabaseAdmin.rpc('increment_ai_search_count', {
-            agent_id: agent.id
-          })
+      // 验证访问合法性
+      const isValidVisit = validateAIVisit(
+        aiName,
+        ipAddress,
+        recentVisits || []
+      )
 
-          // 如果RPC不存在，使用直接更新
-          if (rpcError) {
-            const { error: updateError } = await supabaseAdmin
-              .from('agents')
-              .update({ ai_search_count: (agent.ai_search_count || 0) + 1 })
-              .eq('id', agent.id)
-            
-            if (updateError) {
-              console.error('Failed to update AI search count:', updateError)
-            }
-          }
+      if (isValidVisit) {
+        // 记录 AI 访问
+        await supabaseAdmin.from('ai_visits').insert({
+          agent_id: agent.id,
+          ai_name: aiName,
+          user_agent: headers.get('user-agent') || null,
+          referer: effectiveReferer || null,
+          ip_address: ipAddress,
+          verified: true,
+          verification_method: `${detectionMethod}:${visitType}`,
+          visit_type: visitType
+        })
 
-          // 所有数据库操作完成后才返回响应 - 验证: 需求 8.4
-          return NextResponse.json({
-            success: true,
-            ai_detected: true,
-            ai_name: aiBot.name,
-            detection_method: aiBot.detectionMethod
-          })
+        // 更新 Agent 的 AI 搜索计数
+        const { error: rpcError } = await supabaseAdmin.rpc('increment_ai_search_count', {
+          agent_id: agent.id
+        })
+
+        if (rpcError) {
+          await supabaseAdmin
+            .from('agents')
+            .update({ ai_search_count: (agent.ai_search_count || 0) + 1 })
+            .eq('id', agent.id)
         }
 
-        // 重复访问，不增加计数但仍返回检测结果
         return NextResponse.json({
           success: true,
           ai_detected: true,
-          ai_name: aiBot.name,
-          duplicate: true
+          ai_name: aiName,
+          visit_type: visitType,
+          detection_method: detectionMethod
         })
       }
 
+      // 重复访问，不增加计数但仍返回检测结果
       return NextResponse.json({
         success: true,
-        ai_detected: false
+        ai_detected: true,
+        ai_name: aiName,
+        visit_type: visitType,
+        duplicate: true
       })
     }
 
-    // 情况 2：用户手动报告
-    if (manual_report && reportedAIName) {
-      // 验证AI名称是否有效
-      if (!isKnownAIBot(reportedAIName) && reportedAIName !== '其他') {
-        return NextResponse.json({ 
-          error: 'Invalid AI name',
-          valid_names: ['ChatGPT', 'Claude', 'Perplexity', 'Google Bard', 'Bing AI', 'You.com', '其他']
-        }, { status: 400 })
-      }
-
-      // 记录用户报告
-      const { error: reportError } = await supabaseAdmin.from('user_ai_reports').insert({
-        agent_id: agent.id,
-        ai_name: reportedAIName,
-        search_query: search_query || null,
-        ip_address: ipAddress
-      })
-
-      if (reportError) {
-        console.error('Failed to insert user AI report:', reportError)
-      }
-
-      // 更新 Agent 的 AI 搜索计数 - 验证: 需求 8.4
-      const { error: rpcError } = await supabaseAdmin.rpc('increment_ai_search_count', {
-        agent_id: agent.id
-      })
-
-      if (rpcError) {
-        const { error: updateError } = await supabaseAdmin
-          .from('agents')
-          .update({ ai_search_count: (agent.ai_search_count || 0) + 1 })
-          .eq('id', agent.id)
-        
-        if (updateError) {
-          console.error('Failed to update AI search count:', updateError)
-        }
-      }
-
-      // 所有数据库操作完成后才返回响应 - 验证: 需求 8.4
-      return NextResponse.json({
-        success: true,
-        reported: true,
-        ai_name: reportedAIName
-      })
-    }
-
-    return NextResponse.json({ success: false }, { status: 400 })
+    // 普通访问
+    return NextResponse.json({
+      success: true,
+      ai_detected: false,
+      visit_type: 'organic'
+    })
 
   } catch (error) {
     console.error('Track AI visit error:', error)

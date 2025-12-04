@@ -2,6 +2,7 @@ import { supabaseAdmin } from '@/lib/supabase'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import dynamic from 'next/dynamic'
+import { AIRecommendationSnippets } from '@/components/ai-recommendation-snippets'
 
 // 动态导入客户端组件以实现代码分割 - 需求: 9.1
 const AIVisitTracker = dynamic(() => import('@/components/ai-visit-tracker').then(mod => ({ default: mod.AIVisitTracker })), {
@@ -554,6 +555,9 @@ export default async function AgentDetailPage({ params }: Props) {
               </div>
             </section>
           )}
+
+          {/* AI 推荐词模块 - GEO 核心 */}
+          <AIRecommendationSnippets agent={agent} />
         </main>
 
         {/* 侧边栏 - 语义化aside元素 */}
