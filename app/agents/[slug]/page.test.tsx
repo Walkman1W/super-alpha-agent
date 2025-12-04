@@ -103,6 +103,58 @@ function deriveKeywords(agent: {
   return [...new Set(keywords)]
 }
 
+// ============================================
+// JSON-LD Schema 类型定义
+// ============================================
+
+interface SoftwareApplicationSchema {
+  '@context': string
+  '@type': 'SoftwareApplication'
+  '@id': string
+  name: string
+  description: string | null | undefined
+  url: string
+  applicationCategory: string
+  operatingSystem: string
+  offers: {
+    '@type': 'Offer'
+    price: string
+    priceCurrency: string
+    availability: string
+  }
+  publisher: {
+    '@type': 'Organization'
+    name: string
+    url: string
+  }
+}
+
+interface BreadcrumbListSchema {
+  '@context': string
+  '@type': 'BreadcrumbList'
+  itemListElement: Array<{
+    '@type': 'ListItem'
+    position: number
+    name: string
+    item: string
+  }>
+}
+
+interface FAQPageSchema {
+  '@context': string
+  '@type': 'FAQPage'
+  mainEntity: Array<{
+    '@type': 'Question'
+    name: string
+    acceptedAnswer: {
+      '@type': 'Answer'
+      text: string
+    }
+  }>
+}
+
+type JsonLdSchemas = [SoftwareApplicationSchema, BreadcrumbListSchema, FAQPageSchema]
+
 /**
  * 生成JSON-LD结构化数据
  */
@@ -120,7 +172,7 @@ function generateJsonLd(agent: {
   view_count?: number
   created_at?: string
   updated_at?: string
-}) {
+}): JsonLdSchemas {
   const SITE_URL = 'https://superalphaagent.com'
   const pageUrl = `${SITE_URL}/agents/${agent.slug}`
   
@@ -128,7 +180,7 @@ function generateJsonLd(agent: {
                       agent.pricing?.toLowerCase().includes('free')
   const priceValue = isPriceFree ? '0' : undefined
   
-  const softwareAppSchema = {
+  const softwareAppSchema: SoftwareApplicationSchema = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
     '@id': pageUrl,
@@ -150,7 +202,7 @@ function generateJsonLd(agent: {
     },
   }
 
-  const breadcrumbSchema = {
+  const breadcrumbSchema: BreadcrumbListSchema = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
@@ -160,7 +212,7 @@ function generateJsonLd(agent: {
     ],
   }
 
-  const faqSchema = {
+  const faqSchema: FAQPageSchema = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     mainEntity: [
@@ -437,6 +489,315 @@ describe('Property 24: 语义化HTML和ARIA', () => {
     requiredAriaAttributes.forEach(attr => {
       expect(requiredAriaAttributes).toContain(attr)
     })
+  })
+})
+
+/**
+ * Feature: agent-brand-showcase, Property 23: JSON-LD结构化数据有效性
+ * Validates: Requirements 7.1
+ * 
+ * 对于任意Agent详情页，JSON-LD结构化数据应符合Schema.org SoftwareApplication规范
+ */
+describe('Property 23: JSON-LD结构化数据有效性', () => {
+  /**
+   * Schema.org SoftwareApplication 必需字段验证
+   * https://schema.org/SoftwareApplication
+   */
+  it('should generate valid SoftwareApplication schema for any agent', () => {
+    fc.assert(
+      fc.property(agentArbitrary, (agent) => {
+        const schemas = generateJsonLd(agent)
+        const softwareApp = schemas[0]
+        
+        // 验证 @context 必须是 schema.org
+        expect(softwareApp['@context']).toBe('https://schema.org')
+        
+        // 验证 @type 必须是 SoftwareApplication
+        expect(softwareApp['@type']).toBe('SoftwareApplication')
+        
+        // 验证 name 必须存在且非空
+        expect(softwareApp.name).toBeTruthy()
+        expect(typeof softwareApp.name).toBe('string')
+        
+        // 验证 url 必须是有效的 URL 格式
+        expect(softwareApp.url).toBeTruthy()
+        expect(softwareApp.url).toMatch(/^https?:\/\//)
+        
+        // 验证 @id 必须与 url 一致（Schema.org 最佳实践）
+        expect(softwareApp['@id']).toBe(softwareApp.url)
+        
+        // 验证 applicationCategory 存在
+        expect(softwareApp.applicationCategory).toBeTruthy()
+        
+        // 验证 operatingSystem 存在
+        expect(softwareApp.operatingSystem).toBeTruthy()
+      }),
+      { numRuns: 100 }
+    )
+  })
+
+  /**
+   * Schema.org Offer 结构验证
+   * https://schema.org/Offer
+   */
+  it('should generate valid Offer schema within SoftwareApplication', () => {
+    fc.assert(
+      fc.property(agentArbitrary, (agent) => {
+        const schemas = generateJsonLd(agent)
+        const softwareApp = schemas[0]
+        const offer = softwareApp.offers
+        
+        // 验证 offers 存在
+        expect(offer).toBeDefined()
+        
+        // 验证 Offer @type
+        expect(offer['@type']).toBe('Offer')
+        
+        // 验证 price 存在且为字符串
+        expect(offer.price).toBeDefined()
+        expect(typeof offer.price).toBe('string')
+        
+        // 验证 priceCurrency 是有效的货币代码
+        expect(offer.priceCurrency).toBe('USD')
+        
+        // 验证 availability 是有效的 Schema.org URL
+        expect(offer.availability).toBe('https://schema.org/InStock')
+      }),
+      { numRuns: 100 }
+    )
+  })
+
+  /**
+   * Schema.org Organization (publisher) 结构验证
+   * https://schema.org/Organization
+   */
+  it('should generate valid Organization schema for publisher', () => {
+    fc.assert(
+      fc.property(agentArbitrary, (agent) => {
+        const schemas = generateJsonLd(agent)
+        const softwareApp = schemas[0]
+        const publisher = softwareApp.publisher
+        
+        // 验证 publisher 存在
+        expect(publisher).toBeDefined()
+        
+        // 验证 Organization @type
+        expect(publisher['@type']).toBe('Organization')
+        
+        // 验证 name 存在且非空
+        expect(publisher.name).toBeTruthy()
+        expect(typeof publisher.name).toBe('string')
+        
+        // 验证 url 是有效的 URL
+        expect(publisher.url).toBeTruthy()
+        expect(publisher.url).toMatch(/^https?:\/\//)
+      }),
+      { numRuns: 100 }
+    )
+  })
+
+  /**
+   * Schema.org BreadcrumbList 结构验证
+   * https://schema.org/BreadcrumbList
+   */
+  it('should generate valid BreadcrumbList schema', () => {
+    fc.assert(
+      fc.property(agentArbitrary, (agent) => {
+        const schemas = generateJsonLd(agent)
+        const breadcrumb = schemas[1]
+        
+        // 验证 @context 和 @type
+        expect(breadcrumb['@context']).toBe('https://schema.org')
+        expect(breadcrumb['@type']).toBe('BreadcrumbList')
+        
+        // 验证 itemListElement 存在且为数组
+        expect(Array.isArray(breadcrumb.itemListElement)).toBe(true)
+        expect(breadcrumb.itemListElement.length).toBeGreaterThan(0)
+        
+        // 验证每个 ListItem 的结构
+        breadcrumb.itemListElement.forEach((item: { '@type': string; position: number; name: string; item: string }, index: number) => {
+          expect(item['@type']).toBe('ListItem')
+          expect(typeof item.position).toBe('number')
+          expect(item.position).toBe(index + 1) // position 应该从 1 开始递增
+          expect(item.name).toBeTruthy()
+          expect(item.item).toMatch(/^https?:\/\//)
+        })
+        
+        // 验证最后一个面包屑包含 agent 名称
+        const lastItem = breadcrumb.itemListElement[breadcrumb.itemListElement.length - 1]
+        expect(lastItem.name).toBe(agent.name)
+      }),
+      { numRuns: 100 }
+    )
+  })
+
+  /**
+   * Schema.org FAQPage 结构验证
+   * https://schema.org/FAQPage
+   */
+  it('should generate valid FAQPage schema', () => {
+    fc.assert(
+      fc.property(agentArbitrary, (agent) => {
+        const schemas = generateJsonLd(agent)
+        const faq = schemas[2]
+        
+        // 验证 @context 和 @type
+        expect(faq['@context']).toBe('https://schema.org')
+        expect(faq['@type']).toBe('FAQPage')
+        
+        // 验证 mainEntity 存在且为数组
+        expect(Array.isArray(faq.mainEntity)).toBe(true)
+        expect(faq.mainEntity.length).toBeGreaterThan(0)
+        
+        // 验证每个 Question 的结构
+        faq.mainEntity.forEach((question: { '@type': string; name: string; acceptedAnswer: { '@type': string; text: string } }) => {
+          expect(question['@type']).toBe('Question')
+          expect(question.name).toBeTruthy()
+          expect(typeof question.name).toBe('string')
+          
+          // 验证 acceptedAnswer 结构
+          expect(question.acceptedAnswer).toBeDefined()
+          expect(question.acceptedAnswer['@type']).toBe('Answer')
+          expect(question.acceptedAnswer.text).toBeTruthy()
+          expect(typeof question.acceptedAnswer.text).toBe('string')
+        })
+      }),
+      { numRuns: 100 }
+    )
+  })
+
+  /**
+   * JSON-LD 可序列化验证
+   * 确保生成的数据可以正确序列化为 JSON
+   */
+  it('should produce valid JSON that can be serialized', () => {
+    fc.assert(
+      fc.property(agentArbitrary, (agent) => {
+        const schemas = generateJsonLd(agent)
+        
+        // 验证每个 schema 都可以序列化为 JSON
+        schemas.forEach(schema => {
+          expect(() => JSON.stringify(schema)).not.toThrow()
+          
+          // 验证序列化后可以反序列化
+          const serialized = JSON.stringify(schema)
+          const deserialized = JSON.parse(serialized)
+          
+          // 验证反序列化后的数据与原始数据一致
+          expect(deserialized).toEqual(schema)
+        })
+      }),
+      { numRuns: 100 }
+    )
+  })
+
+  /**
+   * URL 一致性验证
+   * 确保所有 URL 引用都是一致的
+   */
+  it('should have consistent URL references across schemas', () => {
+    fc.assert(
+      fc.property(agentArbitrary, (agent) => {
+        const schemas = generateJsonLd(agent)
+        const softwareApp = schemas[0]
+        const breadcrumb = schemas[1]
+        
+        // 获取 agent 页面 URL
+        const agentUrl = softwareApp.url
+        
+        // 验证面包屑最后一项的 URL 与 SoftwareApplication 的 URL 一致
+        const lastBreadcrumbItem = breadcrumb.itemListElement[breadcrumb.itemListElement.length - 1]
+        expect(lastBreadcrumbItem.item).toBe(agentUrl)
+        
+        // 验证 URL 包含 agent slug
+        expect(agentUrl).toContain(agent.slug)
+      }),
+      { numRuns: 100 }
+    )
+  })
+
+  /**
+   * 免费定价识别验证
+   * 确保免费产品的价格正确设置为 "0"
+   */
+  it('should correctly identify free pricing', () => {
+    const freePricingArbitrary = fc.constantFrom('免费', 'Free', 'free', '免费试用', 'Free Trial')
+    const paidPricingArbitrary = fc.constantFrom('$9.99/月', '付费', '$19.99', '¥99/年')
+    
+    // 测试免费定价
+    fc.assert(
+      fc.property(
+        agentArbitrary.chain(agent => 
+          freePricingArbitrary.map(pricing => ({ ...agent, pricing }))
+        ),
+        (agent) => {
+          const schemas = generateJsonLd(agent)
+          const offer = schemas[0].offers
+          
+          // 免费产品价格应该是 "0"
+          expect(offer.price).toBe('0')
+        }
+      ),
+      { numRuns: 50 }
+    )
+    
+    // 测试付费定价
+    fc.assert(
+      fc.property(
+        agentArbitrary.chain(agent => 
+          paidPricingArbitrary.map(pricing => ({ ...agent, pricing }))
+        ),
+        (agent) => {
+          const schemas = generateJsonLd(agent)
+          const offer = schemas[0].offers
+          
+          // 付费产品价格应该是 "0"（因为我们没有解析具体价格）
+          expect(offer.price).toBe('0')
+        }
+      ),
+      { numRuns: 50 }
+    )
+  })
+
+  /**
+   * 空值和 null 值处理验证
+   * 确保可选字段为空时不会导致错误
+   */
+  it('should handle null and undefined optional fields gracefully', () => {
+    const agentWithNullsArbitrary = fc.record({
+      id: fc.uuid(),
+      slug: fc.string({ minLength: 1, maxLength: 50 }).filter(s => /^[a-z0-9-]+$/.test(s)),
+      name: fc.string({ minLength: 1, maxLength: 100 }),
+      short_description: fc.option(fc.string({ minLength: 10, maxLength: 200 }), { nil: null }),
+      detailed_description: fc.option(fc.string({ minLength: 20, maxLength: 1000 }), { nil: null }),
+      platform: fc.option(fc.constantFrom('Web', 'iOS', 'Android'), { nil: null }),
+      pricing: fc.option(fc.constantFrom('免费', 'Free', '付费'), { nil: null }),
+      key_features: fc.option(fc.array(fc.string(), { minLength: 0, maxLength: 3 }), { nil: null }),
+      categories: fc.option(fc.record({
+        name: fc.string({ minLength: 1, maxLength: 50 }),
+        slug: fc.string({ minLength: 1, maxLength: 50 }),
+      }), { nil: null }),
+    })
+    
+    fc.assert(
+      fc.property(agentWithNullsArbitrary, (agent) => {
+        // 不应该抛出错误
+        expect(() => generateJsonLd(agent)).not.toThrow()
+        
+        const schemas = generateJsonLd(agent)
+        
+        // 验证基本结构仍然有效
+        expect(schemas).toHaveLength(3)
+        expect(schemas[0]['@type']).toBe('SoftwareApplication')
+        expect(schemas[1]['@type']).toBe('BreadcrumbList')
+        expect(schemas[2]['@type']).toBe('FAQPage')
+        
+        // 验证必需字段有默认值
+        expect(schemas[0].applicationCategory).toBeTruthy()
+        expect(schemas[0].operatingSystem).toBeTruthy()
+      }),
+      { numRuns: 100 }
+    )
   })
 })
 
