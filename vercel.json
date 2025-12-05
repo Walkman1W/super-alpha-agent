@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/crawler?schedule=daily_premium",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/crawler?schedule=weekly_full",
+      "schedule": "0 3 * * 0"
+    }
+  ]
+}

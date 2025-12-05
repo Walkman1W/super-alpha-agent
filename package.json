@@ -18,7 +18,11 @@
     "crawler": "tsx crawler/run.ts",
     "crawler:github": "cross-env CRAWLER_SOURCE=github tsx crawler/run.ts",
     "crawler:all": "cross-env CRAWLER_SOURCE=all tsx crawler/run.ts",
-    "crawler:seed": "node crawler/run.js",
+    "crawler:seed": "node crawler/run.seed.js",
+    "crawler:v2": "tsx crawler/crawler-v2.ts",
+    "crawler:daily": "tsx crawler/scheduler.ts daily_premium",
+    "crawler:weekly": "tsx crawler/scheduler.ts weekly_full",
+    "crawler:test": "tsx crawler/scheduler.ts test",
     "sitemap": "node scripts/generate-sitemap.js",
     "verify:seo": "node scripts/verify-seo-setup.js",
     "deploy": "npm run sitemap && vercel --prod"
