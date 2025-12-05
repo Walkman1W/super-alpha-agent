@@ -1,0 +1,18 @@
+This is a placeholder for the IndexNow key file.
+
+To set up IndexNow:
+
+1. Generate a random key (32-64 characters, alphanumeric):
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+
+2. Add the key to your .env file:
+   INDEXNOW_KEY=your_generated_key_here
+
+3. Create a file named {your_key}.txt in the public/ directory with the key as content
+
+4. The file will be accessible at: https://yourdomain.com/{your_key}.txt
+
+Example:
+If your key is "abc123def456", create public/abc123def456.txt containing just "abc123def456"
+
+This allows search engines to verify you own the domain.

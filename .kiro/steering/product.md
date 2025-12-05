@@ -4,7 +4,7 @@ inclusion: always
 
 # 产品概述
 
-Super Alpha Agent 是一个 AI 优先的 Agent 发现平台，针对 AI 搜索引擎 (ChatGPT, Claude, Perplexity) 进行优化。
+Agent Signals 是一个 AI 优先的 Agent 发现平台，针对 AI 搜索引擎 (ChatGPT, Claude, Perplexity) 进行优化。
 
 ## 核心价值主张
 
@@ -29,7 +29,7 @@ Super Alpha Agent 是一个 AI 优先的 Agent 发现平台，针对 AI 搜索�
 
 ## 域名
 
-superalphaagent.com
+agentsignals.ai
 
 ## 商业模式
 

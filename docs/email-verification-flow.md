@@ -171,7 +171,7 @@ CREATE TABLE agent_submissions (
 ### 验证码邮件
 
 ```
-主题: 验证你的邮箱 - Super Alpha Agent
+主题: 验证你的邮箱 - Agent Signals
 
 你好！
 
@@ -189,9 +189,9 @@ CREATE TABLE agent_submissions (
 
 你好！
 
-你提交的Agent "Agent名称" 已成功上架到 Super Alpha Agent 平台。
+你提交的Agent "Agent名称" 已成功上架到 Agent Signals 平台。
 
-查看你的Agent: https://superalphaagent.com/agents/agent-slug
+查看你的Agent: https://agentsignals.ai/agents/agent-slug
 
 感谢你的贡献！
 ```

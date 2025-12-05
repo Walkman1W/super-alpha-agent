@@ -1,8 +1,8 @@
-# Super Alpha Agent
+# Agent Signals
 
-🤖 **AI Agent 发现平台** - 自动爬取、分析、展示 AI Agents，专为 AI 搜索引擎优化
+🤖 **The GEO Engine for AI Agents** - 自动爬取、分析、展示 AI Agents，专为 AI 搜索引擎优化
 
-**域名**: [www.superalphaagent.com](https://www.superalphaagent.com)
+**域名**: [agentsignals.ai](https://agentsignals.ai)
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/super-alpha-agent)
 

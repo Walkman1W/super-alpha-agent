@@ -83,10 +83,10 @@ export default function NotFound() {
               如果您认为这是一个错误，请联系我们
             </p>
             <a
-              href="mailto:support@superalphaagent.com"
+              href="mailto:support@agentsignals.ai"
               className="text-blue-600 hover:text-blue-700 font-medium text-sm"
             >
-              support@superalphaagent.com
+              support@agentsignals.ai
             </a>
           </div>
         </div>

@@ -119,10 +119,10 @@ export default function AgentError({
               如果问题持续存在，请联系我们
             </p>
             <a
-              href="mailto:support@superalphaagent.com"
+              href="mailto:support@agentsignals.ai"
               className="text-blue-600 hover:text-blue-700 font-medium text-sm"
             >
-              support@superalphaagent.com
+              support@agentsignals.ai
             </a>
           </div>
         </div>

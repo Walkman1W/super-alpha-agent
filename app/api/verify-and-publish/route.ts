@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { supabaseAdmin } from '@/lib/supabase'
 import { analyzeURL } from '@/lib/url-analyzer'
 import { sendPublishSuccessEmail } from '@/lib/email'
+import { notifyAgentPublished } from '@/lib/indexnow'
 
 /**
  * 检查是否为管理员邮箱
@@ -197,6 +198,12 @@ export async function POST(request: NextRequest) {
     // 发送成功通知邮件（异步）
     sendPublishSuccessEmail(email, agent.name, agent.slug).catch(err => {
       console.error('Send success email failed:', err)
+    })
+    
+    // 通知 IndexNow (异步，不阻塞主流程) - 需求 4.1, 4.2
+    notifyAgentPublished(agent.slug).catch(err => {
+      console.error('IndexNow notification failed:', err)
+      // 错误不影响主流程
     })
     
     return NextResponse.json({

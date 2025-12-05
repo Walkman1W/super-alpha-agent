@@ -2,180 +2,180 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- 首页 -->
   <url>
-    <loc>https://www.superalphaagent.com</loc>
-    <lastmod>2025-11-29T09:02:17.394Z</lastmod>
+    <loc>https://agentsignals.ai</loc>
+    <lastmod>2025-12-05T07:19:40.782Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   
   <!-- Agent 页面 -->
   <url>
-    <loc>https://www.superalphaagent.com/agents/kiro-mijnqsli</loc>
-    <lastmod>2025-11-29T08:12:12.011395+00:00</lastmod>
+    <loc>https://agentsignals.ai/agents/kiro-mijnqsli</loc>
+    <lastmod>2025-12-05T07:06:48.589383+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.superalphaagent.com/agents/ai-voice-cloning-mijvjb5q</loc>
-    <lastmod>2025-11-29T08:01:15.121138+00:00</lastmod>
+    <loc>https://agentsignals.ai/agents/research-assistant</loc>
+    <lastmod>2025-12-04T18:15:53.196105+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.superalphaagent.com/agents/fast3d-mijurs9b</loc>
-    <lastmod>2025-11-29T07:43:26.4744+00:00</lastmod>
+    <loc>https://agentsignals.ai/agents/citely-mijulcyz</loc>
+    <lastmod>2025-12-04T17:55:25.865104+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.superalphaagent.com/agents/lovart-mijtyw6t</loc>
-    <lastmod>2025-11-29T07:31:17.134855+00:00</lastmod>
+    <loc>https://agentsignals.ai/agents/ui-ux-designer</loc>
+    <lastmod>2025-12-04T17:34:18.642642+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.superalphaagent.com/agents/raphael-ai-miju9jqq</loc>
-    <lastmod>2025-11-29T07:23:15.953976+00:00</lastmod>
+    <loc>https://agentsignals.ai/agents/sql-query-helper</loc>
+    <lastmod>2025-12-04T16:03:09.653229+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.superalphaagent.com/agents/citely-mijulcyz</loc>
-    <lastmod>2025-11-29T06:32:57.048609+00:00</lastmod>
+    <loc>https://agentsignals.ai/agents/productivity-coach</loc>
+    <lastmod>2025-12-04T15:56:35.138468+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.superalphaagent.com/agents/灵光全模态ai助手-mijt9jha</loc>
+    <loc>https://agentsignals.ai/agents/data-analyst-expert</loc>
+    <lastmod>2025-12-04T15:45:34.120196+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://agentsignals.ai/agents/ai-voice-cloning-mijvjb5q</loc>
+    <lastmod>2025-12-04T15:44:51.877878+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://agentsignals.ai/agents/marketing-strategist</loc>
+    <lastmod>2025-12-04T15:43:19.964296+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://agentsignals.ai/agents/raphael-ai-miju9jqq</loc>
+    <lastmod>2025-12-04T15:25:54.445234+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://agentsignals.ai/agents/code-reviewer-pro</loc>
+    <lastmod>2025-12-04T14:20:33.4927+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://agentsignals.ai/agents/fast3d-mijurs9b</loc>
+    <lastmod>2025-12-04T12:24:52.35875+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://agentsignals.ai/agents/customer-support-bot</loc>
+    <lastmod>2025-12-04T12:16:41.024003+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://agentsignals.ai/agents/lovart-mijtyw6t</loc>
+    <lastmod>2025-12-03T18:34:09.07367+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://agentsignals.ai/agents/content-writer-ai</loc>
+    <lastmod>2025-12-03T03:15:31.548824+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://agentsignals.ai/agents/language-tutor</loc>
+    <lastmod>2025-12-02T22:43:29.611935+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://agentsignals.ai/agents/灵光全模态ai助手-mijt9jha</loc>
     <lastmod>2025-11-29T04:48:27.663774+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.superalphaagent.com/agents/飞象老师-mij2w30q</loc>
+    <loc>https://agentsignals.ai/agents/飞象老师-mij2w30q</loc>
     <lastmod>2025-11-28T16:30:10.324414+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.superalphaagent.com/agents/code-reviewer-pro</loc>
-    <lastmod>2025-11-28T15:40:02.495864+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.superalphaagent.com/agents/sql-query-helper</loc>
-    <lastmod>2025-11-28T15:29:29.828402+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.superalphaagent.com/agents/content-writer-ai</loc>
-    <lastmod>2025-11-28T15:19:28.083168+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.superalphaagent.com/agents/productivity-coach</loc>
-    <lastmod>2025-11-28T15:10:38.790277+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.superalphaagent.com/agents/data-analyst-expert</loc>
-    <lastmod>2025-11-28T14:54:52.551024+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.superalphaagent.com/agents/research-assistant</loc>
-    <lastmod>2025-11-28T14:53:14.972003+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.superalphaagent.com/agents/customer-support-bot</loc>
-    <lastmod>2025-11-28T12:30:00.228144+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.superalphaagent.com/agents/language-tutor</loc>
-    <lastmod>2025-11-28T12:20:10.942725+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.superalphaagent.com/agents/marketing-strategist</loc>
-    <lastmod>2025-11-28T12:10:47.162773+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.superalphaagent.com/agents/ui-ux-designer</loc>
-    <lastmod>2025-11-28T11:51:06.411801+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <!-- 分类页面 -->
   <url>
-    <loc>https://www.superalphaagent.com/category/development</loc>
-    <lastmod>2025-11-29T09:02:17.408Z</lastmod>
+    <loc>https://agentsignals.ai/category/development</loc>
+    <lastmod>2025-12-05T07:19:40.785Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.superalphaagent.com/category/content</loc>
-    <lastmod>2025-11-29T09:02:17.408Z</lastmod>
+    <loc>https://agentsignals.ai/category/content</loc>
+    <lastmod>2025-12-05T07:19:40.785Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.superalphaagent.com/category/data-analysis</loc>
-    <lastmod>2025-11-29T09:02:17.408Z</lastmod>
+    <loc>https://agentsignals.ai/category/data-analysis</loc>
+    <lastmod>2025-12-05T07:19:40.785Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.superalphaagent.com/category/design</loc>
-    <lastmod>2025-11-29T09:02:17.408Z</lastmod>
+    <loc>https://agentsignals.ai/category/design</loc>
+    <lastmod>2025-12-05T07:19:40.785Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.superalphaagent.com/category/marketing</loc>
-    <lastmod>2025-11-29T09:02:17.408Z</lastmod>
+    <loc>https://agentsignals.ai/category/marketing</loc>
+    <lastmod>2025-12-05T07:19:40.785Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.superalphaagent.com/category/customer-service</loc>
-    <lastmod>2025-11-29T09:02:17.408Z</lastmod>
+    <loc>https://agentsignals.ai/category/customer-service</loc>
+    <lastmod>2025-12-05T07:19:40.785Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.superalphaagent.com/category/education</loc>
-    <lastmod>2025-11-29T09:02:17.408Z</lastmod>
+    <loc>https://agentsignals.ai/category/education</loc>
+    <lastmod>2025-12-05T07:19:40.785Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.superalphaagent.com/category/research</loc>
-    <lastmod>2025-11-29T09:02:17.408Z</lastmod>
+    <loc>https://agentsignals.ai/category/research</loc>
+    <lastmod>2025-12-05T07:19:40.785Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.superalphaagent.com/category/productivity</loc>
-    <lastmod>2025-11-29T09:02:17.408Z</lastmod>
+    <loc>https://agentsignals.ai/category/productivity</loc>
+    <lastmod>2025-12-05T07:19:40.785Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.superalphaagent.com/category/other</loc>
-    <lastmod>2025-11-29T09:02:17.408Z</lastmod>
+    <loc>https://agentsignals.ai/category/other</loc>
+    <lastmod>2025-12-05T07:19:40.785Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>

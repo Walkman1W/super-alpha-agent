@@ -87,7 +87,7 @@ export async function processGitHubRepo(repo: GitHubRepo): Promise<RawAgentData>
  * 从 GitHub topics 推断分类
  */
 function inferCategoryFromTopics(topics: string[]): string {
-  const topicMap: Record<string, string> = {
+  const topicMap: Record<string, string[]> = {
     'development': ['development', 'developer-tools', 'coding', 'programming'],
     'content': ['content', 'writing', 'blog', 'documentation'],
     'data-analysis': ['data', 'analytics', 'data-science', 'visualization'],

@@ -1,11 +1,13 @@
 import { Suspense } from 'react'
 import dynamic from 'next/dynamic'
 import { getHomePageData } from '@/lib/data-fetcher'
+import { getHomepageBotStats } from '@/lib/bot-stats'
 import { AnimatedGrid } from '@/components/ui/animated-grid'
 import { GradientText } from '@/components/ui/gradient-text'
 import { EnhancedButton } from '@/components/ui/enhanced-button'
 import { GlassCard } from '@/components/ui/glass-card'
 import { AgentGridSkeleton } from '@/components/agent-card-skeleton'
+import { AIBotHomepageStats, AIBotStatsLoading } from '@/components/ai-bot-homepage-stats'
 
 // 动态导入重型组件以实现代码分割 - 需求: 9.1
 const ModeSwitcher = dynamic(() => import('@/components/mode-switcher').then(mod => ({ default: mod.ModeSwitcher })), {
@@ -39,6 +41,12 @@ export const revalidate = 300
 
 // 预渲染页面以减少首次加载时间
 export const fetchCache = 'force-cache'
+
+// Server component to fetch bot stats
+async function BotStatsSection() {
+  const stats = await getHomepageBotStats()
+  return <AIBotHomepageStats stats={stats} />
+}
 
 export default async function HomePage() {
   // 使用优化的数据获取层，带内存缓存
@@ -98,6 +106,11 @@ export default async function HomePage() {
           </svg>
         </div>
       </section>
+
+      {/* AI Bot 访问统计 - Requirements: 2.1, 2.4 */}
+      <Suspense fallback={<AIBotStatsLoading />}>
+        <BotStatsSection />
+      </Suspense>
 
       {/* 分类导航 */}
       {categories && categories.length > 0 && (

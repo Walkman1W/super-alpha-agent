@@ -4,7 +4,7 @@ const { createClient } = require('@supabase/supabase-js')
 const fs = require('fs')
 const path = require('path')
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.superalphaagent.com'
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://agentsignals.ai'
 
 async function generateSitemap() {
   console.log('🗺️  Generating sitemap...\n')

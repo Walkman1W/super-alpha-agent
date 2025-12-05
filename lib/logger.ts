@@ -114,14 +114,15 @@ class Logger {
    */
   error(context: string, error: Error | string, metadata?: LogMetadata): void {
     const errorObj = typeof error === 'string' ? new Error(error) : error
+    const message = errorObj?.message || String(error) || 'Unknown error'
     
     const entry: LogEntry = {
       level: 'error',
       context,
-      message: errorObj.message,
+      message,
       metadata: {
         ...metadata,
-        stack: errorObj.stack
+        stack: errorObj?.stack
       },
       timestamp: new Date().toISOString(),
       error: errorObj
@@ -129,7 +130,7 @@ class Logger {
 
     console.error(this.formatLogEntry(entry))
     
-    if (errorObj.stack) {
+    if (errorObj?.stack) {
       console.error('Stack trace:', errorObj.stack)
     }
     

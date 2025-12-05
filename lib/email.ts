@@ -7,8 +7,8 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-const FROM_EMAIL = process.env.EMAIL_FROM || 'Super Alpha Agent <noreply@superalphaagent.com>'
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://superalphaagent.com'
+const FROM_EMAIL = process.env.EMAIL_FROM || 'Agent Signals <noreply@agentsignals.ai>'
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://agentsignals.ai'
 
 /**
  * 生成6位验证码
@@ -67,7 +67,7 @@ export async function sendVerificationEmail(
             </p>
             
             <p style="color: #999; font-size: 12px; text-align: center; margin-top: 16px;">
-              © ${new Date().getFullYear()} Super Alpha Agent | <a href="${SITE_URL}" style="color: #4f46e5;">superalphaagent.com</a>
+              © ${new Date().getFullYear()} Agent Signals | <a href="${SITE_URL}" style="color: #4f46e5;">agentsignals.ai</a>
             </p>
           </div>
         </body>
@@ -140,7 +140,7 @@ export async function sendPublishSuccessEmail(
             <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">
             
             <p style="color: #999; font-size: 12px; text-align: center;">
-              © ${new Date().getFullYear()} Super Alpha Agent | <a href="${SITE_URL}" style="color: #4f46e5;">superalphaagent.com</a>
+              © ${new Date().getFullYear()} Agent Signals | <a href="${SITE_URL}" style="color: #4f46e5;">agentsignals.ai</a>
             </p>
           </div>
         </body>

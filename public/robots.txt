@@ -1,4 +1,4 @@
-# robots.txt for www.superalphaagent.com
+# robots.txt for agentsignals.ai
 
 User-agent: *
 Allow: /
@@ -20,7 +20,11 @@ User-agent: anthropic-ai
 Allow: /
 
 # Sitemap
-Sitemap: https://www.superalphaagent.com/sitemap.xml
+Sitemap: https://agentsignals.ai/sitemap.xml
+
+# IndexNow Key Location
+# Key file: https://agentsignals.ai/{INDEXNOW_KEY}.txt
+# See public/indexnow-key-placeholder.txt for setup instructions
 
 # Disallow admin paths (if any in future)
 Disallow: /api/

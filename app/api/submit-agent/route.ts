@@ -11,6 +11,7 @@ import {
   getClientIP,
   createRateLimitHeaders
 } from '@/lib/rate-limiter'
+import { notifyAgentPublished } from '@/lib/indexnow'
 
 /**
  * 提交Agent请求的Schema验证（使用安全增强版本）
@@ -261,6 +262,12 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
+    
+    // Step 7.5: 通知 IndexNow (异步，不阻塞主流程) - 需求 4.1, 4.2
+    notifyAgentPublished(agent.slug).catch(error => {
+      console.error('IndexNow notification failed:', error)
+      // 错误不影响主流程
+    })
     
     // Step 8: 返回成功结果（添加安全头部和速率限制头部）
     const response = NextResponse.json({

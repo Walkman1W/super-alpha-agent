@@ -12,8 +12,12 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --run --coverage",
     "test:perf": "node scripts/test-performance.js",
+    "test:crawler": "node scripts/test-github-crawler.js",
+    "setup:crawler": "node scripts/setup-github-crawler.js",
     "db:init": "node scripts/init-categories.js",
     "crawler": "node crawler/run.js",
+    "crawler:github": "CRAWLER_SOURCE=github node crawler/run.js",
+    "crawler:all": "CRAWLER_SOURCE=all node crawler/run.js",
     "sitemap": "node scripts/generate-sitemap.js",
     "verify:seo": "node scripts/verify-seo-setup.js",
     "deploy": "npm run sitemap && vercel --prod"

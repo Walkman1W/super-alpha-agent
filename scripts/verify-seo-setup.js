@@ -3,7 +3,7 @@ const https = require('https')
 const fs = require('fs')
 const path = require('path')
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.superalphaagent.com'
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://agentsignals.ai'
 
 console.log('🔍 验证 SEO 设置...\n')
 
@@ -115,9 +115,9 @@ function validateSitemapContent() {
   
   // 检查必需元素
   const checks = [
-    { name: '首页', pattern: /<loc>https:\/\/www\.superalphaagent\.com<\/loc>/ },
-    { name: 'Agent 页面', pattern: /<loc>https:\/\/www\.superalphaagent\.com\/agents\// },
-    { name: '分类页面', pattern: /<loc>https:\/\/www\.superalphaagent\.com\/category\// },
+    { name: '首页', pattern: /<loc>https:\/\/agentsignals\.ai<\/loc>/ },
+    { name: 'Agent 页面', pattern: /<loc>https:\/\/agentsignals\.ai\/agents\// },
+    { name: '分类页面', pattern: /<loc>https:\/\/agentsignals\.ai\/category\// },
     { name: 'lastmod 标签', pattern: /<lastmod>/ },
     { name: 'changefreq 标签', pattern: /<changefreq>/ },
     { name: 'priority 标签', pattern: /<priority>/ },
@@ -158,7 +158,7 @@ function generateSubmissionChecklist() {
   console.log('')
   console.log('  2. Bing Webmaster Tools')
   console.log('     🔗 https://www.bing.com/webmasters')
-  console.log('     📝 提交 sitemap: https://www.superalphaagent.com/sitemap.xml')
+  console.log('     📝 提交 sitemap: https://agentsignals.ai/sitemap.xml')
   console.log('')
   console.log('  3. Yandex Webmaster (可选)')
   console.log('     🔗 https://webmaster.yandex.com')

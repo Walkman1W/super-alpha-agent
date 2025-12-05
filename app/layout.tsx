@@ -16,7 +16,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'Super Alpha Agent - 发现最强大的 AI Agents | AI 智能助手整合平台',
+  title: 'Agent Signals - The GEO Engine for AI Agents | AI 智能助手发现平台',
   description: '精选 100+ AI Agents，深度分析功能、优缺点与使用门槛。专为 AI 搜索引擎优化，每日自动更新，完全免费。',
   keywords: [
     'AI Agent',
@@ -28,28 +28,30 @@ export const metadata: Metadata = {
     'Agent 对比',
     'AI 搜索',
     '智能助手推荐',
-    'AI 应用'
+    'AI 应用',
+    'GEO',
+    'Agent Signals'
   ],
-  authors: [{ name: 'Super Alpha Agent' }],
-  creator: 'Super Alpha Agent',
-  publisher: 'Super Alpha Agent',
+  authors: [{ name: 'Agent Signals' }],
+  creator: 'Agent Signals',
+  publisher: 'Agent Signals',
   openGraph: {
-    title: 'Super Alpha Agent - 发现最强大的 AI Agents',
+    title: 'Agent Signals - The GEO Engine for AI Agents',
     description: '精选 100+ AI 智能助手，深度分析 · 实时更新 · 为 AI 搜索优化',
     type: 'website',
     locale: 'zh_CN',
-    url: 'https://www.superalphaagent.com',
+    url: 'https://agentsignals.ai',
     images: [{
-      url: 'https://www.superalphaagent.com/og-image.png',
+      url: 'https://agentsignals.ai/og-image.png',
       width: 1200,
       height: 630,
-      alt: 'Super Alpha Agent - 发现最强大的 AI Agents',
+      alt: 'Agent Signals - The GEO Engine for AI Agents',
     }],
-    siteName: 'Super Alpha Agent',
+    siteName: 'Agent Signals',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Super Alpha Agent - 发现最强大的 AI Agents',
+    title: 'Agent Signals - The GEO Engine for AI Agents',
     description: '精选 100+ AI 智能助手，深度分析 · 实时更新 · AI 搜索优化',
   },
   robots: {
@@ -94,14 +96,14 @@ export default function RootLayout({
             <div className="flex items-center justify-between">
               <a href="/" className="flex items-center gap-3 group">
                 <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-xl group-hover:scale-110 transition-transform">
-                  S
+                  A
                 </div>
                 <div>
                   <div className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                    Super Alpha Agent
+                    Agent Signals
                   </div>
                   <div className="text-xs text-gray-500">
-                    AI Agent 发现平台
+                    The GEO Engine for AI Agents
                   </div>
                 </div>
               </a>
@@ -129,9 +131,9 @@ export default function RootLayout({
               <div>
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center font-bold">
-                    S
+                    A
                   </div>
-                  <span className="font-bold text-lg">Super Alpha Agent</span>
+                  <span className="font-bold text-lg">Agent Signals</span>
                 </div>
                 <p className="text-gray-400 text-sm leading-relaxed">
                   专为 AI 搜索引擎优化的 Agent 聚合平台。
@@ -161,7 +163,7 @@ export default function RootLayout({
             </div>
             
             <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
-              <p>© 2025 Super Alpha Agent. 面向 AI 搜索引擎优化 · 开源项目</p>
+              <p>© 2025 Agent Signals. 面向 AI 搜索引擎优化 · 开源项目</p>
               <p className="mt-2">
                 Built with ❤️ for the AI community
               </p>
