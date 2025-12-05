@@ -1,9 +1,20 @@
 import OpenAI from 'openai'
 
-export const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
-})
+// 延迟初始化OpenAI客户端，确保环境变量已加载
+let _openai: OpenAI | null = null
+
+function getOpenAI(): OpenAI {
+  if (!_openai) {
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error('OPENAI_API_KEY environment variable is not set')
+    }
+    _openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+      baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
+    })
+  }
+  return _openai
+}
 
 // AI 分析 Agent 信息
 export async function analyzeAgent(rawData: {
@@ -12,6 +23,7 @@ export async function analyzeAgent(rawData: {
   url?: string
   platform?: string
 }) {
+  const openai = getOpenAI() // 确保客户端已初始化
   const prompt = `
 分析这个 AI Agent 并提取结构化信息：
 

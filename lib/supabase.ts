@@ -1,17 +1,39 @@
 import { createClient } from '@supabase/supabase-js'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
-// 服务端使用（API 路由、Server Components）
-export const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
+// 延迟初始化Supabase客户端，确保环境变量已加载
+let _supabaseAdmin: ReturnType<typeof createClient> | null = null
+
+function getSupabaseAdmin() {
+  if (!_supabaseAdmin) {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+    
+    if (!url) {
+      throw new Error('NEXT_PUBLIC_SUPABASE_URL environment variable is not set')
     }
+    if (!key) {
+      throw new Error('SUPABASE_SERVICE_ROLE_KEY environment variable is not set')
+    }
+    
+    _supabaseAdmin = createClient(url, key, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    })
   }
-)
+  return _supabaseAdmin
+}
+
+// 服务端使用（API 路由、Server Components）
+// 使用getter来延迟初始化
+export const supabaseAdmin = new Proxy({} as ReturnType<typeof createClient>, {
+  get(target, prop) {
+    const client = getSupabaseAdmin()
+    return (client as any)[prop]
+  }
+})
 
 // 客户端使用（Client Components）
 export const createSupabaseClient = () => {

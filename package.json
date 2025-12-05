@@ -15,9 +15,10 @@
     "test:crawler": "node scripts/test-github-crawler.js",
     "setup:crawler": "node scripts/setup-github-crawler.js",
     "db:init": "node scripts/init-categories.js",
-    "crawler": "node crawler/run.js",
-    "crawler:github": "CRAWLER_SOURCE=github node crawler/run.js",
-    "crawler:all": "CRAWLER_SOURCE=all node crawler/run.js",
+    "crawler": "tsx crawler/run.ts",
+    "crawler:github": "cross-env CRAWLER_SOURCE=github tsx crawler/run.ts",
+    "crawler:all": "cross-env CRAWLER_SOURCE=all tsx crawler/run.ts",
+    "crawler:seed": "node crawler/run.js",
     "sitemap": "node scripts/generate-sitemap.js",
     "verify:seo": "node scripts/verify-seo-setup.js",
     "deploy": "npm run sitemap && vercel --prod"
@@ -52,6 +53,7 @@
     "@vitest/coverage-v8": "^4.0.14",
     "@vitest/ui": "^4.0.14",
     "autoprefixer": "^10.4.0",
+    "cross-env": "^10.1.0",
     "eslint": "^8.56.0",
     "eslint-config-next": "14.2.0",
     "fast-check": "^4.3.0",
@@ -59,6 +61,7 @@
     "postcss": "^8.4.0",
     "tailwindcss": "^3.4.0",
     "terser-webpack-plugin": "^5.3.14",
+    "tsx": "^4.21.0",
     "typescript": "^5.3.0",
     "vitest": "^4.0.14"
   }
