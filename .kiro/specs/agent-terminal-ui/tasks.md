@@ -102,13 +102,18 @@
 
   - [x] 4.5 创建 HeroTerminal 组件
 
+
     - 创建 `components/terminal/hero-terminal.tsx`
     - 整合 StatusPill, Omnibar, CodeMarquee
     - 深色背景和紫色光晕效果
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.6_
 
-- [ ] 5. 实现 Signal Card 组件
-  - [ ] 5.1 创建实体类型图标映射函数
+- [x] 5. 实现 Signal Card 组件
+
+
+
+  - [x] 5.1 创建实体类型图标映射函数
+
     - 创建 `lib/entity-utils.ts`
     - 实现 getEntityIcon 和 getFrameworkIcon 函数
     - _Requirements: 6.5_
@@ -119,7 +124,9 @@
     - 测试所有实体类型返回正确图标
     - _Requirements: 6.5_
 
-  - [ ] 5.3 创建 SignalCard 组件
+
+  - [x] 5.3 创建 SignalCard 组件
+
     - 创建 `components/terminal/signal-card.tsx`
     - 显示 agent 名称、状态、排名
     - 显示框架图标和自主等级徽章
