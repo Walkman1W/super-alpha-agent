@@ -93,11 +93,15 @@ function SignalCardComponent({ agent, onClick, className }: SignalCardProps) {
       className={cn(
         'group block relative',
         'bg-zinc-900/80 backdrop-blur-sm',
-        'rounded-lg p-4',
+        // 响应式内边距 - 移动端更紧凑
+        'rounded-lg p-3 sm:p-4',
         'border border-zinc-800',
         'transition-all duration-200 ease-out',
-        'hover:border-zinc-700 hover:-translate-y-1',
+        // 移动端禁用 hover 位移效果，避免触摸问题
+        'hover:border-zinc-700 sm:hover:-translate-y-1',
         'focus:outline-none focus:ring-1 focus:ring-purple-500/50',
+        // 移动端增加触摸反馈
+        'active:scale-[0.98] sm:active:scale-100',
         // Top tier 紫色光晕效果
         isTopTier && 'ring-1 ring-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.15)]',
         // 离线状态样式
@@ -116,14 +120,14 @@ function SignalCardComponent({ agent, onClick, className }: SignalCardProps) {
       )}
 
       {/* 头部: 名称 + 状态 + 排名 */}
-      <div className="flex items-start justify-between gap-2 mb-3">
+      <div className="flex items-start justify-between gap-2 mb-2 sm:mb-3">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-base" aria-label={getEntityLabel(agent.entity_type)}>
+          <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
+            <span className="text-sm sm:text-base" aria-label={getEntityLabel(agent.entity_type)}>
               {getEntityIcon(agent.entity_type)}
             </span>
             <h3
-              className="font-semibold text-zinc-100 truncate group-hover:text-purple-300 transition-colors"
+              className="text-sm sm:text-base font-semibold text-zinc-100 truncate group-hover:text-purple-300 transition-colors"
               data-testid="agent-name"
             >
               {agent.name}
@@ -134,31 +138,31 @@ function SignalCardComponent({ agent, onClick, className }: SignalCardProps) {
         <RankBadge rank={agent.rank} />
       </div>
 
-      {/* 描述 */}
+      {/* 描述 - 移动端单行 */}
       <p
-        className="text-xs text-zinc-400 mb-3 line-clamp-2 leading-relaxed"
+        className="text-xs text-zinc-400 mb-2 sm:mb-3 line-clamp-1 sm:line-clamp-2 leading-relaxed"
         data-testid="agent-description"
       >
         {agent.short_description}
       </p>
 
-      {/* 框架 + 自主等级 */}
-      <div className="flex items-center gap-2 mb-3">
+      {/* 框架 + 自主等级 - 响应式换行 */}
+      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
         {agent.framework && (
           <div
             className={cn(
-              'flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono',
+              'flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs font-mono',
               'bg-zinc-800 border border-zinc-700'
             )}
             data-testid="framework-badge"
           >
             <span className={frameworkStyle.color}>{frameworkStyle.icon}</span>
-            <span className="text-zinc-300">{agent.framework}</span>
+            <span className="text-zinc-300 hidden xs:inline">{agent.framework}</span>
           </div>
         )}
         <div
           className={cn(
-            'px-2 py-0.5 rounded text-xs font-mono font-medium',
+            'px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs font-mono font-medium',
             autonomyStyle.bgColor,
             autonomyStyle.color,
             'border border-current/20'
@@ -170,8 +174,8 @@ function SignalCardComponent({ agent, onClick, className }: SignalCardProps) {
         </div>
       </div>
 
-      {/* 指标 */}
-      <div className="flex items-center gap-3 mb-3 font-mono text-xs" data-testid="metrics">
+      {/* 指标 - 响应式间距和字体 */}
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2 sm:mb-3 font-mono text-[10px] sm:text-xs" data-testid="metrics">
         {agent.metrics.latency !== undefined && (
           <div className="flex items-center gap-1">
             <span className="text-zinc-500">⚡</span>
@@ -204,19 +208,32 @@ function SignalCardComponent({ agent, onClick, className }: SignalCardProps) {
         )}
       </div>
 
-      {/* 标签 */}
+      {/* 标签 - 移动端显示更少 */}
       {agent.tags && agent.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1.5" data-testid="tags">
-          {agent.tags.slice(0, 4).map((tag, idx) => (
+        <div className="flex flex-wrap gap-1 sm:gap-1.5" data-testid="tags">
+          {agent.tags.slice(0, 2).map((tag, idx) => (
             <span
               key={idx}
-              className="px-2 py-0.5 text-xs font-mono text-zinc-400 bg-zinc-800/50 border border-zinc-700/50 rounded"
+              className="px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs font-mono text-zinc-400 bg-zinc-800/50 border border-zinc-700/50 rounded sm:hidden"
             >
               {tag}
             </span>
           ))}
+          {agent.tags.slice(0, 4).map((tag, idx) => (
+            <span
+              key={idx}
+              className="hidden sm:inline-block px-2 py-0.5 text-xs font-mono text-zinc-400 bg-zinc-800/50 border border-zinc-700/50 rounded"
+            >
+              {tag}
+            </span>
+          ))}
+          {agent.tags.length > 2 && (
+            <span className="px-1.5 py-0.5 text-[10px] font-mono text-zinc-500 sm:hidden">
+              +{agent.tags.length - 2}
+            </span>
+          )}
           {agent.tags.length > 4 && (
-            <span className="px-2 py-0.5 text-xs font-mono text-zinc-500">
+            <span className="hidden sm:inline-block px-2 py-0.5 text-xs font-mono text-zinc-500">
               +{agent.tags.length - 4}
             </span>
           )}

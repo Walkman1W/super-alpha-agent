@@ -76,22 +76,22 @@ function EmptyState({ searchQuery, onReset }: { searchQuery?: string; onReset?: 
 /**
  * Grid Header 组件
  * **Property 6: Grid Header Accuracy**
- * **Validates: Requirements 5.2**
+ * **Validates: Requirements 5.2, 9.3**
  */
 function GridHeader({ searchQuery, count }: { searchQuery?: string; count: number }) {
   return (
-    <div className="col-span-full flex items-center justify-between mb-4 pb-4 border-b border-zinc-800" data-testid="grid-header">
-      <div className="flex items-center gap-3">
-        <span className="text-xs font-mono text-zinc-500 uppercase tracking-wider">
+    <div className="col-span-full flex flex-col xs:flex-row items-start xs:items-center justify-between gap-2 mb-3 sm:mb-4 pb-3 sm:pb-4 border-b border-zinc-800" data-testid="grid-header">
+      <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+        <span className="text-[10px] sm:text-xs font-mono text-zinc-500 uppercase tracking-wider">
           Signals
         </span>
         {searchQuery && (
-          <span className="text-xs font-mono text-zinc-400">
+          <span className="text-[10px] sm:text-xs font-mono text-zinc-400 truncate max-w-[150px] sm:max-w-none">
             for &ldquo;<span className="text-purple-400" data-testid="search-query">{searchQuery}</span>&rdquo;
           </span>
         )}
       </div>
-      <span className="text-xs font-mono text-zinc-400" data-testid="result-count">
+      <span className="text-[10px] sm:text-xs font-mono text-zinc-400 whitespace-nowrap" data-testid="result-count">
         {count} {count === 1 ? 'result' : 'results'}
       </span>
     </div>
@@ -102,7 +102,7 @@ function GridHeader({ searchQuery, count }: { searchQuery?: string; count: numbe
  * AgentGrid 组件
  * 响应式网格布局展示 Agent 卡片
  * 
- * **Validates: Requirements 5.1, 5.2, 5.3, 5.4, 5.5**
+ * **Validates: Requirements 5.1, 5.2, 5.3, 5.4, 5.5, 9.1, 9.3**
  */
 function AgentGridComponent({
   agents,
@@ -111,17 +111,21 @@ function AgentGridComponent({
   onAgentClick,
   className
 }: AgentGridProps) {
-  // 加载状态
+  // 加载状态 - 响应式骨架屏数量
   if (isLoading) {
     return (
       <div
         className={cn(
-          'grid gap-4',
-          'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+          'grid',
+          // 响应式间距 - 移动端更紧凑
+          'gap-3 sm:gap-4',
+          // 响应式列数 - 更细粒度的断点
+          'grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
           className
         )}
         data-testid="agent-grid-loading"
       >
+        {/* 移动端显示4个，桌面端显示8个 */}
         {Array.from({ length: 8 }).map((_, i) => (
           <SkeletonCard key={i} />
         ))}
@@ -141,8 +145,11 @@ function AgentGridComponent({
   return (
     <div
       className={cn(
-        'grid gap-4',
-        'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+        'grid',
+        // 响应式间距
+        'gap-3 sm:gap-4',
+        // 响应式列数 - 更细粒度的断点
+        'grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
         className
       )}
       data-testid="agent-grid"

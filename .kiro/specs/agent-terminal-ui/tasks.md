@@ -307,16 +307,23 @@
 - [x] 11. Checkpoint - 确保所有测试通过
 
 
+
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 12. 响应式设计优化
-  - [ ] 12.1 添加移动端菜单组件
+- [x] 12. 响应式设计优化
+
+
+
+  - [x] 12.1 添加移动端菜单组件
+
     - 创建 `components/terminal/mobile-menu.tsx`
     - 汉堡菜单按钮
     - 滑出式筛选面板
     - _Requirements: 9.2_
 
-  - [ ] 12.2 优化组件响应式样式
+
+  - [x] 12.2 优化组件响应式样式
+
     - 更新 HeroTerminal 移动端布局
     - 更新 SignalCard 移动端样式
     - 更新 AgentGrid 响应式断点
