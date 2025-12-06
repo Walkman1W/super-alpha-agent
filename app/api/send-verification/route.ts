@@ -76,10 +76,10 @@ export async function POST(request: NextRequest) {
     }
     
     // 检查URL是否已存在
-    const { data: existingAgent } = await supabaseAdmin
+    const { data: existingAgent } = await (supabaseAdmin as any)
       .from('agents')
       .select('id, name')
-      .eq('official_url', urlValidation.url)
+      .eq('official_url', urlValidation.url || '')
       .single()
     
     if (existingAgent) {
@@ -110,18 +110,18 @@ export async function POST(request: NextRequest) {
     
     // 存储待验证的提交（只存URL和邮箱，不做分析）
     // 先删除该邮箱+URL的旧记录（如果存在）
-    await supabaseAdmin
+    await (supabaseAdmin as any)
       .from('agent_submissions')
       .delete()
       .eq('email', email)
-      .eq('url', urlValidation.url)
+      .eq('url', urlValidation.url || '')
     
     // 插入新记录
-    const { error: insertError } = await supabaseAdmin
+    const { error: insertError } = await (supabaseAdmin as any)
       .from('agent_submissions')
       .insert({
         email,
-        url: urlValidation.url,
+        url: urlValidation.url || '',
         verification_code: code,
         expires_at: expiresAt.toISOString(),
         verified: false,

@@ -1,12 +1,14 @@
 -- Migration: Create bot_stats_7d view
 -- Date: 2025-12-05
--- Description: Creates a materialized view for AI bot visit statistics aggregated over 7 and 14 day periods
+-- Description: Creates a view for AI bot visit statistics aggregated over 7 and 14 day periods
 
 -- Drop view if exists (for idempotent migrations)
 DROP VIEW IF EXISTS bot_stats_7d;
 
--- Create view for bot statistics
-CREATE OR REPLACE VIEW bot_stats_7d AS
+-- Create view for bot statistics with SECURITY INVOKER for better security
+CREATE OR REPLACE VIEW bot_stats_7d
+WITH (security_invoker = true)
+AS
 SELECT 
   ai_name as bot_name,
   COUNT(*) as total_visits,

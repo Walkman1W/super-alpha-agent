@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+import { config } from 'dotenv'
+config() // 加载环境变量
+
 import { crawlGPTStore, getGPTStoreSeedData } from './sources/gpt-store'
 import { crawlAndExport } from './sources/github'
 import { batchEnrichAgents } from './enricher'

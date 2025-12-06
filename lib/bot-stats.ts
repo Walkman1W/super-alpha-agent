@@ -26,7 +26,7 @@ export interface BotVisitStats {
 export async function getHomepageBotStats(): Promise<BotVisitStats[]> {
   try {
     // Query the bot_stats_7d view which already calculates growth_rate
-    const { data, error } = await supabaseAdmin
+    const { data: dataRaw, error } = await (supabaseAdmin as any)
       .from('bot_stats_7d')
       .select('*')
       .order('visits_7d', { ascending: false })
@@ -36,9 +36,17 @@ export async function getHomepageBotStats(): Promise<BotVisitStats[]> {
       return []
     }
 
-    if (!data || data.length === 0) {
+    if (!dataRaw || dataRaw.length === 0) {
       return []
     }
+
+    const data = dataRaw as Array<{
+      bot_name: string
+      total_visits: number
+      visits_7d: number
+      visits_prev_7d: number
+      growth_rate: number
+    }>
 
     // Transform data and add trend indicator
     const stats: BotVisitStats[] = data.map((row) => {

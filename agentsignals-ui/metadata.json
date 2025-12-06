@@ -1,0 +1,5 @@
+{
+  "name": "AgentSignals",
+  "description": "A high-performance, dark-themed directory for autonomous AI agents, featuring a command-line style interface and real-time signal metrics.",
+  "requestFramePermissions": []
+}

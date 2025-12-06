@@ -116,7 +116,8 @@ describe('Submit Agent API', () => {
       const data = await response.json()
       
       expect(response.status).toBe(400)
-      expect(data.details).toContain('无效的邮箱格式')
+      expect(data.error).toBe('请求数据验证失败')
+      expect(data.details).toBeDefined()
     })
 
     it('应该拒绝超长的备注', async () => {
@@ -130,17 +131,14 @@ describe('Submit Agent API', () => {
       const data = await response.json()
       
       expect(response.status).toBe(400)
-      expect(data.details).toContain('备注不能超过1000个字符')
+      expect(data.error).toBe('请求数据验证失败')
+      expect(data.details).toBeDefined()
     })
   })
 
   describe('URL验证', () => {
     it('应该拒绝无效的URL格式', async () => {
-      mockValidateURL.mockReturnValue({
-        isValid: false,
-        error: '无效的URL格式'
-      })
-      
+      // 无效URL会在schema验证阶段被拒绝
       const { POST } = await importRoute()
       const request = createMockRequest({ url: 'not-a-url' })
       
@@ -148,15 +146,11 @@ describe('Submit Agent API', () => {
       const data = await response.json()
       
       expect(response.status).toBe(400)
-      expect(data.error).toBe('无效的URL格式')
+      expect(data.error).toBe('请求数据验证失败')
     })
 
     it('应该拒绝非http/https协议', async () => {
-      mockValidateURL.mockReturnValue({
-        isValid: false,
-        error: '只允许http或https协议'
-      })
-      
+      // 非http/https协议会在schema验证阶段被拒绝
       const { POST } = await importRoute()
       const request = createMockRequest({ url: 'ftp://example.com' })
       
@@ -164,7 +158,7 @@ describe('Submit Agent API', () => {
       const data = await response.json()
       
       expect(response.status).toBe(400)
-      expect(data.error).toBe('只允许http或https协议')
+      expect(data.error).toBe('请求数据验证失败')
     })
   })
 

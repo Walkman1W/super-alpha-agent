@@ -2,16 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* JetBrains Mono 字体导入 */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
 :root {
   --foreground-rgb: 15, 23, 42;
   --background-start-rgb: 248, 250, 252;
   --background-end-rgb: 241, 245, 249;
+  
+  /* Terminal 主题变量 */
+  --terminal-bg: #050505;
+  --terminal-surface: #09090b;
+  --terminal-border: #27272a;
+  --terminal-border-hover: #3f3f46;
+  --terminal-text: #f4f4f5;
+  --terminal-text-muted: #a1a1aa;
+  --terminal-text-dim: #71717a;
+  --terminal-accent: #a855f7;
+  --terminal-accent-glow: #c084fc;
+  --terminal-success: #22c55e;
+  --terminal-warning: #f59e0b;
+  --terminal-error: #ef4444;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-start-rgb));
   font-feature-settings: 'rlig' 1, 'calt' 1;
+}
+
+/* Terminal 深色主题模式 */
+body.terminal-theme {
+  background: var(--terminal-bg);
+  color: var(--terminal-text);
 }
 
 /* 平滑滚动 */
@@ -37,10 +60,34 @@ html {
   background: linear-gradient(to bottom, #0052CC, #5B21B6);
 }
 
+/* Terminal 主题滚动条 */
+.terminal-theme::-webkit-scrollbar {
+  width: 8px;
+}
+
+.terminal-theme::-webkit-scrollbar-track {
+  background: var(--terminal-bg);
+}
+
+.terminal-theme::-webkit-scrollbar-thumb {
+  background: var(--terminal-border);
+  border-radius: 4px;
+}
+
+.terminal-theme::-webkit-scrollbar-thumb:hover {
+  background: var(--terminal-border-hover);
+}
+
 /* 文本选择颜色 - 使用品牌色 */
 ::selection {
   background-color: #A78BFA;
   color: #0F172A;
+}
+
+/* Terminal 主题文本选择 */
+.terminal-theme ::selection {
+  background-color: var(--terminal-accent);
+  color: var(--terminal-bg);
 }
 
 /* 卡片悬停效果 */
@@ -222,4 +269,219 @@ html {
   nav, footer {
     display: none;
   }
+}
+
+/* ========================================
+   Terminal 主题样式
+   ======================================== */
+
+/* Terminal 卡片基础样式 */
+.terminal-card {
+  background: var(--terminal-surface);
+  border: 1px solid var(--terminal-border);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.terminal-card:hover {
+  border-color: var(--terminal-border-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Terminal 输入框样式 */
+.terminal-input {
+  background: var(--terminal-bg);
+  border: 1px solid var(--terminal-border);
+  color: var(--terminal-text);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.terminal-input:focus {
+  outline: none;
+  border-color: var(--terminal-accent);
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
+}
+
+.terminal-input::placeholder {
+  color: var(--terminal-text-dim);
+}
+
+/* Terminal 按钮样式 */
+.terminal-btn {
+  background: var(--terminal-surface);
+  border: 1px solid var(--terminal-border);
+  color: var(--terminal-text);
+  font-family: 'JetBrains Mono', monospace;
+  transition: all 0.2s ease;
+}
+
+.terminal-btn:hover {
+  background: var(--terminal-border);
+  border-color: var(--terminal-border-hover);
+}
+
+.terminal-btn-primary {
+  background: var(--terminal-accent);
+  border-color: var(--terminal-accent);
+  color: white;
+}
+
+.terminal-btn-primary:hover {
+  background: var(--terminal-accent-glow);
+  border-color: var(--terminal-accent-glow);
+}
+
+/* Terminal 状态指示器 */
+.terminal-status-online {
+  color: var(--terminal-success);
+}
+
+.terminal-status-offline {
+  color: var(--terminal-error);
+}
+
+.terminal-status-maintenance {
+  color: var(--terminal-warning);
+}
+
+/* Terminal 光晕效果 */
+.terminal-glow {
+  box-shadow: 0 0 30px rgba(168, 85, 247, 0.4);
+}
+
+.terminal-glow-lg {
+  box-shadow: 0 0 60px rgba(168, 85, 247, 0.5);
+}
+
+/* Terminal Spotlight 效果 */
+.terminal-spotlight {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+  animation: spotlight 8s ease-in-out infinite;
+}
+
+@keyframes spotlight {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+/* Marquee 动画 */
+.marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.marquee-content {
+  display: inline-flex;
+  animation: marquee 25s linear infinite;
+}
+
+.marquee-content:hover {
+  animation-play-state: paused;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Terminal 网格背景 */
+.terminal-grid-bg {
+  background-image: 
+    linear-gradient(rgba(39, 39, 42, 0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(39, 39, 42, 0.3) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Terminal 等宽字体工具类 */
+.font-terminal {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+}
+
+/* Terminal 文本颜色工具类 */
+.text-terminal {
+  color: var(--terminal-text);
+}
+
+.text-terminal-muted {
+  color: var(--terminal-text-muted);
+}
+
+.text-terminal-dim {
+  color: var(--terminal-text-dim);
+}
+
+.text-terminal-accent {
+  color: var(--terminal-accent);
+}
+
+/* Terminal 边框工具类 */
+.border-terminal {
+  border-color: var(--terminal-border);
+}
+
+.border-terminal-hover {
+  border-color: var(--terminal-border-hover);
+}
+
+/* Terminal 背景工具类 */
+.bg-terminal {
+  background-color: var(--terminal-bg);
+}
+
+.bg-terminal-surface {
+  background-color: var(--terminal-surface);
+}
+
+/* Top 3 排名紫色光晕 */
+.terminal-top-rank {
+  position: relative;
+}
+
+.terminal-top-rank::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(135deg, var(--terminal-accent), var(--terminal-accent-glow));
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0.5;
+  filter: blur(8px);
+}
+
+/* Terminal 脉冲动画 */
+.terminal-pulse {
+  animation: terminal-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes terminal-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Terminal 在线状态点 */
+.terminal-online-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--terminal-success);
+  border-radius: 50%;
+  animation: terminal-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

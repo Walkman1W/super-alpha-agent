@@ -34,15 +34,17 @@ export async function POST(request: NextRequest) {
     }
 
     // 获取 Agent ID
-    const { data: agent, error: agentError } = await supabaseAdmin
+    const { data: agentRaw, error: agentError } = await (supabaseAdmin as any)
       .from('agents')
       .select('id, ai_search_count')
       .eq('slug', agent_slug)
       .single()
 
-    if (agentError || !agent) {
+    if (agentError || !agentRaw) {
       return NextResponse.json({ error: 'Agent not found' }, { status: 404 })
     }
+    
+    const agent = agentRaw as { id: string; ai_search_count: number }
 
     const headers = request.headers
     const ipAddress = getClientIP(headers)
@@ -75,7 +77,7 @@ export async function POST(request: NextRequest) {
     // 如果检测到 AI 相关访问，记录并更新计数
     if (aiName && visitType !== 'organic') {
       // 获取最近的访问记录用于防刷验证
-      const { data: recentVisits } = await supabaseAdmin
+      const { data: recentVisits } = await (supabaseAdmin as any)
         .from('ai_visits')
         .select('ai_name, ip_address, visited_at')
         .eq('agent_id', agent.id)
@@ -90,7 +92,7 @@ export async function POST(request: NextRequest) {
 
       if (isValidVisit) {
         // 记录 AI 访问
-        await supabaseAdmin.from('ai_visits').insert({
+        await (supabaseAdmin as any).from('ai_visits').insert({
           agent_id: agent.id,
           ai_name: aiName,
           user_agent: headers.get('user-agent') || null,
@@ -102,12 +104,12 @@ export async function POST(request: NextRequest) {
         })
 
         // 更新 Agent 的 AI 搜索计数
-        const { error: rpcError } = await supabaseAdmin.rpc('increment_ai_search_count', {
+        const { error: rpcError } = await (supabaseAdmin as any).rpc('increment_ai_search_count', {
           agent_id: agent.id
         })
 
         if (rpcError) {
-          await supabaseAdmin
+          await (supabaseAdmin as any)
             .from('agents')
             .update({ ai_search_count: (agent.ai_search_count || 0) + 1 })
             .eq('id', agent.id)
@@ -161,18 +163,20 @@ export async function GET(request: NextRequest) {
     }
 
     // 获取Agent信息
-    const { data: agent, error: agentError } = await supabaseAdmin
+    const { data: agentData, error: agentError } = await (supabaseAdmin as any)
       .from('agents')
       .select('id, ai_search_count')
       .eq('slug', agentSlug)
       .single()
 
-    if (agentError || !agent) {
+    if (agentError || !agentData) {
       return NextResponse.json({ error: 'Agent not found' }, { status: 404 })
     }
+    
+    const agent = agentData as { id: string; ai_search_count: number }
 
     // 获取AI访问细分统计
-    const { data: breakdown, error: breakdownError } = await supabaseAdmin
+    const { data: breakdown, error: breakdownError } = await (supabaseAdmin as any)
       .from('ai_visits')
       .select('ai_name')
       .eq('agent_id', agent.id)

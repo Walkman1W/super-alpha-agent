@@ -58,18 +58,18 @@ async function findOrCreateCategory(categoryName: string | undefined): Promise<s
   const slug = categoryMap[categoryName] || 'other'
   
   // 查找现有分类
-  const { data: existing } = await supabaseAdmin
+  const { data: existing } = await (supabaseAdmin as any)
     .from('categories')
     .select('id')
     .eq('slug', slug)
     .single()
   
   if (existing) {
-    return existing.id
+    return (existing as { id: string }).id
   }
   
   // 创建新分类
-  const { data: newCategory, error } = await supabaseAdmin
+  const { data: newCategory, error } = await (supabaseAdmin as any)
     .from('categories')
     .insert({
       name: categoryName,
@@ -84,7 +84,7 @@ async function findOrCreateCategory(categoryName: string | undefined): Promise<s
     return null
   }
   
-  return newCategory?.id || null
+  return (newCategory as { id: string } | null)?.id || null
 }
 
 /**
@@ -119,7 +119,7 @@ async function createAgent(
     last_crawled_at: new Date().toISOString()
   }
   
-  const { data: agent, error } = await supabaseAdmin
+  const { data: agent, error } = await (supabaseAdmin as any)
     .from('agents')
     .insert(agentData)
     .select('id, slug')
@@ -133,10 +133,10 @@ async function createAgent(
   // 如果有email或notes，记录到提交表（可选）
   if (email || notes) {
     // 这里可以存储到单独的提交记录表
-    console.log('Submission metadata:', { email, notes, agentId: agent?.id })
+    console.log('Submission metadata:', { email, notes, agentId: (agent as any)?.id })
   }
   
-  return agent
+  return agent as { id: string; slug: string } | null
 }
 
 
@@ -219,11 +219,13 @@ export async function POST(request: NextRequest) {
     }
     
     // Step 5: 检查URL是否已存在
-    const { data: existingAgent } = await supabaseAdmin
+    const { data: existingAgentRaw } = await (supabaseAdmin as any)
       .from('agents')
       .select('id, slug, name')
-      .eq('official_url', urlValidation.url)
+      .eq('official_url', urlValidation.url || '')
       .single()
+    
+    const existingAgent = existingAgentRaw as { id: string; slug: string; name: string } | null
     
     if (existingAgent) {
       return NextResponse.json(
@@ -341,21 +343,23 @@ export async function GET(request: NextRequest) {
     }
     
     // 检查是否已存在
-    const { data: existingAgent } = await supabaseAdmin
+    const { data: existingAgentCheck } = await (supabaseAdmin as any)
       .from('agents')
       .select('id, slug, name, created_at')
-      .eq('official_url', urlValidation.url)
+      .eq('official_url', urlValidation.url || '')
       .single()
     
-    if (existingAgent) {
+    const existingAgentData = existingAgentCheck as { id: string; slug: string; name: string; created_at: string } | null
+    
+    if (existingAgentData) {
       return NextResponse.json({
         exists: true,
         agent: {
-          id: existingAgent.id,
-          slug: existingAgent.slug,
-          name: existingAgent.name,
-          url: `/agents/${existingAgent.slug}`,
-          created_at: existingAgent.created_at
+          id: existingAgentData.id,
+          slug: existingAgentData.slug,
+          name: existingAgentData.name,
+          url: `/agents/${existingAgentData.slug}`,
+          created_at: existingAgentData.created_at
         }
       })
     }

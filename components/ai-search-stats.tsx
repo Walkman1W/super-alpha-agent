@@ -22,14 +22,16 @@ interface AIVisitBreakdown {
  * 获取AI搜索统计细分数据
  */
 async function getAISearchBreakdown(agentId: string): Promise<AIVisitBreakdown[]> {
-  const { data, error } = await supabaseAdmin
+  const { data: dataRaw, error } = await (supabaseAdmin as any)
     .from('ai_visits')
     .select('ai_name')
     .eq('agent_id', agentId)
 
-  if (error || !data) {
+  if (error || !dataRaw) {
     return []
   }
+
+  const data = dataRaw as Array<{ ai_name: string }>
 
   // 统计每个AI引擎的访问次数
   const countMap = new Map<string, number>()
