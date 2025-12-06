@@ -112,6 +112,7 @@
 
 
 
+
   - [x] 5.1 创建实体类型图标映射函数
 
     - 创建 `lib/entity-utils.ts`
@@ -154,8 +155,12 @@
     - 测试离线 agent 显示正确状态
     - _Requirements: 3.7_
 
-- [ ] 6. 实现过滤逻辑
-  - [ ] 6.1 创建过滤工具函数
+- [x] 6. 实现过滤逻辑
+
+
+
+  - [x] 6.1 创建过滤工具函数
+
     - 创建 `lib/filter-utils.ts`
     - 实现 filterAgentsBySearch, filterAgentsByFramework
     - 实现 sanitizeFilterState
@@ -173,7 +178,9 @@
     - 测试框架过滤正确性
     - _Requirements: 4.5_
 
-  - [ ] 6.4 创建 SidebarFilter 组件
+
+  - [x] 6.4 创建 SidebarFilter 组件
+
     - 创建 `components/terminal/sidebar-filter.tsx`
     - 框架复选框过滤器
     - 延迟和成功率滑块
@@ -181,7 +188,9 @@
     - 响应式隐藏
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7_
 
-- [ ] 7. Checkpoint - 确保所有测试通过
+
+- [x] 7. Checkpoint - 确保所有测试通过
+
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 8. 实现 Agent Grid 和首页
