@@ -40,12 +40,19 @@ export const createSupabaseClient = () => {
   return createClientComponentClient()
 }
 
-// 数据库类型定义
+// 导入扩展类型
+import type { EntityType, AutonomyLevel, AgentStatus, AgentMetrics } from './types/agent'
+
+// 重新导出类型供外部使用
+export type { EntityType, AutonomyLevel, AgentStatus, AgentMetrics }
+export type { ExtendedAgent, SignalAgent, FilterState } from './types/agent'
+
+// 数据库类型定义 (扩展版本，包含 Terminal UI 字段)
 export type Agent = {
   id: string
   slug: string
   name: string
-  category_id: string
+  category_id: string | null
   short_description: string
   detailed_description: string | null
   key_features: string[]
@@ -60,11 +67,21 @@ export type Agent = {
   search_terms: string[]
   view_count: number
   favorite_count: number
+  ai_search_count: number
   source: string | null
   source_id: string | null
   last_crawled_at: string | null
   created_at: string
   updated_at: string
+  // Terminal UI 扩展字段
+  entity_type: EntityType
+  autonomy_level: AutonomyLevel
+  status: AgentStatus
+  metrics: AgentMetrics
+  framework: string | null
+  tags: string[]
+  rank: number
+  geo_score: number
 }
 
 export type Category = {

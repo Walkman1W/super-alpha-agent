@@ -4,6 +4,7 @@
 
 
 
+
   - [x] 1.1 更新 Tailwind 配置添加深色主题
 
     - 在 `tailwind.config.ts` 中扩展 colors 添加 zinc 色系
@@ -25,14 +26,20 @@
     - 在 `app/layout.tsx` 中配置字体和深色背景
     - _Requirements: 1.1_
 
-- [ ] 2. 扩展数据库 Schema 和类型
-  - [ ] 2.1 创建数据库迁移文件
+- [x] 2. 扩展数据库 Schema 和类型
+
+
+
+  - [x] 2.1 创建数据库迁移文件
+
     - 创建 `supabase/migrations/add_terminal_fields.sql`
     - 添加 entity_type, autonomy_level, metrics, status, rank, geo_score 字段
     - 添加约束检查
     - _Requirements: 6.1, 6.2, 6.3_
 
-  - [ ] 2.2 更新 TypeScript 类型定义
+
+  - [x] 2.2 更新 TypeScript 类型定义
+
     - 在 `lib/supabase.ts` 中扩展 Agent 类型
     - 创建 `lib/types/agent.ts` 定义新类型
     - _Requirements: 6.1, 6.2, 6.3_
@@ -43,7 +50,9 @@
     - 测试 entity_type 和 autonomy_level 枚举验证
     - _Requirements: 6.1, 6.2, 6.3_
 
-  - [ ] 2.4 实现 GEO Score 计算函数
+
+  - [x] 2.4 实现 GEO Score 计算函数
+
     - 创建 `lib/geo-score.ts`
     - 实现 calculateGeoScore 函数
     - _Requirements: 6.4_
