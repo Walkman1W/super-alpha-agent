@@ -30,6 +30,7 @@
 
 
 
+
   - [x] 2.1 创建数据库迁移文件
 
     - 创建 `supabase/migrations/add_terminal_fields.sql`
@@ -63,11 +64,16 @@
     - 测试分数范围 0-100 和公式正确性
     - _Requirements: 6.4_
 
-- [ ] 3. Checkpoint - 确保所有测试通过
+- [x] 3. Checkpoint - 确保所有测试通过
+
+
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 4. 实现核心终端组件
-  - [ ] 4.1 创建 StatusPill 组件
+
+- [x] 4. 实现核心终端组件
+
+  - [x] 4.1 创建 StatusPill 组件
+
     - 创建 `components/terminal/status-pill.tsx`
     - 显示网络状态和信号计数
     - _Requirements: 2.2_
@@ -78,18 +84,24 @@
     - 测试任意非负整数计数正确渲染
     - _Requirements: 2.2_
 
-  - [ ] 4.3 创建 CodeMarquee 组件
+
+
+  - [x] 4.3 创建 CodeMarquee 组件
     - 创建 `components/terminal/code-marquee.tsx`
     - 实现无限滚动代码流动画
     - _Requirements: 2.4, 10.2_
 
-  - [ ] 4.4 创建 Omnibar 搜索组件
+
+  - [x] 4.4 创建 Omnibar 搜索组件
+
     - 创建 `components/terminal/omnibar.tsx`
     - 终端风格搜索输入框
     - 命令提示符图标和快捷键提示
     - _Requirements: 2.3, 2.5_
 
-  - [ ] 4.5 创建 HeroTerminal 组件
+
+  - [x] 4.5 创建 HeroTerminal 组件
+
     - 创建 `components/terminal/hero-terminal.tsx`
     - 整合 StatusPill, Omnibar, CodeMarquee
     - 深色背景和紫色光晕效果
