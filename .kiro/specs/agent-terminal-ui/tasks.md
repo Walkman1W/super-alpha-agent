@@ -1,19 +1,27 @@
 # Implementation Plan
 
-- [ ] 1. 配置全局主题和字体
-  - [ ] 1.1 更新 Tailwind 配置添加深色主题
+- [x] 1. 配置全局主题和字体
+
+
+
+  - [x] 1.1 更新 Tailwind 配置添加深色主题
+
     - 在 `tailwind.config.ts` 中扩展 colors 添加 zinc 色系
     - 添加 JetBrains Mono 字体配置
     - 添加自定义动画 (marquee, ping-slow, blob)
     - _Requirements: 1.1, 1.2, 1.3, 10.2_
 
-  - [ ] 1.2 更新全局样式
+
+  - [x] 1.2 更新全局样式
+
     - 在 `app/globals.css` 中添加深色主题基础样式
     - 添加 JetBrains Mono 字体导入
     - 添加 marquee 动画 keyframes
     - _Requirements: 1.1, 1.5_
 
-  - [ ] 1.3 更新根布局
+
+  - [x] 1.3 更新根布局
+
     - 在 `app/layout.tsx` 中配置字体和深色背景
     - _Requirements: 1.1_
 
