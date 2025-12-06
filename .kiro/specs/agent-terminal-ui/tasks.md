@@ -225,6 +225,8 @@
 
 - [x] 9. 实现 Inspector 详情抽屉
 
+
+
   - [x] 9.1 创建 API 代码片段生成函数
 
     - 在 `lib/entity-utils.ts` 中添加 generateApiSnippet
@@ -252,8 +254,13 @@
     - 操作按钮
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
 
-- [ ] 10. 实现发布页面
-  - [ ] 10.1 创建 URL 验证函数
+- [x] 10. 实现发布页面
+
+
+
+
+  - [x] 10.1 创建 URL 验证函数
+
     - 在 `lib/validation.ts` 中实现 validateUrl
     - _Requirements: 8.2_
 
@@ -263,7 +270,9 @@
     - 测试有效/无效 URL 识别
     - _Requirements: 8.2_
 
-  - [ ] 10.3 创建 JSON-LD 生成函数
+
+  - [x] 10.3 创建 JSON-LD 生成函数
+
     - 在 `lib/json-ld.ts` 中实现 generateJsonLd
     - _Requirements: 8.3_
 
@@ -273,7 +282,9 @@
     - 测试生成的 JSON-LD 包含所有输入值
     - _Requirements: 8.3_
 
-  - [ ] 10.5 创建表单验证函数
+
+  - [x] 10.5 创建表单验证函数
+
     - 在 `lib/validation.ts` 中实现 validatePublishForm
     - _Requirements: 8.4, 8.5_
 
@@ -283,14 +294,19 @@
     - 测试必填字段验证
     - _Requirements: 8.4, 8.5_
 
-  - [ ] 10.7 创建 PublisherForm 组件
+
+
+  - [x] 10.7 创建 PublisherForm 组件
+
     - 创建 `components/publish/publisher-form.tsx`
     - 分屏布局 (表单 + JSON-LD 预览)
     - 实时 URL 验证
     - 实时 JSON-LD 更新
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5_
 
-- [ ] 11. Checkpoint - 确保所有测试通过
+- [x] 11. Checkpoint - 确保所有测试通过
+
+
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 12. 响应式设计优化
