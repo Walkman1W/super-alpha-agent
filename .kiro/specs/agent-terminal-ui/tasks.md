@@ -314,6 +314,7 @@
 
 
 
+
   - [x] 12.1 添加移动端菜单组件
 
     - 创建 `components/terminal/mobile-menu.tsx`
@@ -329,17 +330,26 @@
     - 更新 AgentGrid 响应式断点
     - _Requirements: 9.1, 9.2, 9.3_
 
-- [ ] 13. 数据迁移和种子数据
-  - [ ] 13.1 创建数据迁移脚本
+
+- [x] 13. 数据迁移和种子数据
+
+
+
+
+  - [x] 13.1 创建数据迁移脚本
     - 创建 `scripts/migrate-terminal-fields.js`
     - 为现有 agents 填充默认值
     - _Requirements: 6.1, 6.2, 6.3_
 
-  - [ ] 13.2 更新种子数据
+
+
+  - [x] 13.2 更新种子数据
+
     - 更新 `supabase/seed.sql` 包含新字段
     - 添加 10 个示例 agents 覆盖不同类型
     - _Requirements: 6.1, 6.2, 6.3_
 
-- [ ] 14. Final Checkpoint - 确保所有测试通过
+
+- [x] 14. Final Checkpoint - 确保所有测试通过
   - Ensure all tests pass, ask the user if questions arise.
 
