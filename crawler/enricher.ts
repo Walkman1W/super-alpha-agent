@@ -1,5 +1,6 @@
 import { analyzeAgent } from '../lib/openai'
 import { supabaseAdmin } from '../lib/supabase'
+import { notifyAgentPublished } from '../lib/indexnow'
 import type { RawAgentData } from './sources/gpt-store'
 
 // 扩展 RawAgentData 类型以支持 GitHub 特有字段
@@ -119,7 +120,13 @@ export async function enrichAndSaveAgent(rawData: RawAgentData | ExtendedRawAgen
       
       if (error) throw error
       console.log(`✅ Updated: ${rawData.name}`)
-      return { action: 'updated', id: existing.id }
+      
+      // 通知 IndexNow（异步，不阻塞）
+      notifyAgentPublished(slug).catch(err => {
+        console.error(`IndexNow notification failed for ${slug}:`, err)
+      })
+      
+      return { action: 'updated', id: existing.id, slug }
     } else {
       // 插入新记录
       const { data: inserted, error } = await supabaseAdmin
@@ -130,7 +137,13 @@ export async function enrichAndSaveAgent(rawData: RawAgentData | ExtendedRawAgen
       
       if (error) throw error
       console.log(`✅ Created: ${rawData.name}`)
-      return { action: 'created', id: inserted?.id }
+      
+      // 通知 IndexNow（异步，不阻塞）
+      notifyAgentPublished(slug).catch(err => {
+        console.error(`IndexNow notification failed for ${slug}:`, err)
+      })
+      
+      return { action: 'created', id: inserted?.id, slug }
     }
     
   } catch (error) {

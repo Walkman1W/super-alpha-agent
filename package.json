@@ -25,6 +25,7 @@
     "crawler:test": "tsx crawler/scheduler.ts test",
     "sitemap": "node scripts/generate-sitemap.js",
     "verify:seo": "node scripts/verify-seo-setup.js",
+    "indexnow:notify-all": "node scripts/notify-all-agents.js",
     "deploy": "npm run sitemap && vercel --prod"
   },
   "dependencies": {
