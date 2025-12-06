@@ -191,10 +191,15 @@
 
 - [x] 7. Checkpoint - 确保所有测试通过
 
+
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 8. 实现 Agent Grid 和首页
-  - [ ] 8.1 创建 AgentGrid 组件
+- [x] 8. 实现 Agent Grid 和首页
+
+
+
+  - [x] 8.1 创建 AgentGrid 组件
+
     - 创建 `components/terminal/agent-grid.tsx`
     - 响应式网格布局 (1/2/3/4 列)
     - 显示搜索查询和结果计数
@@ -208,14 +213,20 @@
     - 测试 header 显示正确的查询和计数
     - _Requirements: 5.2_
 
-  - [ ] 8.3 重构首页
+
+  - [x] 8.3 重构首页
+
     - 更新 `app/page.tsx` 使用新终端组件
     - 整合 HeroTerminal, SidebarFilter, AgentGrid
     - 保持 ISR 缓存策略
     - _Requirements: 1.1, 2.1, 5.1_
 
-- [ ] 9. 实现 Inspector 详情抽屉
-  - [ ] 9.1 创建 API 代码片段生成函数
+
+
+- [x] 9. 实现 Inspector 详情抽屉
+
+  - [x] 9.1 创建 API 代码片段生成函数
+
     - 在 `lib/entity-utils.ts` 中添加 generateApiSnippet
     - _Requirements: 7.3_
 
@@ -225,12 +236,16 @@
     - 测试生成的代码包含 agent URL
     - _Requirements: 7.3_
 
-  - [ ] 9.3 创建 RadarChart 组件
+
+  - [x] 9.3 创建 RadarChart 组件
+
     - 创建 `components/terminal/radar-chart.tsx`
     - 使用 Recharts 实现 5 维度雷达图
     - _Requirements: 7.2_
 
-  - [ ] 9.4 创建 InspectorDrawer 组件
+
+  - [x] 9.4 创建 InspectorDrawer 组件
+
     - 创建 `components/terminal/inspector-drawer.tsx`
     - 右侧滑入抽屉
     - 显示雷达图和 API 代码片段

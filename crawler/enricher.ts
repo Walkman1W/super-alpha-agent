@@ -35,11 +35,13 @@ export async function enrichAndSaveAgent(rawData: RawAgentData | ExtendedRawAgen
     
     // 获取分类 ID
     const categorySlug = categoryMap[analyzed.category] || 'other'
-    const { data: category } = await supabaseAdmin
+    const { data: categoryRaw } = await (supabaseAdmin as any)
       .from('categories')
       .select('id')
       .eq('slug', categorySlug)
       .single()
+    
+    const category = categoryRaw as { id: string } | null
     
     if (!category) {
       throw new Error(`Category not found: ${categorySlug}`)
@@ -52,26 +54,26 @@ export async function enrichAndSaveAgent(rawData: RawAgentData | ExtendedRawAgen
       .replace(/^-|-$/g, '')
     
     // 检查是否已存在（优先通过 source_id 查找，避免重复）
-    let existing = null
+    let existing: { id: string } | null = null
     
     // 如果有 source_id，先尝试通过它查找
     if (rawData.url) {
-      const { data } = await supabaseAdmin
+      const { data } = await (supabaseAdmin as any)
         .from('agents')
         .select('id')
         .eq('source_id', rawData.url)
         .single()
-      existing = data
+      existing = data as { id: string } | null
     }
     
     // 如果没找到，再通过 slug 查找
     if (!existing) {
-      const { data } = await supabaseAdmin
+      const { data } = await (supabaseAdmin as any)
         .from('agents')
         .select('id')
         .eq('slug', slug)
         .single()
-      existing = data
+      existing = data as { id: string } | null
     }
     
     // 构建基础数据
@@ -113,7 +115,7 @@ export async function enrichAndSaveAgent(rawData: RawAgentData | ExtendedRawAgen
     
     if (existing) {
       // 更新现有记录
-      const { error } = await supabaseAdmin
+      const { error } = await (supabaseAdmin as any)
         .from('agents')
         .update(agentData)
         .eq('id', existing.id)
@@ -129,7 +131,7 @@ export async function enrichAndSaveAgent(rawData: RawAgentData | ExtendedRawAgen
       return { action: 'updated', id: existing.id, slug }
     } else {
       // 插入新记录
-      const { data: inserted, error } = await supabaseAdmin
+      const { data: inserted, error } = await (supabaseAdmin as any)
         .from('agents')
         .insert(agentData)
         .select('id')

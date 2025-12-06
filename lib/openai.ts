@@ -3,7 +3,7 @@ import OpenAI from 'openai'
 // 延迟初始化OpenAI客户端，确保环境变量已加载
 let _openai: OpenAI | null = null
 
-function getOpenAI(): OpenAI {
+export function getOpenAI(): OpenAI {
   if (!_openai) {
     if (!process.env.OPENAI_API_KEY) {
       throw new Error('OPENAI_API_KEY environment variable is not set')
@@ -14,6 +14,13 @@ function getOpenAI(): OpenAI {
     })
   }
   return _openai
+}
+
+// 导出 openai 客户端的 getter (用于向后兼容)
+export const openai = {
+  get chat() {
+    return getOpenAI().chat
+  }
 }
 
 // AI 分析 Agent 信息
@@ -92,6 +99,7 @@ export async function generateComparison(agents: Array<{
   cons: string[]
   pricing: string | null
 }>) {
+  const openai = getOpenAI() // 确保客户端已初始化
   const prompt = `
 对比以下 AI Agents：
 

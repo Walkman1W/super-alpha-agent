@@ -4,22 +4,45 @@ export const revalidate = 3600 // 每小时重新生成
 
 export default async function HeroPage() {
   // 获取所有 Agents（按创建时间排序）
-  const { data: allAgents } = await supabaseAdmin
+  const { data: allAgentsRaw } = await (supabaseAdmin as any)
     .from('agents')
     .select('id, slug, name, short_description, platform, key_features, pros, cons, use_cases, pricing, official_url, created_at')
     .order('created_at', { ascending: false })
     .limit(100)
 
+  const allAgents = (allAgentsRaw || []) as Array<{
+    id: string
+    slug: string
+    name: string
+    short_description: string
+    platform: string
+    key_features: string[]
+    pros: string[]
+    cons: string[]
+    use_cases: string[]
+    pricing: string
+    official_url: string
+    created_at: string
+  }>
+
   // 获取统计数据
-  const { count: agentCount } = await supabaseAdmin
+  const { count: agentCount } = await (supabaseAdmin as any)
     .from('agents')
     .select('*', { count: 'exact', head: true })
 
   // 获取分类
-  const { data: categories } = await supabaseAdmin
+  const { data: categoriesRaw } = await (supabaseAdmin as any)
     .from('categories')
     .select('*')
     .order('name')
+
+  const categories = (categoriesRaw || []) as Array<{
+    id: string
+    name: string
+    slug: string
+    description: string
+    icon: string
+  }>
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">

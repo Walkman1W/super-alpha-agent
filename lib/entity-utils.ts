@@ -133,3 +133,55 @@ export function formatStars(stars: number | undefined): string {
   if (stars < 1000000) return `${(stars / 1000).toFixed(1)}k`
   return `${(stars / 1000000).toFixed(1)}M`
 }
+
+/**
+ * 生成 API 代码片段
+ * 根据 Agent 的 URL 生成示例调用代码
+ * 
+ * **Property 10: API Snippet Generation**
+ * **Validates: Requirements 7.3**
+ * 
+ * @param agent - Agent 对象，需包含 official_url 和 name
+ * @returns 代码片段字符串
+ */
+export function generateApiSnippet(agent: { 
+  name: string
+  official_url: string | null 
+  entity_type?: EntityType
+}): string {
+  if (!agent.official_url) {
+    return `// No API endpoint available for ${agent.name}`
+  }
+
+  const url = agent.official_url
+
+  // 根据实体类型生成不同的代码片段
+  if (agent.entity_type === 'repo') {
+    return `# Clone the repository
+git clone ${url}
+
+# Install dependencies
+cd ${agent.name.toLowerCase().replace(/\s+/g, '-')}
+pip install -r requirements.txt  # or npm install
+
+# Run the agent
+python main.py  # or npm start`
+  }
+
+  // SaaS 或 App 类型 - 生成 API 调用示例
+  return `// ${agent.name} API Example
+const response = await fetch('${url}/api/v1/chat', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer YOUR_API_KEY'
+  },
+  body: JSON.stringify({
+    message: 'Hello, agent!',
+    stream: false
+  })
+})
+
+const data = await response.json()
+console.log(data.response)`
+}

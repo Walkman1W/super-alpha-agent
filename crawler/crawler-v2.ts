@@ -60,7 +60,7 @@ function getConfig(): CrawlerConfig {
 async function getExistingGitHubUrls(): Promise<Set<string>> {
   console.log('📊 检查数据库中已存在的agents...')
   
-  const { data, error } = await supabaseAdmin
+  const { data: dataRaw, error } = await (supabaseAdmin as any)
     .from('agents')
     .select('github_url, source_id')
     .or('source.eq.GitHub,source.eq.github')
@@ -70,8 +70,10 @@ async function getExistingGitHubUrls(): Promise<Set<string>> {
     return new Set()
   }
   
+  const data = (dataRaw || []) as Array<{ github_url?: string; source_id?: string }>
+  
   const urls = new Set<string>()
-  data?.forEach(agent => {
+  data.forEach(agent => {
     if (agent.github_url) urls.add(agent.github_url)
     if (agent.source_id) urls.add(agent.source_id)
   })
