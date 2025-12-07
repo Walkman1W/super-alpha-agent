@@ -160,7 +160,7 @@ function AgentGridComponent({
         <SignalCard
           key={agent.id}
           agent={agent}
-          onClick={() => onAgentClick?.(agent)}
+          onCardClick={() => onAgentClick?.(agent)}
         />
       ))}
     </div>

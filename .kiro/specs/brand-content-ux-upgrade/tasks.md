@@ -71,6 +71,7 @@
 
 
 
+
   - [x] 4.1 将 "Full Details" 按钮替换为 "Publish Agent" 按钮
 
 
@@ -90,22 +91,33 @@
 - [ ] 5. 检查点 - 确保卡片交互正常工作
   - 确保所有测试通过，如有问题请询问用户。
 
-- [ ] 6. 重新设计 Header 组件
-  - [ ] 6.1 创建带更新导航的新 Header 组件
+- [x] 6. 重新设计 Header 组件
+
+
+
+
+
+  - [x] 6.1 创建带更新导航的新 Header 组件
+
     - 创建 `components/terminal/header.tsx`（或在 layout.tsx 中重构）
     - 添加导航链接: Agents, About, Blog, Publish Agent, GitHub
     - 用强调色高亮 "Publish" 链接
     - 应用带微妙发光动画的渐变 Logo
     - _需求: 2.1, 2.2, 2.3_
+
   - [ ] 6.2 实现移动端汉堡菜单
     - 为移动视口添加响应式菜单切换
     - 滑入式菜单包含所有导航项
+
     - _需求: 2.4_
-  - [ ] 6.3 确保粘性页眉在滚动时有背景模糊效果
+  - [x] 6.3 确保粘性页眉在滚动时有背景模糊效果
+
     - 验证 backdrop-blur 效果已应用
     - _需求: 2.5_
 
-- [ ] 7. 重新设计 Footer 组件
+
+- [-] 7. 重新设计 Footer 组件
+
   - [ ] 7.1 创建带更新布局的新 Footer 组件
     - 在 `app/layout.tsx` 中重构页脚或创建 `components/terminal/footer.tsx`
     - 品牌区域: Logo、标语、描述
