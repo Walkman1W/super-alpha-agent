@@ -1,8 +1,12 @@
 'use client'
 
-import Link from 'next/link'
-import { memo } from 'react'
+import { memo, useCallback, MouseEvent } from 'react'
 import { cn } from '@/lib/utils'
+import { Tooltip } from '@/components/ui/tooltip'
+import { 
+  getAutonomyTooltipContent, 
+  geoScoreTooltip 
+} from '@/lib/tooltip-content'
 import type { SignalAgent, AgentStatus } from '@/lib/types/agent'
 import {
   getEntityIcon,
@@ -16,7 +20,8 @@ import {
 
 export interface SignalCardProps {
   agent: SignalAgent
-  onClick?: () => void
+  onCardClick?: (agent: SignalAgent) => void
+  isSelected?: boolean
   className?: string
 }
 
@@ -52,6 +57,7 @@ function StatusIndicator({ status }: { status: AgentStatus }) {
   )
 }
 
+
 /**
  * 排名徽章组件
  */
@@ -73,43 +79,102 @@ function RankBadge({ rank }: { rank: number }) {
   )
 }
 
+/**
+ * 自主等级徽章 Tooltip 内容
+ */
+function AutonomyTooltipContent({ level }: { level: string }) {
+  const def = getAutonomyTooltipContent(level)
+  if (!def) return <span>未知等级</span>
+  
+  return (
+    <div className="space-y-1">
+      <div className="font-semibold text-zinc-100">
+        {def.label} ({def.labelEn})
+      </div>
+      <div className="text-zinc-300">{def.description}</div>
+      <div className="text-zinc-400 text-[10px] mt-1">
+        参考: {def.industryRef}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * GEO 评分 Tooltip 内容
+ */
+function GeoTooltipContent() {
+  return (
+    <div className="space-y-2 max-w-[280px]">
+      <div className="font-semibold text-zinc-100">{geoScoreTooltip.title}</div>
+      <div className="text-zinc-300 text-[11px]">{geoScoreTooltip.description}</div>
+      <div className="text-zinc-400 text-[10px] font-mono bg-zinc-900/50 p-1.5 rounded">
+        {geoScoreTooltip.formula}
+      </div>
+    </div>
+  )
+}
+
 
 /**
  * SignalCard 组件
  * 终端风格的 Agent 信息卡片
  * 
- * **Validates: Requirements 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7**
+ * 交互逻辑:
+ * - 标题点击: 在新标签页打开 official_url (target="_blank")
+ * - 卡片主体点击: 触发 onCardClick 回调（打开抽屉）
+ * - 不再导航到 /agents/[slug] 详情页
+ * 
+ * **Validates: Requirements 5.1, 5.2, 5.5**
  */
-function SignalCardComponent({ agent, onClick, className }: SignalCardProps) {
+function SignalCardComponent({ agent, onCardClick, isSelected, className }: SignalCardProps) {
   const isTopTier = agent.rank <= 3
   const isOffline = agent.status === 'offline'
   const frameworkStyle = getFrameworkIcon(agent.framework)
   const autonomyStyle = getAutonomyLevelStyle(agent.autonomy_level)
 
+  // 标题点击: 在新标签页打开官方 URL
+  const handleTitleClick = useCallback((e: MouseEvent<HTMLAnchorElement>) => {
+    // 阻止事件冒泡，避免触发卡片点击
+    e.stopPropagation()
+  }, [])
+
+  // 卡片主体点击: 触发 onCardClick 回调
+  const handleCardClick = useCallback(() => {
+    onCardClick?.(agent)
+  }, [agent, onCardClick])
+
+  // 阻止徽章区域的点击冒泡
+  const handleBadgeClick = useCallback((e: MouseEvent) => {
+    e.stopPropagation()
+  }, [])
+
   return (
-    <Link
-      href={`/agents/${agent.slug}`}
-      onClick={onClick}
+    <div
+      onClick={handleCardClick}
       className={cn(
-        'group block relative',
+        'group relative cursor-pointer',
         'bg-zinc-900/80 backdrop-blur-sm',
-        // 响应式内边距 - 移动端更紧凑
         'rounded-lg p-3 sm:p-4',
         'border border-zinc-800',
         'transition-all duration-200 ease-out',
-        // 移动端禁用 hover 位移效果，避免触摸问题
         'hover:border-zinc-700 sm:hover:-translate-y-1',
         'focus:outline-none focus:ring-1 focus:ring-purple-500/50',
-        // 移动端增加触摸反馈
         'active:scale-[0.98] sm:active:scale-100',
-        // Top tier 紫色光晕效果
         isTopTier && 'ring-1 ring-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.15)]',
-        // 离线状态样式
         isOffline && 'opacity-60',
+        isSelected && 'ring-2 ring-purple-500 border-purple-500',
         className
       )}
+      role="button"
+      tabIndex={0}
       aria-label={`查看 ${agent.name} 详情`}
       data-testid="signal-card"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          handleCardClick()
+        }
+      }}
     >
       {/* Top tier 光晕背景 */}
       {isTopTier && (
@@ -126,19 +191,33 @@ function SignalCardComponent({ agent, onClick, className }: SignalCardProps) {
             <span className="text-sm sm:text-base" aria-label={getEntityLabel(agent.entity_type)}>
               {getEntityIcon(agent.entity_type)}
             </span>
-            <h3
-              className="text-sm sm:text-base font-semibold text-zinc-100 truncate group-hover:text-purple-300 transition-colors"
-              data-testid="agent-name"
-            >
-              {agent.name}
-            </h3>
+            {/* 标题: 点击在新标签页打开官方 URL */}
+            {agent.official_url ? (
+              <a
+                href={agent.official_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={handleTitleClick}
+                className="text-sm sm:text-base font-semibold text-zinc-100 truncate hover:text-purple-300 hover:underline transition-colors"
+                data-testid="agent-name-link"
+              >
+                {agent.name}
+              </a>
+            ) : (
+              <h3
+                className="text-sm sm:text-base font-semibold text-zinc-100 truncate group-hover:text-purple-300 transition-colors"
+                data-testid="agent-name"
+              >
+                {agent.name}
+              </h3>
+            )}
           </div>
           <StatusIndicator status={agent.status} />
         </div>
         <RankBadge rank={agent.rank} />
       </div>
 
-      {/* 描述 - 移动端单行 */}
+      {/* 描述 */}
       <p
         className="text-xs text-zinc-400 mb-2 sm:mb-3 line-clamp-1 sm:line-clamp-2 leading-relaxed"
         data-testid="agent-description"
@@ -146,8 +225,8 @@ function SignalCardComponent({ agent, onClick, className }: SignalCardProps) {
         {agent.short_description}
       </p>
 
-      {/* 框架 + 自主等级 - 响应式换行 */}
-      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+      {/* 框架 + 自主等级 (带 Tooltip) */}
+      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3" onClick={handleBadgeClick}>
         {agent.framework && (
           <div
             className={cn(
@@ -160,22 +239,27 @@ function SignalCardComponent({ agent, onClick, className }: SignalCardProps) {
             <span className="text-zinc-300 hidden xs:inline">{agent.framework}</span>
           </div>
         )}
-        <div
-          className={cn(
-            'px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs font-mono font-medium',
-            autonomyStyle.bgColor,
-            autonomyStyle.color,
-            'border border-current/20'
-          )}
-          title={autonomyStyle.description}
-          data-testid="autonomy-badge"
+        {/* 自主等级徽章 - 带 Tooltip */}
+        <Tooltip
+          content={<AutonomyTooltipContent level={agent.autonomy_level} />}
+          position="top"
         >
-          {autonomyStyle.label}
-        </div>
+          <div
+            className={cn(
+              'px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs font-mono font-medium cursor-help',
+              autonomyStyle.bgColor,
+              autonomyStyle.color,
+              'border border-current/20'
+            )}
+            data-testid="autonomy-badge"
+          >
+            {autonomyStyle.label}
+          </div>
+        </Tooltip>
       </div>
 
-      {/* 指标 - 响应式间距和字体 */}
-      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2 sm:mb-3 font-mono text-[10px] sm:text-xs" data-testid="metrics">
+      {/* 指标 (GEO 评分带 Tooltip) */}
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2 sm:mb-3 font-mono text-[10px] sm:text-xs" data-testid="metrics" onClick={handleBadgeClick}>
         {agent.metrics.latency !== undefined && (
           <div className="flex items-center gap-1">
             <span className="text-zinc-500">⚡</span>
@@ -195,20 +279,25 @@ function SignalCardComponent({ agent, onClick, className }: SignalCardProps) {
           </div>
         )}
         {agent.geo_score > 0 && (
-          <div className="flex items-center gap-1 ml-auto">
-            <span className="text-zinc-500">GEO</span>
-            <span className={cn(
-              'font-medium',
-              agent.geo_score >= 80 ? 'text-green-400' :
-              agent.geo_score >= 60 ? 'text-yellow-400' : 'text-zinc-400'
-            )}>
-              {agent.geo_score}
-            </span>
-          </div>
+          <Tooltip
+            content={<GeoTooltipContent />}
+            position="top"
+          >
+            <div className="flex items-center gap-1 ml-auto cursor-help">
+              <span className="text-zinc-500">GEO</span>
+              <span className={cn(
+                'font-medium',
+                agent.geo_score >= 80 ? 'text-green-400' :
+                agent.geo_score >= 60 ? 'text-yellow-400' : 'text-zinc-400'
+              )}>
+                {agent.geo_score}
+              </span>
+            </div>
+          </Tooltip>
         )}
       </div>
 
-      {/* 标签 - 移动端显示更少 */}
+      {/* 标签 */}
       {agent.tags && agent.tags.length > 0 && (
         <div className="flex flex-wrap gap-1 sm:gap-1.5" data-testid="tags">
           {agent.tags.slice(0, 2).map((tag, idx) => (
@@ -239,7 +328,7 @@ function SignalCardComponent({ agent, onClick, className }: SignalCardProps) {
           )}
         </div>
       )}
-    </Link>
+    </div>
   )
 }
 
@@ -250,6 +339,7 @@ export const SignalCard = memo(SignalCardComponent, (prevProps, nextProps) => {
     prevProps.agent.status === nextProps.agent.status &&
     prevProps.agent.rank === nextProps.agent.rank &&
     prevProps.agent.geo_score === nextProps.agent.geo_score &&
+    prevProps.isSelected === nextProps.isSelected &&
     prevProps.className === nextProps.className
   )
 })

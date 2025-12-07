@@ -1,10 +1,10 @@
-# Requirements Document
+# 需求文档
 
-## Introduction
+## 简介
 
 本次改版旨在提升 Agent Signals 平台的品牌形象和用户体验，包括：添加 About/Blog 内容页面展示行业标准文章、重新设计页眉页脚以体现独角兽企业科技感、优化卡片交互逻辑、修复搜索框图标、以及在导航中集成发布 Agent 入口。
 
-## Glossary
+## 术语表
 
 - **GEO**: Generative Engine Optimization，生成式引擎优化，针对 AI 搜索引擎的优化策略
 - **L1-L5**: Agent 自主性分级标准，从 L1 (辅助型) 到 L5 (蜂群/组织级)
@@ -14,71 +14,71 @@
 - **Header**: 页面顶部导航栏
 - **Footer**: 页面底部注脚区域
 
-## Requirements
+## 需求列表
 
-### Requirement 1: About 和 Blog 内容页面
+### 需求 1: About 和 Blog 内容页面
 
-**User Story:** As a visitor, I want to read authoritative articles about AI agent classification and GEO scoring, so that I can understand the industry standards behind Agent Signals.
+**用户故事:** 作为访客，我希望阅读关于 AI Agent 分级和 GEO 评分的权威文章，以便了解 Agent Signals 背后的行业标准。
 
-#### Acceptance Criteria
+#### 验收标准
 
-1. WHEN a user navigates to the About page THEN THE system SHALL display the L1-L5 AI autonomy framework article with proper formatting and citations
-2. WHEN a user navigates to the Blog page THEN THE system SHALL display the GEO scoring algorithm article with detailed explanations
-3. WHEN displaying articles THEN THE system SHALL use consistent terminal-style typography with proper headings, lists, and code blocks
-4. WHEN a user hovers over L1-L5 level badges anywhere on the site THEN THE system SHALL display a tooltip with the level definition and industry reference
-5. WHEN a user hovers over GEO score badges anywhere on the site THEN THE system SHALL display a tooltip explaining the scoring methodology
+1. 当用户访问 About 页面时，系统应显示 L1-L5 AI 自主性框架文章，包含正确的格式和引用
+2. 当用户访问 Blog 页面时，系统应显示 GEO 评分算法文章，包含详细说明
+3. 当显示文章时，系统应使用一致的终端风格排版，包含正确的标题、列表和代码块
+4. 当用户在网站任何位置悬停在 L1-L5 等级徽章上时，系统应显示包含等级定义和行业参考的工具提示
+5. 当用户悬停在 GEO 评分徽章上时，系统应显示解释评分方法的工具提示
 
-### Requirement 2: 页眉 (Header) 重新设计
+### 需求 2: 页眉 (Header) 重新设计
 
-**User Story:** As a visitor, I want to see a modern, tech-forward header that conveys the platform's unicorn-level ambition, so that I feel confident in the platform's credibility.
+**用户故事:** 作为访客，我希望看到一个现代、科技感的页眉，传达平台的独角兽级别愿景，以便对平台的可信度充满信心。
 
-#### Acceptance Criteria
+#### 验收标准
 
-1. WHEN the header is displayed THEN THE system SHALL show a refined logo with gradient effects and subtle glow animation
-2. WHEN the header is displayed THEN THE system SHALL include navigation links to: Agents, About, Blog, and Publish Agent
-3. WHEN a user clicks the Publish Agent link THEN THE system SHALL navigate to the /publish page
-4. WHEN the header is displayed on mobile THEN THE system SHALL collapse navigation into a hamburger menu
-5. WHEN a user scrolls down THEN THE system SHALL apply a backdrop blur effect to the sticky header
+1. 当页眉显示时，系统应展示带有渐变效果和微妙发光动画的精致 Logo
+2. 当页眉显示时，系统应包含导航链接：Agents、About、Blog 和 Publish Agent
+3. 当用户点击 Publish Agent 链接时，系统应导航到 /publish 页面
+4. 当页眉在移动端显示时，系统应将导航折叠为汉堡菜单
+5. 当用户向下滚动时，系统应对粘性页眉应用背景模糊效果
 
-### Requirement 3: 页脚 (Footer) 重新设计
+### 需求 3: 页脚 (Footer) 重新设计
 
-**User Story:** As a visitor, I want to see a clean, professional footer with essential links and brand information, so that I can easily navigate and understand the platform.
+**用户故事:** 作为访客，我希望看到一个简洁、专业的页脚，包含必要的链接和品牌信息，以便轻松导航和了解平台。
 
-#### Acceptance Criteria
+#### 验收标准
 
-1. WHEN the footer is displayed THEN THE system SHALL show the brand logo, tagline, and brief description
-2. WHEN the footer is displayed THEN THE system SHALL include links to: About, Blog, Publish Agent, and GitHub
-3. WHEN the footer is displayed THEN THE system SHALL show technology stack information in a compact format
-4. WHEN the footer is displayed THEN THE system SHALL include copyright notice and community attribution
-5. WHEN the footer is displayed THEN THE system SHALL maintain terminal aesthetic with monospace fonts and subtle borders
+1. 当页脚显示时，系统应展示品牌 Logo、标语和简要描述
+2. 当页脚显示时，系统应包含链接：About、Blog、Publish Agent 和 GitHub
+3. 当页脚显示时，系统应以紧凑格式显示技术栈信息
+4. 当页脚显示时，系统应包含版权声明和社区归属
+5. 当页脚显示时，系统应保持终端美学，使用等宽字体和微妙边框
 
-### Requirement 4: 搜索框图标修改
+### 需求 4: 搜索框图标修改
 
-**User Story:** As a user, I want to see a terminal-style prompt icon in the search box, so that the interface maintains consistent terminal aesthetics.
+**用户故事:** 作为用户，我希望在搜索框中看到终端风格的提示符图标，以便界面保持一致的终端美学。
 
-#### Acceptance Criteria
+#### 验收标准
 
-1. WHEN the search box is displayed THEN THE system SHALL show a terminal prompt symbol ">_" instead of a magnifying glass icon
-2. WHEN the terminal prompt is displayed THEN THE system SHALL use monospace font styling consistent with the terminal theme
+1. 当搜索框显示时，系统应显示终端提示符 ">_" 而不是放大镜图标
+2. 当终端提示符显示时，系统应使用与终端主题一致的等宽字体样式
 
-### Requirement 5: 卡片交互优化
+### 需求 5: 卡片交互优化
 
-**User Story:** As a user, I want intuitive card interactions that allow me to quickly access agent information without unexpected navigation, so that I can efficiently browse agents.
+**用户故事:** 作为用户，我希望有直观的卡片交互，允许我快速访问 Agent 信息而不会意外导航，以便高效浏览 Agents。
 
-#### Acceptance Criteria
+#### 验收标准
 
-1. WHEN a user clicks on an agent card title THEN THE system SHALL open the agent's official website (GitHub or homepage) in a new browser tab
-2. WHEN a user clicks on the card body (not title) THEN THE system SHALL open the Inspector Drawer showing the radar chart and details
-3. WHEN the Inspector Drawer is open THEN THE system SHALL display buttons for "Visit Site" (opens official URL) and "Publish Agent" (navigates to /publish)
-4. WHEN a user clicks the same card again while Inspector Drawer is open THEN THE system SHALL close the drawer and return to the main grid view
-5. WHEN a user clicks a card THEN THE system SHALL NOT navigate to the /agents/[slug] detail page (this page is for AI bots only)
+1. 当用户点击 Agent 卡片标题时，系统应在新浏览器标签页中打开 Agent 的官方网站（GitHub 或主页）
+2. 当用户点击卡片主体（非标题）时，系统应打开 Inspector Drawer 显示雷达图和详情
+3. 当 Inspector Drawer 打开时，系统应显示 "Visit Site"（打开官方 URL）和 "Publish Agent"（导航到 /publish）按钮
+4. 当用户在 Inspector Drawer 打开时再次点击同一卡片，系统应关闭抽屉并返回主网格视图
+5. 当用户点击卡片时，系统不应导航到 /agents/[slug] 详情页（该页面仅供 AI Bot 使用）
 
-### Requirement 6: 详情页访问限制
+### 需求 6: 详情页访问限制
 
-**User Story:** As a platform operator, I want the agent detail pages to be accessible only to AI bots for SEO purposes, so that human users have a streamlined experience through the Inspector Drawer.
+**用户故事:** 作为平台运营者，我希望 Agent 详情页仅供 AI Bot 访问以用于 SEO 目的，以便人类用户通过 Inspector Drawer 获得流畅的体验。
 
-#### Acceptance Criteria
+#### 验收标准
 
-1. WHEN a human user attempts to directly access /agents/[slug] THEN THE system SHALL redirect them to the homepage with the Inspector Drawer open for that agent
-2. WHEN an AI bot accesses /agents/[slug] THEN THE system SHALL serve the full detail page with JSON-LD structured data
-3. WHEN the system detects user type THEN THE system SHALL use User-Agent analysis to distinguish between human browsers and AI crawlers
+1. 当人类用户尝试直接访问 /agents/[slug] 时，系统应将其重定向到首页并打开该 Agent 的 Inspector Drawer
+2. 当 AI Bot 访问 /agents/[slug] 时，系统应提供包含 JSON-LD 结构化数据的完整详情页
+3. 当系统检测用户类型时，系统应使用 User-Agent 分析来区分人类浏览器和 AI 爬虫

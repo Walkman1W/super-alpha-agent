@@ -1,6 +1,6 @@
-# Design Document: Brand Content & UX Upgrade
+# 设计文档: 品牌内容与用户体验升级
 
-## Overview
+## 概述
 
 本设计文档描述 Agent Signals 平台的品牌内容和用户体验升级方案。主要包括：
 1. 新增 About 和 Blog 内容页面，展示 L1-L5 分级标准和 GEO 评分算法
@@ -9,41 +9,41 @@
 4. 修改搜索框图标为终端风格
 5. 实现详情页的 AI Bot 专属访问策略
 
-## Architecture
+## 架构
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                        App Layout                           │
+│                        应用布局                              │
 ├─────────────────────────────────────────────────────────────┤
 │  ┌─────────────────────────────────────────────────────┐   │
-│  │                    Header                            │   │
+│  │                    页眉 (Header)                     │   │
 │  │  Logo | Agents | About | Blog | Publish | GitHub    │   │
 │  └─────────────────────────────────────────────────────┘   │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐ │
-│  │   /about    │  │   /blog     │  │    / (Homepage)     │ │
-│  │  L1-L5 文章  │  │  GEO 文章   │  │  Terminal Grid +    │ │
-│  │             │  │             │  │  Inspector Drawer   │ │
+│  │   /about    │  │   /blog     │  │    / (首页)          │ │
+│  │  L1-L5 文章  │  │  GEO 文章   │  │  终端网格 +          │ │
+│  │             │  │             │  │  Inspector 抽屉      │ │
 │  └─────────────┘  └─────────────┘  └─────────────────────┘ │
 │                                                             │
 │  ┌─────────────────────────────────────────────────────┐   │
-│  │              /agents/[slug] (AI Bot Only)           │   │
-│  │  Human → Redirect to / with drawer open             │   │
-│  │  Bot → Full page with JSON-LD                       │   │
+│  │              /agents/[slug] (仅 AI Bot)              │   │
+│  │  人类用户 → 重定向到首页并打开抽屉                      │   │
+│  │  Bot → 完整页面 + JSON-LD                            │   │
 │  └─────────────────────────────────────────────────────┘   │
 │                                                             │
 ├─────────────────────────────────────────────────────────────┤
 │  ┌─────────────────────────────────────────────────────┐   │
-│  │                    Footer                            │   │
-│  │  Brand | About | Blog | Publish | Tech Stack        │   │
+│  │                    页脚 (Footer)                     │   │
+│  │  品牌 | About | Blog | Publish | 技术栈              │   │
 │  └─────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## Components and Interfaces
+## 组件与接口
 
-### 1. Header Component (重构)
+### 1. Header 组件 (重构)
 
 ```typescript
 // components/terminal/header.tsx
@@ -61,7 +61,7 @@ const navItems = [
 ]
 ```
 
-### 2. Footer Component (重构)
+### 2. Footer 组件 (重构)
 
 ```typescript
 // components/terminal/footer.tsx
@@ -75,7 +75,7 @@ const footerLinks = {
 }
 ```
 
-### 3. Tooltip Component (新增)
+### 3. Tooltip 组件 (新增)
 
 ```typescript
 // components/ui/tooltip.tsx
@@ -87,28 +87,28 @@ interface TooltipProps {
 
 // 预定义 Tooltip 内容
 const autonomyTooltips: Record<string, { label: string; description: string; reference: string }> = {
-  L1: { label: 'Assisted', description: 'AI as tool, triggered by human prompts', reference: 'SAE L1' },
-  L2: { label: 'Copilot', description: 'AI provides suggestions, human has final say', reference: 'Microsoft Copilot Stack' },
-  L3: { label: 'Chained', description: 'AI executes linear multi-step workflows', reference: 'LangChain Chains' },
-  L4: { label: 'Autonomous', description: 'AI self-corrects and handles non-linear tasks', reference: 'SAE L4' },
-  L5: { label: 'Swarm', description: 'Multi-agent collaboration with org structure', reference: 'OpenAI Multi-Agent' }
+  L1: { label: '辅助型', description: 'AI 作为工具，由人类提示触发', reference: 'SAE L1' },
+  L2: { label: '副驾驶型', description: 'AI 提供建议，人类拥有最终决定权', reference: 'Microsoft Copilot Stack' },
+  L3: { label: '链式工作流', description: 'AI 执行线性多步骤工作流', reference: 'LangChain Chains' },
+  L4: { label: '自主闭环', description: 'AI 自我纠错并处理非线性任务', reference: 'SAE L4' },
+  L5: { label: '蜂群/组织级', description: '多智能体协作，具备组织架构', reference: 'OpenAI Multi-Agent' }
 }
 
 const geoTooltip = {
-  title: 'GEO Score',
-  description: 'Generative Engine Optimization score based on Princeton GEO research',
-  formula: 'Base(50) + Vitality(20) + Influence(10) + Metadata(10) + Autonomy(0-10)'
+  title: 'GEO 评分',
+  description: '基于普林斯顿 GEO 研究的生成式引擎优化评分',
+  formula: '基础分(50) + 生命力(20) + 影响力(10) + 元数据(10) + 自主性(0-10)'
 }
 ```
 
-### 4. Omnibar Component (修改)
+### 4. Omnibar 组件 (修改)
 
 ```typescript
 // components/terminal/omnibar.tsx
-// 将 Search icon 替换为终端提示符 ">_"
+// 将 Search 图标替换为终端提示符 ">_"
 ```
 
-### 5. SignalCard Component (修改)
+### 5. SignalCard 组件 (修改)
 
 ```typescript
 // components/terminal/signal-card.tsx
@@ -120,7 +120,7 @@ interface SignalCardProps {
 }
 ```
 
-### 6. InspectorDrawer Component (修改)
+### 6. InspectorDrawer 组件 (修改)
 
 ```typescript
 // components/terminal/inspector-drawer.tsx
@@ -128,21 +128,21 @@ interface SignalCardProps {
 // 添加 "Publish Agent" 按钮
 ```
 
-### 7. About Page (新增)
+### 7. About 页面 (新增)
 
 ```typescript
 // app/about/page.tsx
 // 展示 L1-L5 分级框架文章
 ```
 
-### 8. Blog Page (新增)
+### 8. Blog 页面 (新增)
 
 ```typescript
 // app/blog/page.tsx
 // 展示 GEO 评分算法文章
 ```
 
-### 9. User Agent Detection (新增/增强)
+### 9. User Agent 检测 (新增/增强)
 
 ```typescript
 // lib/ai-detector.ts (增强)
@@ -150,9 +150,9 @@ function isAIBot(userAgent: string): boolean
 function shouldRedirectToHome(userAgent: string): boolean
 ```
 
-## Data Models
+## 数据模型
 
-### Tooltip Content Model
+### Tooltip 内容模型
 
 ```typescript
 interface TooltipContent {
@@ -171,7 +171,7 @@ interface AutonomyLevel {
 }
 ```
 
-### Article Content Model
+### 文章内容模型
 
 ```typescript
 interface ArticleSection {
@@ -197,82 +197,82 @@ interface Citation {
 }
 ```
 
-## Correctness Properties
+## 正确性属性
 
-*A property is a characteristic or behavior that should hold true across all valid executions of a system-essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
+*属性是指在系统所有有效执行中都应保持为真的特征或行为——本质上是关于系统应该做什么的形式化陈述。属性是人类可读规范与机器可验证正确性保证之间的桥梁。*
 
-### Property 1: Autonomy Level Tooltip Consistency
+### 属性 1: 自主等级 Tooltip 一致性
 
-*For any* autonomy level (L1-L5), the tooltip content SHALL include a valid label, description, and industry reference that matches the predefined autonomy level definitions.
+*对于任意*自主等级 (L1-L5)，Tooltip 内容应包含有效的标签、描述和行业参考，且与预定义的自主等级定义匹配。
 
-**Validates: Requirements 1.4**
+**验证: 需求 1.4**
 
-### Property 2: Card Title External Link
+### 属性 2: 卡片标题外部链接
 
-*For any* agent card with a valid official_url, clicking the title SHALL result in an anchor element with `target="_blank"` and `rel="noopener noreferrer"` attributes pointing to the official URL.
+*对于任意*具有有效 official_url 的 Agent 卡片，点击标题应产生一个带有 `target="_blank"` 和 `rel="noopener noreferrer"` 属性的锚元素，指向官方 URL。
 
-**Validates: Requirements 5.1**
+**验证: 需求 5.1**
 
-### Property 3: Card Click Does Not Navigate to Detail Page
+### 属性 3: 卡片点击不导航到详情页
 
-*For any* agent card click event on the card body, the system SHALL NOT trigger navigation to `/agents/[slug]` route.
+*对于任意*卡片主体的点击事件，系统不应触发到 `/agents/[slug]` 路由的导航。
 
-**Validates: Requirements 5.5**
+**验证: 需求 5.5**
 
-### Property 4: User Agent Based Routing
+### 属性 4: 基于 User Agent 的路由
 
-*For any* request to `/agents/[slug]`, if the User-Agent matches known AI bot patterns, the system SHALL serve the full page; otherwise, the system SHALL redirect to the homepage.
+*对于任意*到 `/agents/[slug]` 的请求，如果 User-Agent 匹配已知的 AI Bot 模式，系统应提供完整页面；否则，系统应重定向到首页。
 
-**Validates: Requirements 6.1, 6.2, 6.3**
+**验证: 需求 6.1, 6.2, 6.3**
 
-## Error Handling
+## 错误处理
 
-### Navigation Errors
-- If About/Blog page content fails to load, display a fallback message with retry option
-- If agent official_url is invalid or missing, disable the title link and show tooltip explaining unavailability
+### 导航错误
+- 如果 About/Blog 页面内容加载失败，显示带有重试选项的回退消息
+- 如果 Agent 的 official_url 无效或缺失，禁用标题链接并显示解释不可用的工具提示
 
-### Tooltip Errors
-- If tooltip content is undefined for an autonomy level, fall back to generic description
-- Ensure tooltip positioning doesn't overflow viewport boundaries
+### Tooltip 错误
+- 如果某个自主等级的 Tooltip 内容未定义，回退到通用描述
+- 确保 Tooltip 定位不会溢出视口边界
 
-### Redirect Errors
-- If redirect to homepage fails, serve the detail page as fallback
-- Log redirect failures for monitoring
+### 重定向错误
+- 如果重定向到首页失败，作为回退提供详情页
+- 记录重定向失败以便监控
 
-## Testing Strategy
+## 测试策略
 
-### Unit Testing
-- Test Tooltip component renders correct content for each autonomy level
-- Test Header component renders all navigation links
-- Test Footer component renders all required sections
-- Test Omnibar displays terminal prompt symbol
+### 单元测试
+- 测试 Tooltip 组件为每个自主等级渲染正确内容
+- 测试 Header 组件渲染所有导航链接
+- 测试 Footer 组件渲染所有必需部分
+- 测试 Omnibar 显示终端提示符
 
-### Property-Based Testing
+### 属性测试
 
 使用 **fast-check** 库进行属性测试。
 
-**Test Configuration:**
-- Minimum iterations: 100
-- Shrinking enabled for counterexample discovery
+**测试配置:**
+- 最小迭代次数: 100
+- 启用收缩以发现反例
 
-**Property Tests:**
+**属性测试:**
 
-1. **Autonomy Tooltip Property Test**
-   - Generate random autonomy levels (L1-L5)
-   - Verify tooltip content is always valid and complete
-   - **Feature: brand-content-ux-upgrade, Property 1: Autonomy Level Tooltip Consistency**
+1. **自主等级 Tooltip 属性测试**
+   - 生成随机自主等级 (L1-L5)
+   - 验证 Tooltip 内容始终有效且完整
+   - **功能: brand-content-ux-upgrade, 属性 1: 自主等级 Tooltip 一致性**
 
-2. **Card Title Link Property Test**
-   - Generate random agent data with various official_url values
-   - Verify title link attributes are correctly set
-   - **Feature: brand-content-ux-upgrade, Property 2: Card Title External Link**
+2. **卡片标题链接属性测试**
+   - 生成具有各种 official_url 值的随机 Agent 数据
+   - 验证标题链接属性设置正确
+   - **功能: brand-content-ux-upgrade, 属性 2: 卡片标题外部链接**
 
-3. **User Agent Routing Property Test**
-   - Generate random user agent strings (both bot and human patterns)
-   - Verify routing decision matches expected behavior
-   - **Feature: brand-content-ux-upgrade, Property 4: User Agent Based Routing**
+3. **User Agent 路由属性测试**
+   - 生成随机 User Agent 字符串（Bot 和人类模式）
+   - 验证路由决策符合预期行为
+   - **功能: brand-content-ux-upgrade, 属性 4: 基于 User Agent 的路由**
 
-### Integration Testing
-- Test full page navigation flow: Home → About → Blog → Publish
-- Test card interaction: click title → new tab, click body → drawer opens
-- Test drawer toggle: click same card → drawer closes
+### 集成测试
+- 测试完整页面导航流程: 首页 → About → Blog → Publish
+- 测试卡片交互: 点击标题 → 新标签页，点击主体 → 抽屉打开
+- 测试抽屉切换: 点击同一卡片 → 抽屉关闭
