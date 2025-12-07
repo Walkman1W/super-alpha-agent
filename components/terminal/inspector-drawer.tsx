@@ -24,7 +24,7 @@ interface InspectorDrawerProps {
 /**
  * 代码片段显示组件
  */
-function CodeSnippet({ code, language = 'javascript' }: { code: string; language?: string }) {
+function CodeSnippet({ code }: { code: string }) {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = useCallback(async () => {

@@ -68,13 +68,18 @@
 - [x] 4. 更新 InspectorDrawer 操作
 
 
+
+
+
   - [x] 4.1 将 "Full Details" 按钮替换为 "Publish Agent" 按钮
+
 
 
     - 修改 `components/terminal/inspector-drawer.tsx`
     - "Visit Site" 按钮: 在新标签页打开 official_url
     - "Publish Agent" 按钮: 导航到 /publish 页面
     - _需求: 5.3_
+
 
   - [x] 4.2 实现同一卡片点击时的抽屉切换
 
