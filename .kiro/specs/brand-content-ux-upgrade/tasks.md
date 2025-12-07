@@ -61,16 +61,23 @@
     - **验证: 需求 5.1**
 
   - [x] 3.5 编写卡片点击不导航到详情页属性测试
+
     - **属性 3: 卡片点击不导航到详情页**
     - **验证: 需求 5.5**
 
-- [ ] 4. 更新 InspectorDrawer 操作
-  - [ ] 4.1 将 "Full Details" 按钮替换为 "Publish Agent" 按钮
+- [x] 4. 更新 InspectorDrawer 操作
+
+
+  - [x] 4.1 将 "Full Details" 按钮替换为 "Publish Agent" 按钮
+
+
     - 修改 `components/terminal/inspector-drawer.tsx`
     - "Visit Site" 按钮: 在新标签页打开 official_url
     - "Publish Agent" 按钮: 导航到 /publish 页面
     - _需求: 5.3_
-  - [ ] 4.2 实现同一卡片点击时的抽屉切换
+
+  - [x] 4.2 实现同一卡片点击时的抽屉切换
+
     - 更新父组件 (terminal-home-page.tsx) 以跟踪选中的 Agent
     - 如果点击同一 Agent，关闭抽屉；否则打开新 Agent
     - _需求: 5.4_

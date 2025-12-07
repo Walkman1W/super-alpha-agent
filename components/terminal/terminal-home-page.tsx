@@ -39,11 +39,19 @@ export function TerminalHomePage({ initialAgents, signalCount }: TerminalHomePag
     return applyAllFilters(initialAgents, filters)
   }, [initialAgents, filters])
 
-  // Agent 点击处理 - 打开 Inspector
+  // Agent 点击处理 - 打开/切换 Inspector
+  // 如果点击同一 Agent，关闭抽屉；否则打开新 Agent
   const handleAgentClick = useCallback((agent: SignalAgent) => {
-    setSelectedAgent(agent)
-    setIsDrawerOpen(true)
-  }, [])
+    if (selectedAgent?.slug === agent.slug && isDrawerOpen) {
+      // 点击同一 Agent，关闭抽屉
+      setIsDrawerOpen(false)
+      setTimeout(() => setSelectedAgent(null), 300)
+    } else {
+      // 点击不同 Agent，打开/切换到新 Agent
+      setSelectedAgent(agent)
+      setIsDrawerOpen(true)
+    }
+  }, [selectedAgent, isDrawerOpen])
 
   // 关闭 Inspector
   const handleCloseDrawer = useCallback(() => {
