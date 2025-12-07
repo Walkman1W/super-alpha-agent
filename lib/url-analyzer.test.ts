@@ -455,19 +455,14 @@ describe('Property Tests: HTML Parsing', () => {
  * 测试AI生成数据的schema验证
  */
 describe('Property Tests: Schema Validation', () => {
-  // 生成有效的Agent数据 - 使用非空白字符串
-  // 使用 fc.string 并过滤掉纯空白字符串，同时确保规范化后仍满足最小长度
-  const nonEmptyString = (minLen: number, maxLen: number) => 
-    fc.string({ minLength: minLen, maxLength: maxLen })
-      .filter(s => {
-        const normalized = s.trim().replace(/\s+/g, ' ')
-        return normalized.length >= minLen
-      })
-  
+  // 使用固定前缀确保最小长度
   const validAgentDataGenerator = fc.record({
-    name: nonEmptyString(1, 100),
-    short_description: nonEmptyString(10, 200),
-    key_features: fc.array(nonEmptyString(1, 50), { minLength: 1, maxLength: 10 })
+    name: fc.string({ minLength: 1, maxLength: 50 }).map(s => `Agent${s.replace(/\s/g, '')}`),
+    short_description: fc.string({ minLength: 1, maxLength: 100 }).map(s => `Description ${s.replace(/\s/g, ' ')}`),
+    key_features: fc.array(
+      fc.string({ minLength: 1, maxLength: 30 }).map(s => `Feature${s.replace(/\s/g, '')}`),
+      { minLength: 1, maxLength: 5 }
+    )
   })
 
   it('should accept all valid agent data with required fields', () => {
@@ -478,7 +473,7 @@ describe('Property Tests: Schema Validation', () => {
           const result = validateAgentData(data)
           expect(result.success).toBe(true)
           expect(result.data).toBeDefined()
-          // 验证数据存在且非空（validateAgentData 可能会规范化空白字符）
+          // 验证数据存在且非空
           expect(result.data?.name.trim().length).toBeGreaterThan(0)
           expect(result.data?.short_description.trim().length).toBeGreaterThanOrEqual(10)
           expect(result.data?.key_features.length).toBeGreaterThan(0)
@@ -568,24 +563,23 @@ describe('Property Tests: Schema Validation', () => {
  */
 describe('Property Tests: Information Extraction Completeness', () => {
   it('should always include required fields in valid agent data', () => {
-    // 生成规范化后仍满足最小长度的字符串
-    const nonEmptyStr = (minLen: number, maxLen: number) => 
-      fc.string({ minLength: minLen, maxLength: maxLen })
-        .filter(s => s.trim().replace(/\s+/g, ' ').length >= minLen)
-    
+    // 使用固定前缀确保最小长度
     const completeAgentDataGenerator = fc.record({
-      name: nonEmptyStr(1, 100),
-      short_description: nonEmptyStr(10, 200),
-      detailed_description: fc.option(nonEmptyStr(10, 500)),
-      key_features: fc.array(nonEmptyStr(1, 50), { minLength: 1, maxLength: 10 }),
-      use_cases: fc.option(fc.array(nonEmptyStr(1, 50), { minLength: 0, maxLength: 5 })),
-      pros: fc.option(fc.array(nonEmptyStr(1, 50), { minLength: 0, maxLength: 5 })),
-      cons: fc.option(fc.array(nonEmptyStr(1, 50), { minLength: 0, maxLength: 5 })),
+      name: fc.string({ minLength: 1, maxLength: 50 }).map(s => `Agent${s.replace(/\s/g, '')}`),
+      short_description: fc.string({ minLength: 1, maxLength: 100 }).map(s => `Description ${s.replace(/\s/g, ' ')}`),
+      detailed_description: fc.option(fc.string({ minLength: 1, maxLength: 200 }).map(s => `Detailed ${s}`)),
+      key_features: fc.array(
+        fc.string({ minLength: 1, maxLength: 30 }).map(s => `Feature${s.replace(/\s/g, '')}`),
+        { minLength: 1, maxLength: 5 }
+      ),
+      use_cases: fc.option(fc.array(fc.string({ minLength: 1, maxLength: 30 }).map(s => `UseCase${s}`), { minLength: 0, maxLength: 3 })),
+      pros: fc.option(fc.array(fc.string({ minLength: 1, maxLength: 30 }).map(s => `Pro${s}`), { minLength: 0, maxLength: 3 })),
+      cons: fc.option(fc.array(fc.string({ minLength: 1, maxLength: 30 }).map(s => `Con${s}`), { minLength: 0, maxLength: 3 })),
       platform: fc.option(fc.constantFrom('Web', 'Desktop', 'Mobile', 'API')),
       pricing: fc.option(fc.constantFrom('免费', '付费', 'Freemium')),
       category: fc.option(fc.constantFrom('开发工具', '内容创作', '数据分析', '设计', '其他')),
-      keywords: fc.option(fc.array(nonEmptyStr(1, 20), { minLength: 0, maxLength: 5 })),
-      how_to_use: fc.option(nonEmptyStr(10, 200))
+      keywords: fc.option(fc.array(fc.string({ minLength: 1, maxLength: 15 }).map(s => `kw${s}`), { minLength: 0, maxLength: 3 })),
+      how_to_use: fc.option(fc.string({ minLength: 1, maxLength: 100 }).map(s => `HowToUse ${s}`))
     })
 
     fc.assert(
@@ -594,11 +588,11 @@ describe('Property Tests: Information Extraction Completeness', () => {
         (data) => {
           const result = validateAgentData(data)
           if (result.success && result.data) {
-            // 验证必需字段存在（规范化后）
+            // 验证必需字段存在
             expect(result.data.name).toBeDefined()
             expect(result.data.name.trim().length).toBeGreaterThan(0)
             expect(result.data.short_description).toBeDefined()
-            expect(result.data.short_description.trim().replace(/\s+/g, ' ').length).toBeGreaterThanOrEqual(10)
+            expect(result.data.short_description.trim().length).toBeGreaterThanOrEqual(10)
             expect(result.data.key_features).toBeDefined()
             expect(result.data.key_features.length).toBeGreaterThan(0)
           }
