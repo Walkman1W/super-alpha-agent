@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useCallback, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { RadarChart } from './radar-chart'
 import type { SignalAgent } from '@/lib/types/agent'
@@ -88,8 +88,6 @@ function generateRadarData(agent: SignalAgent) {
  * **Validates: Requirements 7.1, 7.2, 7.3, 7.4, 7.5**
  */
 export function InspectorDrawer({ agent, isOpen, onClose }: InspectorDrawerProps) {
-  const router = useRouter()
-
   // ESC 键关闭
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -289,8 +287,8 @@ export function InspectorDrawer({ agent, isOpen, onClose }: InspectorDrawerProps
                   Visit Site
                 </a>
               )}
-              <button
-                onClick={() => router.push('/publish')}
+              <Link
+                href="/publish"
                 className={cn(
                   'flex-1 flex items-center justify-center gap-2',
                   'px-4 py-3 rounded-lg font-medium text-sm',
@@ -301,7 +299,7 @@ export function InspectorDrawer({ agent, isOpen, onClose }: InspectorDrawerProps
               >
                 <span>🚀</span>
                 Publish Agent
-              </button>
+              </Link>
             </div>
             <button
               className={cn(

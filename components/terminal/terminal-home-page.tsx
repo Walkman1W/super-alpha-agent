@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useCallback, useMemo, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { HeroTerminal } from './hero-terminal'
 import { SidebarFilter } from './sidebar-filter'
 import { AgentGrid } from './agent-grid'
@@ -25,8 +24,6 @@ interface TerminalHomePageProps {
  * **Validates: Requirements 1.1, 2.1, 5.1, 6.1, 9.1, 9.2**
  */
 export function TerminalHomePage({ initialAgents, signalCount, initialAgentSlug }: TerminalHomePageProps) {
-  const router = useRouter()
-  
   // 过滤器状态
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTER_STATE)
   
@@ -44,10 +41,13 @@ export function TerminalHomePage({ initialAgents, signalCount, initialAgentSlug 
         setSelectedAgent(agent)
         setIsDrawerOpen(true)
         // 清除 URL 中的 agent 参数，避免刷新时重复打开
-        router.replace('/', { scroll: false })
+        // 使用 window.history.replaceState 避免触发 React 重新渲染
+        if (typeof window !== 'undefined') {
+          window.history.replaceState(null, '', '/')
+        }
       }
     }
-  }, [initialAgentSlug, initialAgents, router])
+  }, [initialAgentSlug, initialAgents])
 
   // 搜索处理
   const handleSearch = useCallback((query: string) => {

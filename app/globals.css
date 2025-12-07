@@ -1,9 +1,9 @@
+/* JetBrains Mono 字体导入 - 必须在 @tailwind 之前 */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* JetBrains Mono 字体导入 */
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 :root {
   --foreground-rgb: 15, 23, 42;

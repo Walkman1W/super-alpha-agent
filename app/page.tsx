@@ -36,7 +36,7 @@ function LoadingSkeleton() {
 }
 
 interface HomePageProps {
-  searchParams: { agent?: string }
+  searchParams: Promise<{ agent?: string }>
 }
 
 /**
@@ -45,6 +45,9 @@ interface HomePageProps {
  * 验证: 需求 6.1
  */
 export default async function HomePage({ searchParams }: HomePageProps) {
+  // Next.js 16: searchParams 是 Promise，需要 await
+  const resolvedSearchParams = await searchParams
+  
   // 并行获取数据
   const [agents, agentCount] = await Promise.all([
     getTerminalAgents(50),
@@ -52,7 +55,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   ])
 
   // 获取要自动打开的 Agent slug（从详情页重定向过来）
-  const initialAgentSlug = searchParams.agent || undefined
+  const initialAgentSlug = resolvedSearchParams.agent || undefined
 
   return (
     <Suspense fallback={<LoadingSkeleton />}>

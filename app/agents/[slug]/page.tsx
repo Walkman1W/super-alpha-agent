@@ -30,7 +30,7 @@ export const revalidate = 3600
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://superalphaagent.com'
 
 type Props = {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 /**
@@ -70,10 +70,11 @@ function deriveKeywords(agent: {
  * 验证: 需求 4.4, 7.3
  */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
   const { data: agent } = await supabaseAdmin
     .from('agents')
     .select('*, categories(name, slug)')
-    .eq('slug', params.slug)
+    .eq('slug', slug)
     .single()
 
   if (!agent) {
@@ -295,21 +296,21 @@ function generateJsonLd(agent: {
 }
 
 export default async function AgentDetailPage({ params }: Props) {
-  // 获取请求头中的 User-Agent
-  // 验证: 需求 6.1, 6.2, 6.3
-  const headersList = headers()
+  // Next.js 16: params 和 headers 都是 Promise
+  const { slug } = await params
+  const headersList = await headers()
   const userAgent = headersList.get('user-agent') || ''
   
   // 检查是否应该重定向人类用户到首页
   // Bot 获得完整页面用于 SEO，人类用户重定向到首页并打开 Inspector Drawer
   if (shouldRedirectToHome(userAgent)) {
-    redirect(`/?agent=${params.slug}`)
+    redirect(`/?agent=${slug}`)
   }
 
   const { data: agentRaw } = await supabaseAdmin
     .from('agents')
     .select('*, categories(name, slug, icon)')
-    .eq('slug', params.slug)
+    .eq('slug', slug)
     .single()
 
   if (!agentRaw) notFound()
@@ -394,7 +395,7 @@ export default async function AgentDetailPage({ params }: Props) {
       </nav>
 
       {/* AI 访问追踪 */}
-      <AIVisitTracker agentSlug={params.slug} />
+      <AIVisitTracker agentSlug={slug} />
 
       {/* 标题区域 - 语义化header元素 */}
       <header className="mb-8" role="banner">
