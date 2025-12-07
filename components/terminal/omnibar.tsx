@@ -1,6 +1,6 @@
 'use client'
 
-import { Search, Command } from 'lucide-react'
+import { Command } from 'lucide-react'
 import { useCallback, useRef, useEffect } from 'react'
 
 interface OmnibarProps {
@@ -27,7 +27,7 @@ export function Omnibar({ value, onChange, placeholder = 'Search agents...' }: O
   return (
     <div className="relative w-full max-w-2xl">
       <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-        <Search className="w-5 h-5 text-zinc-500" />
+        <span className="font-mono text-sm text-purple-400 font-semibold select-none">&gt;_</span>
       </div>
       
       <input
