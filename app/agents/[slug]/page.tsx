@@ -1,8 +1,10 @@
 import { supabaseAdmin } from '@/lib/supabase'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 import type { Metadata } from 'next'
 import dynamic from 'next/dynamic'
 import { AIRecommendationSnippets } from '@/components/ai-recommendation-snippets'
+import { shouldRedirectToHome } from '@/lib/ai-detector'
 
 // 动态导入客户端组件以实现代码分割 - 需求: 9.1
 const AIVisitTracker = dynamic(() => import('@/components/ai-visit-tracker').then(mod => ({ default: mod.AIVisitTracker })), {
@@ -293,6 +295,17 @@ function generateJsonLd(agent: {
 }
 
 export default async function AgentDetailPage({ params }: Props) {
+  // 获取请求头中的 User-Agent
+  // 验证: 需求 6.1, 6.2, 6.3
+  const headersList = headers()
+  const userAgent = headersList.get('user-agent') || ''
+  
+  // 检查是否应该重定向人类用户到首页
+  // Bot 获得完整页面用于 SEO，人类用户重定向到首页并打开 Inspector Drawer
+  if (shouldRedirectToHome(userAgent)) {
+    redirect(`/?agent=${params.slug}`)
+  }
+
   const { data: agentRaw } = await supabaseAdmin
     .from('agents')
     .select('*, categories(name, slug, icon)')

@@ -35,18 +35,31 @@ function LoadingSkeleton() {
   )
 }
 
-export default async function HomePage() {
+interface HomePageProps {
+  searchParams: { agent?: string }
+}
+
+/**
+ * 首页
+ * 支持 agent 查询参数，用于从详情页重定向后自动打开 Inspector Drawer
+ * 验证: 需求 6.1
+ */
+export default async function HomePage({ searchParams }: HomePageProps) {
   // 并行获取数据
   const [agents, agentCount] = await Promise.all([
     getTerminalAgents(50),
     getAgentCount()
   ])
 
+  // 获取要自动打开的 Agent slug（从详情页重定向过来）
+  const initialAgentSlug = searchParams.agent || undefined
+
   return (
     <Suspense fallback={<LoadingSkeleton />}>
       <TerminalHomePage 
         initialAgents={agents}
         signalCount={agentCount}
+        initialAgentSlug={initialAgentSlug}
       />
     </Suspense>
   )

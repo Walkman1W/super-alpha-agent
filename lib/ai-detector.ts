@@ -223,3 +223,87 @@ export function getSupportedAIBots(): string[] {
 export function isKnownAIBot(name: string): boolean {
   return AI_BOTS.some(bot => bot.name.toLowerCase() === name.toLowerCase())
 }
+
+/**
+ * 常见的搜索引擎爬虫 User-Agent 模式
+ * 这些爬虫应该获得完整页面内容用于索引
+ */
+const SEARCH_ENGINE_BOTS = [
+  // Google
+  'googlebot', 'google-inspectiontool', 'storebot-google', 'googleother',
+  // Bing
+  'bingbot', 'bingpreview', 'msnbot',
+  // Yahoo
+  'slurp',
+  // Yandex
+  'yandexbot',
+  // Baidu
+  'baiduspider',
+  // DuckDuckGo
+  'duckduckbot',
+  // Other search engines
+  'sogou', 'exabot', 'facebot', 'ia_archiver',
+  // Social media crawlers
+  'twitterbot', 'linkedinbot', 'pinterest', 'slackbot', 'telegrambot',
+  'whatsapp', 'discordbot',
+  // SEO tools
+  'semrushbot', 'ahrefsbot', 'mj12bot', 'dotbot',
+]
+
+/**
+ * 检测是否是搜索引擎爬虫
+ * @param userAgent User-Agent 字符串
+ * @returns 是否是搜索引擎爬虫
+ */
+export function isSearchEngineBot(userAgent: string): boolean {
+  if (!userAgent) return false
+  
+  const normalizedUA = userAgent.toLowerCase()
+  
+  return SEARCH_ENGINE_BOTS.some(bot => normalizedUA.includes(bot))
+}
+
+/**
+ * 检测是否是 AI Bot（包括 AI 搜索引擎和传统搜索引擎爬虫）
+ * 用于决定是否应该提供完整页面内容
+ * 
+ * 验证: 需求 6.3
+ * 
+ * @param userAgent User-Agent 字符串
+ * @returns 是否是 Bot
+ */
+export function isBot(userAgent: string): boolean {
+  if (!userAgent) return false
+  
+  // 检查是否是 AI Bot
+  const aiBot = detectBotFromUserAgent(userAgent)
+  if (aiBot) return true
+  
+  // 检查是否是搜索引擎爬虫
+  if (isSearchEngineBot(userAgent)) return true
+  
+  // 检查通用 Bot 标识
+  const normalizedUA = userAgent.toLowerCase()
+  const genericBotPatterns = ['bot', 'crawler', 'spider', 'scraper', 'fetch', 'http']
+  
+  return genericBotPatterns.some(pattern => normalizedUA.includes(pattern))
+}
+
+/**
+ * 判断请求是否应该重定向到首页
+ * 人类用户应该重定向，Bot 应该获得完整页面
+ * 
+ * 验证: 需求 6.1, 6.2, 6.3
+ * 
+ * @param userAgent User-Agent 字符串
+ * @returns 是否应该重定向到首页
+ */
+export function shouldRedirectToHome(userAgent: string): boolean {
+  // 如果是 Bot，不重定向，提供完整页面
+  if (isBot(userAgent)) {
+    return false
+  }
+  
+  // 人类用户应该重定向到首页
+  return true
+}

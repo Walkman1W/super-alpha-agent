@@ -159,12 +159,12 @@ export default function AboutPage() {
                   </li>
                   <li className="flex items-start gap-3">
                     <span className="text-purple-400 mt-1">▸</span>
-                    <span><strong className="text-terminal-text">Google DeepMind 的《Levels of AGI》论文 (Nov 2023)</strong>：DeepMind 将 AI 分为 "Emerging" (L1) 到 "Superhuman" (L5)。</span>
+                    <span><strong className="text-terminal-text">Google DeepMind 的《Levels of AGI》论文 (Nov 2023)</strong>：DeepMind 将 AI 分为 &ldquo;Emerging&rdquo; (L1) 到 &ldquo;Superhuman&rdquo; (L5)。</span>
                   </li>
                 </ul>
                 <div className="mt-6 p-4 bg-purple-500/10 border border-purple-500/30 rounded-lg">
                   <p className="text-sm text-terminal-text-muted">
-                    <strong className="text-purple-400">我们的差异化：</strong> DeepMind 侧重"智商（能力）"，我们侧重"<strong className="text-terminal-text">架构（结构）</strong>"。AgentSignals 参考了 SAE 的结构化定义与 DeepMind 的能力评估，提出了针对 B2B 工程落地的 <strong className="text-terminal-text">AAS (Agent Autonomy Standard)</strong>。
+                    <strong className="text-purple-400">我们的差异化：</strong> DeepMind 侧重&ldquo;智商（能力）&rdquo;，我们侧重&ldquo;<strong className="text-terminal-text">架构（结构）</strong>&rdquo;。AgentSignals 参考了 SAE 的结构化定义与 DeepMind 的能力评估，提出了针对 B2B 工程落地的 <strong className="text-terminal-text">AAS (Agent Autonomy Standard)</strong>。
                   </p>
                 </div>
               </div>
@@ -234,7 +234,7 @@ export default function AboutPage() {
                 结论
               </h2>
               <p className="text-lg text-terminal-text-muted leading-relaxed">
-                在 AgentSignals，我们不仅仅收录工具，我们为企业评估"<strong className="text-terminal-text">这位 AI 员工</strong>"的独立工作能力。通过 L1-L5 分级框架，开发者和企业可以快速判断一个 AI Agent 的技术架构和适用场景。
+                在 AgentSignals，我们不仅仅收录工具，我们为企业评估&ldquo;<strong className="text-terminal-text">这位 AI 员工</strong>&rdquo;的独立工作能力。通过 L1-L5 分级框架，开发者和企业可以快速判断一个 AI Agent 的技术架构和适用场景。
               </p>
             </div>
 

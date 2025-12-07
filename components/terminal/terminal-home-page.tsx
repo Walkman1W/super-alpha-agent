@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { HeroTerminal } from './hero-terminal'
 import { SidebarFilter } from './sidebar-filter'
 import { AgentGrid } from './agent-grid'
@@ -13,21 +14,40 @@ import { applyAllFilters } from '@/lib/filter-utils'
 interface TerminalHomePageProps {
   initialAgents: SignalAgent[]
   signalCount: number
+  /** 初始要打开的 Agent slug（从详情页重定向过来时使用）- 验证: 需求 6.1 */
+  initialAgentSlug?: string
 }
 
 /**
  * Terminal 风格首页
  * 整合 HeroTerminal, SidebarFilter, AgentGrid, InspectorDrawer, MobileMenu
  * 
- * **Validates: Requirements 1.1, 2.1, 5.1, 9.1, 9.2**
+ * **Validates: Requirements 1.1, 2.1, 5.1, 6.1, 9.1, 9.2**
  */
-export function TerminalHomePage({ initialAgents, signalCount }: TerminalHomePageProps) {
+export function TerminalHomePage({ initialAgents, signalCount, initialAgentSlug }: TerminalHomePageProps) {
+  const router = useRouter()
+  
   // 过滤器状态
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTER_STATE)
   
   // 选中的 Agent (用于 Inspector)
   const [selectedAgent, setSelectedAgent] = useState<SignalAgent | null>(null)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+
+  // 处理从详情页重定向过来的情况，自动打开 Inspector Drawer
+  // 验证: 需求 6.1
+  useEffect(() => {
+    if (initialAgentSlug) {
+      // 查找对应的 Agent
+      const agent = initialAgents.find(a => a.slug === initialAgentSlug)
+      if (agent) {
+        setSelectedAgent(agent)
+        setIsDrawerOpen(true)
+        // 清除 URL 中的 agent 参数，避免刷新时重复打开
+        router.replace('/', { scroll: false })
+      }
+    }
+  }, [initialAgentSlug, initialAgents, router])
 
   // 搜索处理
   const handleSearch = useCallback((query: string) => {

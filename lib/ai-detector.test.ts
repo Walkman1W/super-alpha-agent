@@ -10,6 +10,9 @@ import {
   validateAIVisit,
   getClientIP,
   AIBotConfig,
+  isBot,
+  isSearchEngineBot,
+  shouldRedirectToHome,
 } from './ai-detector'
 
 // 生成已知AI机器人的User-Agent
@@ -331,5 +334,145 @@ describe('getClientIP', () => {
     headers.set('x-real-ip', '192.168.1.2')
     headers.set('cf-connecting-ip', '192.168.1.3')
     expect(getClientIP(headers)).toBe('192.168.1.1')
+  })
+})
+
+
+// 生成搜索引擎爬虫的 User-Agent
+const searchEngineBotUserAgentArbitrary = fc.constantFrom(
+  'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+  'Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)',
+  'Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)',
+  'Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)',
+  'DuckDuckBot/1.0; (+http://duckduckgo.com/duckduckbot.html)',
+  'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)',
+  'Twitterbot/1.0',
+  'LinkedInBot/1.0 (compatible; Mozilla/5.0; Apache-HttpClient +http://www.linkedin.com)',
+  'Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)',
+  'Mozilla/5.0 (compatible; SemrushBot/7~bl; +http://www.semrush.com/bot.html)'
+)
+
+/**
+ * Feature: brand-content-ux-upgrade, Property 4: 基于 User Agent 的路由
+ * Validates: Requirements 6.1, 6.2, 6.3
+ */
+describe('Property 4: 基于 User Agent 的路由', () => {
+  it('should not redirect AI bots (provide full page)', () => {
+    fc.assert(
+      fc.property(knownBotUserAgentArbitrary, ({ userAgent }) => {
+        const shouldRedirect = shouldRedirectToHome(userAgent)
+        expect(shouldRedirect).toBe(false)
+        return true
+      }),
+      { numRuns: 100 }
+    )
+  })
+
+  it('should not redirect search engine bots (provide full page)', () => {
+    fc.assert(
+      fc.property(searchEngineBotUserAgentArbitrary, (userAgent) => {
+        const shouldRedirect = shouldRedirectToHome(userAgent)
+        expect(shouldRedirect).toBe(false)
+        return true
+      }),
+      { numRuns: 100 }
+    )
+  })
+
+  it('should redirect normal human users to home page', () => {
+    fc.assert(
+      fc.property(normalUserAgentArbitrary, (userAgent) => {
+        const shouldRedirect = shouldRedirectToHome(userAgent)
+        expect(shouldRedirect).toBe(true)
+        return true
+      }),
+      { numRuns: 100 }
+    )
+  })
+
+  it('isBot should return true for AI bots', () => {
+    fc.assert(
+      fc.property(knownBotUserAgentArbitrary, ({ userAgent }) => {
+        expect(isBot(userAgent)).toBe(true)
+        return true
+      }),
+      { numRuns: 100 }
+    )
+  })
+
+  it('isBot should return true for search engine bots', () => {
+    fc.assert(
+      fc.property(searchEngineBotUserAgentArbitrary, (userAgent) => {
+        expect(isBot(userAgent)).toBe(true)
+        return true
+      }),
+      { numRuns: 100 }
+    )
+  })
+
+  it('isBot should return false for normal users', () => {
+    fc.assert(
+      fc.property(normalUserAgentArbitrary, (userAgent) => {
+        expect(isBot(userAgent)).toBe(false)
+        return true
+      }),
+      { numRuns: 100 }
+    )
+  })
+})
+
+// 单元测试 - isSearchEngineBot
+describe('isSearchEngineBot', () => {
+  it('should detect Googlebot', () => {
+    expect(isSearchEngineBot('Mozilla/5.0 (compatible; Googlebot/2.1)')).toBe(true)
+  })
+
+  it('should detect Bingbot', () => {
+    expect(isSearchEngineBot('Mozilla/5.0 (compatible; bingbot/2.0)')).toBe(true)
+  })
+
+  it('should detect social media bots', () => {
+    expect(isSearchEngineBot('Twitterbot/1.0')).toBe(true)
+    expect(isSearchEngineBot('LinkedInBot/1.0')).toBe(true)
+    expect(isSearchEngineBot('Slackbot-LinkExpanding 1.0')).toBe(true)
+  })
+
+  it('should return false for normal browsers', () => {
+    expect(isSearchEngineBot('Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0')).toBe(false)
+  })
+
+  it('should return false for empty string', () => {
+    expect(isSearchEngineBot('')).toBe(false)
+  })
+})
+
+// 单元测试 - shouldRedirectToHome
+describe('shouldRedirectToHome', () => {
+  it('should not redirect GPTBot', () => {
+    expect(shouldRedirectToHome('GPTBot/1.0')).toBe(false)
+  })
+
+  it('should not redirect ClaudeBot', () => {
+    expect(shouldRedirectToHome('ClaudeBot/1.0')).toBe(false)
+  })
+
+  it('should not redirect Googlebot', () => {
+    expect(shouldRedirectToHome('Mozilla/5.0 (compatible; Googlebot/2.1)')).toBe(false)
+  })
+
+  it('should redirect Chrome browser', () => {
+    expect(shouldRedirectToHome('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36')).toBe(true)
+  })
+
+  it('should redirect Safari browser', () => {
+    expect(shouldRedirectToHome('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Safari/605.1.15')).toBe(true)
+  })
+
+  it('should redirect Firefox browser', () => {
+    expect(shouldRedirectToHome('Mozilla/5.0 (X11; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0')).toBe(true)
+  })
+
+  it('should redirect mobile browsers', () => {
+    expect(shouldRedirectToHome('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Safari/604.1')).toBe(true)
   })
 })
