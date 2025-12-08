@@ -3,11 +3,11 @@ import Link from 'next/link'
 import { ArrowLeft, ExternalLink, FileText, Activity, TrendingUp, Database, Sparkles } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'GEO 评分算法解密 | Agent Signals',
-  description: '了解 Signal Score 的计算方法：基于普林斯顿 GEO 研究的生成式引擎优化评分算法。',
+  title: 'Signal Score (SSS v2.0) 评分算法解密 | Agent Signals',
+  description: '了解 Signal Score 的计算方法：基于机器可读性与可靠性的 SSS v2.0 评分系统。',
   openGraph: {
-    title: 'GEO 评分算法解密 | Agent Signals',
-    description: '了解 Signal Score 的计算方法：基于普林斯顿 GEO 研究的生成式引擎优化评分算法。',
+    title: 'Signal Score (SSS v2.0) 评分算法解密 | Agent Signals',
+    description: '了解 Signal Score 的计算方法：基于机器可读性与可靠性的 SSS v2.0 评分系统。',
     type: 'article',
   },
 }
@@ -15,57 +15,58 @@ export const metadata: Metadata = {
 const scoreDimensions = [
   {
     name: 'Vitality (生命力)',
-    weight: '20%',
+    weight: '最高 3.0 分',
     icon: Activity,
     color: 'from-green-500 to-green-400',
     bgColor: 'bg-green-500/10',
     borderColor: 'border-green-500/30',
-    basis: 'Google SEO 的 "Freshness Algorithm"',
-    logic: 'AI 模型倾向于信任最新的数据。如果一个 Repo 3个月没 commit，或者 API 延迟超过 2秒，它在 AI 眼里就是"死链"。',
-    factors: ['最近更新时间', 'Commit 频率', 'API 响应速度', '文档更新状态'],
+    basis: 'Agent 是否存活且可安全调用？',
+    logic: 'AI 模型倾向于信任活跃且安全的服务。如果 API 延迟超过 2秒或证书无效，它在 AI 眼里就是"不可靠"。',
+    factors: [
+      'Active Endpoint (+1.0): 200 OK & Latency < 2s',
+      'Freshness (+1.0): Last Commit < 30 days',
+      'Security (+1.0): Valid HTTPS & No malware'
+    ],
   },
   {
-    name: 'Influence (影响力)',
-    weight: '10%',
-    icon: TrendingUp,
+    name: 'Semantic Readiness (语义就绪)',
+    weight: '最高 4.0 分',
+    icon: Database,
     color: 'from-blue-500 to-blue-400',
     bgColor: 'bg-blue-500/10',
     borderColor: 'border-blue-500/30',
-    basis: 'PageRank 算法与 Social Proof (社会认同)',
-    logic: 'GitHub Stars 和 Fork 数量是开发者社区投票的结果，代表了代码的鲁棒性。',
-    factors: ['GitHub Stars', 'Fork 数量', '社区活跃度', '引用次数'],
+    basis: 'LLM 能否无需人工帮助就理解如何使用这个 Agent？',
+    logic: '这是最关键的维度。我们检测 Agent 是否提供了结构化数据、文档和规范文件，这是 AI 读懂你的关键。',
+    factors: [
+      'Basic Meta (+1.0): <title>, <meta description>',
+      'Documentation (+1.0): /docs, README.md, Wiki',
+      'Structured Data (+1.0): application/ld+json',
+      'Manifest/Spec (+1.0): openapi.yaml, agent.json'
+    ],
   },
   {
-    name: 'Metadata (元数据/GEO核心)',
-    weight: '10%',
-    icon: Database,
+    name: 'Interoperability (互操作性)',
+    weight: '最高 3.0 分',
+    icon: TrendingUp,
     color: 'from-purple-500 to-purple-400',
     bgColor: 'bg-purple-500/10',
     borderColor: 'border-purple-500/30',
-    basis: 'Schema.org 标准与 Princeton GEO 论文',
-    logic: '这是最关键的。我们检测 Agent 是否提供了 JSON-LD？是否有清晰的 Capabilities 列表？这是 AI 读懂你的关键。',
-    factors: ['JSON-LD 结构化数据', 'Capabilities 列表', 'API 文档完整度', '语义化标记'],
-  },
-  {
-    name: 'Autonomy (自主性加权)',
-    weight: '0-10 加分',
-    icon: Sparkles,
-    color: 'from-orange-500 to-orange-400',
-    bgColor: 'bg-orange-500/10',
-    borderColor: 'border-orange-500/30',
-    basis: '技术复杂度',
-    logic: '构建一个 L5 Swarm 系统的难度远高于 L1 Script。我们给予高阶 Agent 更高的初始权重，以鼓励技术创新。',
-    factors: ['L1: +0', 'L2: +2', 'L3: +4', 'L4: +7', 'L5: +10'],
+    basis: '这个 Agent 是否属于开放生态系统？',
+    logic: '开源和标准协议支持让 Agent 更容易被集成和信任。MCP 协议支持是未来 AI Agent 互操作的关键。',
+    factors: [
+      'Open Source (+1.0): Public Repo + OSI License',
+      'Protocol Ready (+2.0): Supports MCP or standard APIs'
+    ],
   },
 ]
 
 const citations = [
   {
     id: 1,
-    source: 'Princeton University, Georgia Tech, Allen AI',
-    title: 'GEO: Generative Engine Optimization',
-    url: 'https://arxiv.org/abs/2311.09735',
-    date: 'Nov 2023',
+    source: 'Anthropic',
+    title: 'Model Context Protocol (MCP)',
+    url: 'https://modelcontextprotocol.io/',
+    date: '2024',
     highlight: true,
   },
   {
@@ -76,9 +77,15 @@ const citations = [
   },
   {
     id: 3,
-    source: 'Google',
-    title: 'Search Quality Evaluator Guidelines',
-    url: 'https://developers.google.com/search/docs/fundamentals/creating-helpful-content',
+    source: 'OpenAPI Initiative',
+    title: 'OpenAPI Specification',
+    url: 'https://www.openapis.org/',
+  },
+  {
+    id: 4,
+    source: 'Open Source Initiative',
+    title: 'OSI Approved Licenses',
+    url: 'https://opensource.org/licenses/',
   },
 ]
 
@@ -106,11 +113,11 @@ export default function BlogPage() {
               解密 Signal Score：
               <br />
               <span className="bg-gradient-to-r from-green-400 to-green-300 bg-clip-text text-transparent">
-                基于 GEO 的量化算法
+                SSS v2.0 评分系统
               </span>
             </h1>
             <p className="text-lg text-terminal-text-muted max-w-2xl">
-              Decoding the Signal Score: The Mathematics of GEO (Generative Engine Optimization)
+              Signal Standard Score v2.0: Machine Readability & Reliability
             </p>
           </div>
         </div>
@@ -126,39 +133,39 @@ export default function BlogPage() {
               <div className="bg-terminal-surface border border-terminal-border rounded-xl p-6 md:p-8">
                 <h2 className="text-2xl font-bold text-terminal-text mb-4 flex items-center gap-3">
                   <span className="text-green-400 font-mono">01</span>
-                  理论依据与学术引用
+                  评分理念
                 </h2>
                 <p className="text-terminal-text-muted leading-relaxed mb-4">
-                  <strong className="text-terminal-text">GEO (Generative Engine Optimization)</strong> 这个词本身有学术出处，这非常重要！
+                  <strong className="text-terminal-text">SSS v2.0 (Signal Standard Score)</strong> 不基于流行度评分，而是基于<strong className="text-green-400">机器可读性与可靠性</strong>。
                 </p>
                 <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg mb-6">
                   <p className="text-sm text-terminal-text-muted mb-2">
-                    <strong className="text-green-400">核心引用：</strong>
+                    <strong className="text-green-400">核心问题：</strong>
                   </p>
                   <p className="text-terminal-text">
-                    普林斯顿大学、乔治亚理工学院、艾伦人工智能研究所联合发布的论文 <strong>《GEO: Generative Engine Optimization》 (Nov 2023)</strong>
+                    LLM 能否在<strong>无需人工帮助</strong>的情况下理解并调用这个 Agent？
                   </p>
                 </div>
                 <div className="space-y-3 text-terminal-text-muted">
-                  <p><strong className="text-terminal-text">论文核心发现：</strong></p>
+                  <p><strong className="text-terminal-text">三大评估维度：</strong></p>
                   <ul className="space-y-2 ml-4">
                     <li className="flex items-start gap-3">
-                      <span className="text-green-400 mt-1">▸</span>
-                      <span>在 LLM 的回答中，<strong className="text-terminal-text">引用源（Citations）</strong>能显著增加内容被 AI 推荐的概率</span>
+                      <span className="text-green-400 mt-1">🟢</span>
+                      <span><strong className="text-terminal-text">Vitality (生命力)</strong> - Agent 是否存活且可安全调用？</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <span className="text-green-400 mt-1">▸</span>
-                      <span><strong className="text-terminal-text">统计数据（Statistics）</strong>让 AI 更容易理解和引用你的内容</span>
+                      <span className="text-blue-400 mt-1">🔵</span>
+                      <span><strong className="text-terminal-text">Semantic Readiness (语义就绪)</strong> - LLM 能否理解如何使用？</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <span className="text-green-400 mt-1">▸</span>
-                      <span><strong className="text-terminal-text">权威性（Quotations）</strong>是 AI 判断信息可信度的关键因素</span>
+                      <span className="text-purple-400 mt-1">🟣</span>
+                      <span><strong className="text-terminal-text">Interoperability (互操作性)</strong> - 是否属于开放生态？</span>
                     </li>
                   </ul>
                 </div>
                 <div className="mt-6 p-4 bg-terminal-border/30 rounded-lg">
                   <p className="text-sm text-terminal-text-muted">
-                    <strong className="text-green-400">我们的应用：</strong> Signal Score 本质上就是检测一个 Agent 是否具备这些&ldquo;容易被 AI 理解&rdquo;的特征。
+                    <strong className="text-green-400">设计原则：</strong> Signal Score 检测 Agent 是否具备&ldquo;容易被 AI 理解和调用&rdquo;的特征，而非人类的主观评价。
                   </p>
                 </div>
               </div>
@@ -172,18 +179,16 @@ export default function BlogPage() {
               </h2>
               <div className="bg-terminal-bg/50 rounded-lg p-6 font-mono text-center">
                 <p className="text-lg md:text-xl text-terminal-text mb-4">
-                  <span className="text-green-400">Signal Score</span> = 
+                  <span className="text-green-400">Signal Score</span> = <span className="text-zinc-400">0.0 - 10.0</span>
                 </p>
                 <p className="text-sm md:text-base text-terminal-text-muted">
-                  <span className="text-blue-400">基础分(50)</span> + 
-                  <span className="text-green-400"> 生命力(20)</span> + 
-                  <span className="text-blue-400"> 影响力(10)</span> + 
-                  <span className="text-purple-400"> 元数据(10)</span> + 
-                  <span className="text-orange-400"> 自主性(0-10)</span>
+                  <span className="text-green-400">🟢 Vitality (3.0)</span> + 
+                  <span className="text-blue-400"> 🔵 Semantic Readiness (4.0)</span> + 
+                  <span className="text-purple-400"> 🟣 Interoperability (3.0)</span>
                 </p>
               </div>
               <p className="text-sm text-terminal-text-dim mt-4 text-center">
-                满分 100 分，基础分确保所有收录的 Agent 都有一个合理的起点
+                满分 10.0 分，基于 10 个可量化的检测指标
               </p>
             </div>
 
@@ -242,7 +247,7 @@ export default function BlogPage() {
                 结论
               </h2>
               <p className="text-lg text-terminal-text-muted leading-relaxed">
-                Signal Score 不仅仅是一个分数，它是你的 Agent 在 AI 时代的<strong className="text-terminal-text">可见度指数 (Visibility Index)</strong>。在 ChatGPT、Claude、Perplexity 等 AI 搜索引擎主导信息获取的时代，GEO 优化将成为每个 AI 产品的必修课。
+                Signal Score 不仅仅是一个分数，它是你的 Agent 在 AI 时代的<strong className="text-terminal-text">机器可读性指数</strong>。在 ChatGPT、Claude、Perplexity 等 AI 搜索引擎主导信息获取的时代，让你的 Agent 能被 LLM 理解和调用将成为每个 AI 产品的必修课。
               </p>
             </div>
 
@@ -279,7 +284,7 @@ export default function BlogPage() {
             {/* CTA */}
             <div className="text-center py-8">
               <p className="text-terminal-text-muted mb-6">
-                想要提升你的 Agent 的 Signal Score？
+                想要提升你的 Agent 的 Signal Score？确保你的 Agent 具备完整的文档、结构化数据和 MCP 协议支持。
               </p>
               <Link
                 href="/publish"

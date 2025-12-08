@@ -96,8 +96,11 @@ export const DEFAULT_FILTER_STATE: FilterState = {
   categoryId: null
 }
 
-// GEO Score 档位
-export const GEO_SCORE_LEVELS = [0, 20, 40, 60, 80, 100] as const
+// Signal Score 档位 (0-10 分制)
+export const SIGNAL_SCORE_LEVELS = [0, 2.5, 5, 7.5, 10] as const
+
+// 保留旧名称的别名以兼容
+export const GEO_SCORE_LEVELS = SIGNAL_SCORE_LEVELS
 
 // 可用框架列表
 export const AVAILABLE_FRAMEWORKS = [

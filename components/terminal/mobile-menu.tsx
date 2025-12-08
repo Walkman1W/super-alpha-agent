@@ -153,10 +153,10 @@ export function MobileMenu({ filters, onFiltersChange, className }: MobileMenuPr
             </div>
           </div>
 
-          {/* GEO Score 滑轨 */}
+          {/* Signal Score 滑轨 */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">GEO Score</h3>
+              <h3 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Signal Score</h3>
               <span className="text-xs font-mono text-purple-400">{filters.geoScoreMin}+</span>
             </div>
             <div className="flex gap-1">

@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 import { Tooltip } from '@/components/ui/tooltip'
 import { 
   getAutonomyTooltipContent, 
-  geoScoreTooltip 
+  signalScoreTooltip 
 } from '@/lib/tooltip-content'
 import type { SignalAgent, AgentStatus } from '@/lib/types/agent'
 import {
@@ -100,15 +100,67 @@ function AutonomyTooltipContent({ level }: { level: string }) {
 }
 
 /**
- * GEO 评分 Tooltip 内容
+ * Signal Score 雷达波 SVG 组件
+ * 4条波，根据分数显示颜色：0-2.5 全灰，2.5-5 一条亮，5-7.5 两条亮，7.5-10 三条亮，10 四条亮
  */
-function GeoTooltipContent() {
+function SignalRadarIcon({ score }: { score: number }) {
+  // 计算亮起的波数：0-2.5=0条, 2.5-5=1条, 5-7.5=2条, 7.5-10=3条, 10=4条
+  const activeBars = score <= 2.5 ? 0 : score <= 5 ? 1 : score <= 7.5 ? 2 : score < 10 ? 3 : 4
+  
   return (
-    <div className="space-y-2 max-w-[280px]">
-      <div className="font-semibold text-zinc-100">{geoScoreTooltip.title}</div>
-      <div className="text-zinc-300 text-[11px]">{geoScoreTooltip.description}</div>
-      <div className="text-zinc-400 text-[10px] font-mono bg-zinc-900/50 p-1.5 rounded">
-        {geoScoreTooltip.formula}
+    <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* 4条雷达波，从左到右 */}
+      <path 
+        d="M1 10V8" 
+        stroke={activeBars >= 1 ? '#22c55e' : '#52525b'} 
+        strokeWidth="2" 
+        strokeLinecap="round"
+      />
+      <path 
+        d="M5 10V6" 
+        stroke={activeBars >= 2 ? '#22c55e' : '#52525b'} 
+        strokeWidth="2" 
+        strokeLinecap="round"
+      />
+      <path 
+        d="M9 10V4" 
+        stroke={activeBars >= 3 ? '#22c55e' : '#52525b'} 
+        strokeWidth="2" 
+        strokeLinecap="round"
+      />
+      <path 
+        d="M13 10V2" 
+        stroke={activeBars >= 4 ? '#22c55e' : '#52525b'} 
+        strokeWidth="2" 
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
+/**
+ * Signal Score Tooltip 内容
+ */
+function SignalScoreTooltipContent() {
+  return (
+    <div className="space-y-2 max-w-[320px]">
+      <div className="font-semibold text-zinc-100">{signalScoreTooltip.title}</div>
+      <div className="text-zinc-300 text-[11px]">{signalScoreTooltip.description}</div>
+      <div className="space-y-1.5 mt-2">
+        {signalScoreTooltip.dimensions.map((dim) => (
+          <div key={dim.nameEn} className="text-[10px]">
+            <span className={`font-medium ${
+              dim.color === 'green' ? 'text-green-400' : 
+              dim.color === 'blue' ? 'text-blue-400' : 'text-purple-400'
+            }`}>
+              {dim.nameEn} ({dim.maxPoints}pts)
+            </span>
+            <span className="text-zinc-500"> - {dim.name}</span>
+          </div>
+        ))}
+      </div>
+      <div className="text-zinc-400 text-[10px] font-mono bg-zinc-900/50 p-1.5 rounded mt-2">
+        {signalScoreTooltip.formula}
       </div>
     </div>
   )
@@ -258,7 +310,7 @@ function SignalCardComponent({ agent, onCardClick, isSelected, className }: Sign
         </Tooltip>
       </div>
 
-      {/* 指标 (GEO 评分带 Tooltip) */}
+      {/* 指标 (Signal Score 带 Tooltip) */}
       <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2 sm:mb-3 font-mono text-[10px] sm:text-xs" data-testid="metrics" onClick={handleBadgeClick}>
         {agent.metrics.latency !== undefined && (
           <div className="flex items-center gap-1">
@@ -280,17 +332,18 @@ function SignalCardComponent({ agent, onCardClick, isSelected, className }: Sign
         )}
         {agent.geo_score > 0 && (
           <Tooltip
-            content={<GeoTooltipContent />}
+            content={<SignalScoreTooltipContent />}
             position="top"
           >
-            <div className="flex items-center gap-1 ml-auto cursor-help">
-              <span className="text-zinc-500">GEO</span>
+            <div className="flex items-center gap-1.5 ml-auto cursor-help">
+              <SignalRadarIcon score={agent.geo_score} />
+              <span className="text-zinc-500 text-[10px]">SR</span>
               <span className={cn(
                 'font-medium',
-                agent.geo_score >= 80 ? 'text-green-400' :
-                agent.geo_score >= 60 ? 'text-yellow-400' : 'text-zinc-400'
+                agent.geo_score >= 7.5 ? 'text-green-400' :
+                agent.geo_score >= 5 ? 'text-yellow-400' : 'text-zinc-400'
               )}>
-                {agent.geo_score}
+                {agent.geo_score.toFixed(1)}
               </span>
             </div>
           </Tooltip>

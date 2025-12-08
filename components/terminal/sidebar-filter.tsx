@@ -148,9 +148,9 @@ export function SidebarFilter({ filters, onFiltersChange, className }: SidebarFi
         </div>
       </div>
 
-      {/* GEO Score 滑轨 */}
+      {/* Signal Score 滑轨 */}
       <StepSlider
-        label="GEO Score"
+        label="Signal Score"
         value={filters.geoScoreMin}
         steps={GEO_SCORE_LEVELS}
         onChange={handleGeoScoreChange}

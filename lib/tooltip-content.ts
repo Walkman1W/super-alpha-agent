@@ -12,14 +12,20 @@ export interface AutonomyLevelDefinition {
   examples: string[]
 }
 
-export interface GeoScoreTooltip {
+export interface SignalScoreTooltip {
   title: string
   description: string
   formula: string
-  components: {
+  dimensions: {
     name: string
-    weight: number
-    description: string
+    nameEn: string
+    maxPoints: number
+    color: string
+    metrics: {
+      name: string
+      criteria: string
+      points: number
+    }[]
   }[]
 }
 
@@ -89,48 +95,62 @@ export function formatAutonomyTooltip(level: string): string {
 }
 
 /**
- * GEO 评分 Tooltip 内容
- * 基于普林斯顿 GEO 研究的生成式引擎优化评分
+ * Signal Score (SSS v2.0) Tooltip 内容
+ * 基于机器可读性和可靠性的评分系统
  */
-export const geoScoreTooltip: GeoScoreTooltip = {
-  title: 'GEO 评分',
-  description: '基于普林斯顿 GEO 研究的生成式引擎优化评分，衡量 Agent 在 AI 搜索引擎中的可发现性',
-  formula: '总分 = 基础分(50) + 生命力(20) + 影响力(10) + 元数据(10) + 自主性(0-10)',
-  components: [
-    {
-      name: '基础分',
-      weight: 50,
-      description: '所有 Agent 的起始分数',
-    },
+export const signalScoreTooltip: SignalScoreTooltip = {
+  title: 'Signal Score (SSS v2.0)',
+  description: '基于机器可读性与可靠性的评分系统，衡量 Agent 被 LLM 理解和调用的能力',
+  formula: 'Total Score: 0.0 - 10.0 = Vitality(3) + Semantic Readiness(4) + Interoperability(3)',
+  dimensions: [
     {
       name: '生命力',
-      weight: 20,
-      description: '基于最近更新时间和活跃度',
+      nameEn: 'Vitality',
+      maxPoints: 3,
+      color: 'green',
+      metrics: [
+        { name: 'Active Endpoint', criteria: 'Website/API 200 OK & Latency < 2s', points: 1.0 },
+        { name: 'Freshness', criteria: 'Last Commit/Update < 30 days', points: 1.0 },
+        { name: 'Security', criteria: 'Valid HTTPS & No malware flags', points: 1.0 },
+      ],
     },
     {
-      name: '影响力',
-      weight: 10,
-      description: '基于 GitHub Stars、用户评分等指标',
+      name: '语义就绪',
+      nameEn: 'Semantic Readiness',
+      maxPoints: 4,
+      color: 'blue',
+      metrics: [
+        { name: 'Basic Meta', criteria: '<title>, <meta description> exist', points: 1.0 },
+        { name: 'Documentation', criteria: '/docs, README.md or Wiki exists', points: 1.0 },
+        { name: 'Structured Data', criteria: 'Contains application/ld+json', points: 1.0 },
+        { name: 'Manifest/Spec', criteria: 'manifest.json, openapi.yaml exists', points: 1.0 },
+      ],
     },
     {
-      name: '元数据',
-      weight: 10,
-      description: '描述完整度、标签丰富度等',
-    },
-    {
-      name: '自主性',
-      weight: 10,
-      description: '基于 L1-L5 等级 (L1=2, L5=10)',
+      name: '互操作性',
+      nameEn: 'Interoperability',
+      maxPoints: 3,
+      color: 'purple',
+      metrics: [
+        { name: 'Open Source', criteria: 'Public Repo + OSI License', points: 1.0 },
+        { name: 'Protocol Ready', criteria: 'Supports MCP or standard APIs', points: 2.0 },
+      ],
     },
   ],
 }
 
+// 保留旧名称的别名以兼容
+export const geoScoreTooltip = signalScoreTooltip
+
 /**
- * 格式化 GEO 评分 Tooltip 显示内容
+ * 格式化 Signal Score Tooltip 显示内容
  */
-export function formatGeoTooltip(): string {
-  return `${geoScoreTooltip.title}\n${geoScoreTooltip.description}\n\n公式: ${geoScoreTooltip.formula}`
+export function formatSignalScoreTooltip(): string {
+  return `${signalScoreTooltip.title}\n${signalScoreTooltip.description}\n\n公式: ${signalScoreTooltip.formula}`
 }
+
+// 保留旧名称的别名以兼容
+export const formatGeoTooltip = formatSignalScoreTooltip
 
 /**
  * 验证自主等级是否有效

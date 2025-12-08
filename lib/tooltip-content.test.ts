@@ -187,21 +187,21 @@ describe('Tooltip Content', () => {
     })
   })
 
-  describe('GEO Score Tooltip', () => {
-    it('GEO 评分 Tooltip 包含完整信息', () => {
+  describe('Signal Score Tooltip (SSS v2.0)', () => {
+    it('Signal Score Tooltip 包含完整信息', () => {
       expect(geoScoreTooltip.title).toBeTruthy()
       expect(geoScoreTooltip.description).toBeTruthy()
       expect(geoScoreTooltip.formula).toBeTruthy()
-      expect(geoScoreTooltip.components).toBeDefined()
-      expect(geoScoreTooltip.components.length).toBeGreaterThan(0)
+      expect(geoScoreTooltip.dimensions).toBeDefined()
+      expect(geoScoreTooltip.dimensions.length).toBe(3) // Vitality, Semantic Readiness, Interoperability
     })
 
-    it('GEO 评分组件权重总和为 100', () => {
-      const totalWeight = geoScoreTooltip.components.reduce(
-        (sum, comp) => sum + comp.weight,
+    it('Signal Score 三个维度总分为 10', () => {
+      const totalPoints = geoScoreTooltip.dimensions.reduce(
+        (sum: number, dim: { maxPoints: number }) => sum + dim.maxPoints,
         0
       )
-      expect(totalWeight).toBe(100)
+      expect(totalPoints).toBe(10)
     })
 
     it('formatGeoTooltip 返回包含标题和公式的字符串', () => {
@@ -210,6 +210,20 @@ describe('Tooltip Content', () => {
       expect(formatted).toContain(geoScoreTooltip.title)
       expect(formatted).toContain(geoScoreTooltip.description)
       expect(formatted).toContain(geoScoreTooltip.formula)
+    })
+
+    it('每个维度包含正确的指标数量', () => {
+      // Vitality: 3 metrics (Active Endpoint, Freshness, Security)
+      const vitality = geoScoreTooltip.dimensions.find(d => d.nameEn === 'Vitality')
+      expect(vitality?.metrics.length).toBe(3)
+      
+      // Semantic Readiness: 4 metrics
+      const semantic = geoScoreTooltip.dimensions.find(d => d.nameEn === 'Semantic Readiness')
+      expect(semantic?.metrics.length).toBe(4)
+      
+      // Interoperability: 2 metrics
+      const interop = geoScoreTooltip.dimensions.find(d => d.nameEn === 'Interoperability')
+      expect(interop?.metrics.length).toBe(2)
     })
   })
 })

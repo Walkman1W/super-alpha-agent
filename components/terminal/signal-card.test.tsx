@@ -21,7 +21,7 @@ const signalAgentArbitrary = fc.record({
   framework: fc.option(fc.constantFrom('LangChain', 'AutoGPT', 'CrewAI', 'Custom', null), { nil: null }),
   tags: fc.array(fc.string({ minLength: 1, maxLength: 20 }), { minLength: 0, maxLength: 5 }),
   rank: fc.integer({ min: 1, max: 100 }),
-  geo_score: fc.integer({ min: 0, max: 100 }),
+  geo_score: fc.float({ min: 0, max: 10, noNaN: true }),
   official_url: fc.option(fc.webUrl(), { nil: null }),
 }) as fc.Arbitrary<SignalAgent>
 
@@ -193,7 +193,7 @@ describe('SignalCard', () => {
       framework: 'LangChain',
       tags: ['test', 'ai'],
       rank: 1,
-      geo_score: 85,
+      geo_score: 8.5,
       official_url: 'https://github.com/test/agent',
     }
 
@@ -213,9 +213,9 @@ describe('SignalCard', () => {
       expect(badge).toBeInTheDocument()
     })
 
-    it('应正确渲染 GEO 评分', () => {
+    it('应正确渲染 Signal Score', () => {
       render(<SignalCard agent={mockAgent} />)
-      expect(screen.getByText('85')).toBeInTheDocument()
+      expect(screen.getByText('8.5')).toBeInTheDocument()
     })
 
     it('选中状态应添加高亮样式', () => {

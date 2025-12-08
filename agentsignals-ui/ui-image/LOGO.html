@@ -1,14 +1,17 @@
 <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
   <!-- 黑色主体 A -->
+  <!-- 这里的顶部路径 (Q 100 10 115 35) 是关键，使用了二次贝塞尔曲线确保顺滑过渡 -->
   <path d="M45 185H75L94 75C94 75 96 68 100 68C104 68 106 75 106 75L125 185H155L115 35C115 35 110 10 100 10C90 10 85 35 85 35L45 185Z" fill="black"/>
 
-  <!-- 信号波 - 从 A 字母顶部向外扩散的弧形 -->
-  <!-- 第一层信号 (最内层/最小) -->
-  <path d="M85 55 A20 20 0 0 1 115 55" stroke="#00C853" stroke-width="8" stroke-linecap="round" fill="none"/>
+  <!-- 绿色横条 (鞋带部分) -->
+  <!-- 使用 stroke-linecap="round" 确保两头是圆润的 -->
   
-  <!-- 第二层信号 (中间) -->
-  <path d="M72 42 A35 35 0 0 1 128 42" stroke="#00C853" stroke-width="8" stroke-linecap="round" fill="none"/>
+  <!-- 第一根 (最上) -->
+  <path d="M86 90C86 90 93 87 100 87C107 87 114 90 114 90" stroke="#00C853" stroke-width="12" stroke-linecap="round"/>
   
-  <!-- 第三层信号 (最外层/最大) -->
-  <path d="M58 28 A52 52 0 0 1 142 28" stroke="#00C853" stroke-width="8" stroke-linecap="round" fill="none"/>
+  <!-- 第二根 (中间) -->
+  <path d="M80 120C80 120 90 117 100 117C110 117 120 120 120 120" stroke="#00C853" stroke-width="12" stroke-linecap="round"/>
+  
+  <!-- 第三根 (最下) -->
+  <path d="M74 150C74 150 87 146 100 146C113 146 126 150 126 150" stroke="#00C853" stroke-width="12" stroke-linecap="round"/>
 </svg>

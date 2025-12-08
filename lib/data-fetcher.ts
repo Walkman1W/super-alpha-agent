@@ -186,7 +186,7 @@ export async function getTerminalAgents(limit = 50) {
         framework: agent.framework || null,
         tags: agent.tags || [],
         rank: agent.rank || (index + 1),
-        geo_score: agent.geo_score || 50,
+        geo_score: agent.geo_score || 5.0,
         official_url: agent.official_url || null
       }))
     },

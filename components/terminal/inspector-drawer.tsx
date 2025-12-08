@@ -58,7 +58,8 @@ function CodeSnippet({ code }: { code: string }) {
  * 基于 metrics 和其他属性估算能力值
  */
 function generateRadarData(agent: SignalAgent) {
-  const baseScore = agent.geo_score || 50
+  // 将 0-10 分制转换为 0-100 用于雷达图显示
+  const baseScore = (agent.geo_score || 5) * 10
   
   // 基于 autonomy_level 调整基础分
   const autonomyBonus: Record<string, number> = {
@@ -217,9 +218,9 @@ export function InspectorDrawer({ agent, isOpen, onClose }: InspectorDrawerProps
               )}
               <div className="bg-zinc-800/50 rounded-lg p-3 text-center">
                 <div className="text-lg font-mono text-purple-400">
-                  {agent.geo_score}
+                  {agent.geo_score.toFixed(1)}
                 </div>
-                <div className="text-xs text-zinc-500">GEO Score</div>
+                <div className="text-xs text-zinc-500">Signal Score</div>
               </div>
               <div className="bg-zinc-800/50 rounded-lg p-3 text-center">
                 <div className="text-lg font-mono text-zinc-200">
