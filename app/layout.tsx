@@ -88,7 +88,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="zh-CN" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+    <html lang="zh-CN" className={`${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <head>
         {/* 预连接到关键域名以减少 DNS 查询和连接时间 */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />

@@ -96,16 +96,21 @@ export async function getCategories() {
     async () => {
       const { data, error } = await supabaseAdmin
         .from('categories')
-        .select('id, name, icon, description')
+        .select('id, name, slug, icon, description')
         .order('name')
-        .limit(6) // 首页只显示 6 个分类
       
       if (error) {
         console.error('Error fetching categories:', error)
         return []
       }
       
-      return data || []
+      return (data || []).map(cat => ({
+        id: cat.id,
+        name: cat.name,
+        slug: cat.slug,
+        icon: cat.icon || '📁',
+        description: cat.description
+      }))
     },
     CACHE_DURATION.CATEGORIES
   )

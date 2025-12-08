@@ -79,22 +79,25 @@ export interface SignalAgent {
 // 过滤器状态
 export interface FilterState {
   search: string
-  maxLatency: number
-  minSuccessRate: number
   frameworks: string[]
   entityTypes: EntityType[]
   autonomyLevels: AutonomyLevel[]
+  geoScoreMin: number
+  categoryId: string | null
 }
 
 // 默认过滤器状态
 export const DEFAULT_FILTER_STATE: FilterState = {
   search: '',
-  maxLatency: 2000,
-  minSuccessRate: 0,
   frameworks: [],
   entityTypes: [],
-  autonomyLevels: []
+  autonomyLevels: [],
+  geoScoreMin: 0,
+  categoryId: null
 }
+
+// GEO Score 档位
+export const GEO_SCORE_LEVELS = [0, 20, 40, 60, 80, 100] as const
 
 // 可用框架列表
 export const AVAILABLE_FRAMEWORKS = [

@@ -1,13 +1,9 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useCallback } from 'react'
 import { cn } from '@/lib/utils'
 import type { FilterState, EntityType, AutonomyLevel } from '@/lib/types/agent'
-import {
-  AVAILABLE_FRAMEWORKS,
-  AUTONOMY_LEVEL_DESCRIPTIONS,
-  ENTITY_TYPE_DESCRIPTIONS
-} from '@/lib/types/agent'
+import { AVAILABLE_FRAMEWORKS, GEO_SCORE_LEVELS } from '@/lib/types/agent'
 import { hasActiveFilters, resetFilters } from '@/lib/filter-utils'
 
 interface SidebarFilterProps {
@@ -17,15 +13,55 @@ interface SidebarFilterProps {
 }
 
 /**
- * SidebarFilter 组件
- * 终端风格的筛选面板
- * 
- * **Validates: Requirements 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7**
+ * 5档滑轨组件
  */
-export function SidebarFilter({ filters, onFiltersChange, className }: SidebarFilterProps) {
-  const [isConnected] = useState(true)
+function StepSlider({
+  label,
+  value,
+  steps,
+  onChange,
+  formatLabel = (v) => String(v)
+}: {
+  label: string
+  value: number
+  steps: readonly number[] | string[]
+  onChange: (index: number) => void
+  formatLabel?: (v: number | string) => string
+}) {
+  const currentIndex = typeof steps[0] === 'number' 
+    ? (steps as readonly number[]).findIndex(s => s >= value)
+    : (steps as string[]).indexOf(value as unknown as string)
+  const activeIndex = currentIndex === -1 ? 0 : currentIndex
 
-  // 框架过滤切换
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <h3 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">{label}</h3>
+        <span className="text-xs font-mono text-purple-400">{formatLabel(steps[activeIndex])}</span>
+      </div>
+      <div className="flex items-center gap-1">
+        {steps.map((step, index) => (
+          <button
+            key={index}
+            onClick={() => onChange(index)}
+            className={cn(
+              'flex-1 h-2 rounded-full transition-all',
+              index <= activeIndex ? 'bg-purple-500' : 'bg-zinc-700',
+              'hover:bg-purple-400'
+            )}
+            title={formatLabel(step)}
+          />
+        ))}
+      </div>
+      <div className="flex justify-between text-[10px] font-mono text-zinc-600">
+        <span>{formatLabel(steps[0])}</span>
+        <span>{formatLabel(steps[steps.length - 1])}</span>
+      </div>
+    </div>
+  )
+}
+
+export function SidebarFilter({ filters, onFiltersChange, className }: SidebarFilterProps) {
   const toggleFramework = useCallback((framework: string) => {
     const newFrameworks = filters.frameworks.includes(framework)
       ? filters.frameworks.filter(f => f !== framework)
@@ -33,7 +69,6 @@ export function SidebarFilter({ filters, onFiltersChange, className }: SidebarFi
     onFiltersChange({ ...filters, frameworks: newFrameworks })
   }, [filters, onFiltersChange])
 
-  // 实体类型过滤切换
   const toggleEntityType = useCallback((entityType: EntityType) => {
     const newTypes = filters.entityTypes.includes(entityType)
       ? filters.entityTypes.filter(t => t !== entityType)
@@ -41,7 +76,6 @@ export function SidebarFilter({ filters, onFiltersChange, className }: SidebarFi
     onFiltersChange({ ...filters, entityTypes: newTypes })
   }, [filters, onFiltersChange])
 
-  // 自主等级过滤切换
   const toggleAutonomyLevel = useCallback((level: AutonomyLevel) => {
     const newLevels = filters.autonomyLevels.includes(level)
       ? filters.autonomyLevels.filter(l => l !== level)
@@ -49,17 +83,10 @@ export function SidebarFilter({ filters, onFiltersChange, className }: SidebarFi
     onFiltersChange({ ...filters, autonomyLevels: newLevels })
   }, [filters, onFiltersChange])
 
-  // 延迟滑块变化
-  const handleLatencyChange = useCallback((value: number) => {
-    onFiltersChange({ ...filters, maxLatency: value })
+  const handleGeoScoreChange = useCallback((index: number) => {
+    onFiltersChange({ ...filters, geoScoreMin: GEO_SCORE_LEVELS[index] })
   }, [filters, onFiltersChange])
 
-  // 成功率滑块变化
-  const handleSuccessRateChange = useCallback((value: number) => {
-    onFiltersChange({ ...filters, minSuccessRate: value })
-  }, [filters, onFiltersChange])
-
-  // 重置所有过滤器
   const handleReset = useCallback(() => {
     onFiltersChange(resetFilters())
   }, [onFiltersChange])
@@ -69,44 +96,31 @@ export function SidebarFilter({ filters, onFiltersChange, className }: SidebarFi
   return (
     <aside
       className={cn(
-        'w-64 flex-shrink-0',
-        'bg-zinc-900/50 backdrop-blur-sm',
-        'border-r border-zinc-800',
-        'p-4 space-y-6',
-        'hidden lg:block',
+        'w-56 flex-shrink-0 bg-zinc-900/50 backdrop-blur-sm border-r border-zinc-800 p-4 space-y-5 hidden lg:block overflow-y-auto',
         className
       )}
-      data-testid="sidebar-filter"
     >
-      {/* Logo + 标题 */}
-      <div className="flex items-center gap-2 mb-6">
-        <div className="relative">
-          <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
-            <span className="text-purple-400 font-bold font-mono">AS</span>
-          </div>
-          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-        </div>
-        <span className="font-semibold text-zinc-100">AgentSignals</span>
+      {/* 标题 */}
+      <div className="flex items-center gap-2 pb-3 border-b border-zinc-800">
+        <span className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Filters</span>
+        {hasFilters && (
+          <span className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" />
+        )}
       </div>
 
       {/* 框架过滤器 */}
-      <div className="space-y-3">
-        <h3 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">
-          Frameworks
-        </h3>
-        <div className="space-y-2">
+      <div className="space-y-2">
+        <h3 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Frameworks</h3>
+        <div className="space-y-1.5">
           {AVAILABLE_FRAMEWORKS.map(framework => (
-            <label
-              key={framework}
-              className="flex items-center gap-2 cursor-pointer group"
-            >
+            <label key={framework} className="flex items-center gap-2 cursor-pointer group">
               <input
                 type="checkbox"
                 checked={filters.frameworks.includes(framework)}
                 onChange={() => toggleFramework(framework)}
-                className="w-4 h-4 rounded border-zinc-700 bg-zinc-800 text-purple-500 focus:ring-purple-500/20 focus:ring-offset-0"
+                className="w-3.5 h-3.5 rounded border-zinc-700 bg-zinc-800 text-purple-500 focus:ring-purple-500/20 focus:ring-offset-0"
               />
-              <span className="text-sm text-zinc-400 group-hover:text-zinc-200 transition-colors">
+              <span className="text-xs text-zinc-400 group-hover:text-zinc-200 transition-colors">
                 {framework}
               </span>
             </label>
@@ -115,123 +129,64 @@ export function SidebarFilter({ filters, onFiltersChange, className }: SidebarFi
       </div>
 
       {/* 实体类型过滤器 */}
-      <div className="space-y-3">
-        <h3 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">
-          Entity Type
-        </h3>
-        <div className="space-y-2">
-          {(['repo', 'saas', 'app'] as EntityType[]).map(type => (
-            <label
-              key={type}
-              className="flex items-center gap-2 cursor-pointer group"
-              title={ENTITY_TYPE_DESCRIPTIONS[type]}
-            >
+      <div className="space-y-2">
+        <h3 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Entity Type</h3>
+        <div className="space-y-1.5">
+          {(['repo', 'saas'] as EntityType[]).map(type => (
+            <label key={type} className="flex items-center gap-2 cursor-pointer group">
               <input
                 type="checkbox"
                 checked={filters.entityTypes.includes(type)}
                 onChange={() => toggleEntityType(type)}
-                className="w-4 h-4 rounded border-zinc-700 bg-zinc-800 text-purple-500 focus:ring-purple-500/20 focus:ring-offset-0"
+                className="w-3.5 h-3.5 rounded border-zinc-700 bg-zinc-800 text-purple-500 focus:ring-purple-500/20 focus:ring-offset-0"
               />
-              <span className="text-sm text-zinc-400 group-hover:text-zinc-200 transition-colors capitalize">
-                {type === 'repo' ? '📦 Repository' : type === 'saas' ? '🌐 SaaS' : '📱 App'}
+              <span className="text-xs text-zinc-400 group-hover:text-zinc-200 transition-colors">
+                {type === 'repo' ? '📦 Repository' : '☁️ SaaS'}
               </span>
             </label>
           ))}
         </div>
       </div>
 
-      {/* 自主等级过滤器 */}
-      <div className="space-y-3">
-        <h3 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">
-          Autonomy Level
-        </h3>
-        <div className="space-y-2">
+      {/* GEO Score 滑轨 */}
+      <StepSlider
+        label="GEO Score"
+        value={filters.geoScoreMin}
+        steps={GEO_SCORE_LEVELS}
+        onChange={handleGeoScoreChange}
+        formatLabel={(v) => `${v}+`}
+      />
+
+      {/* Autonomy Level 滑轨 */}
+      <div className="space-y-2">
+        <h3 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Autonomy Level</h3>
+        <div className="flex gap-1">
           {(['L1', 'L2', 'L3', 'L4', 'L5'] as AutonomyLevel[]).map(level => (
-            <label
+            <button
               key={level}
-              className="flex items-center gap-2 cursor-pointer group"
-              title={AUTONOMY_LEVEL_DESCRIPTIONS[level]}
+              onClick={() => toggleAutonomyLevel(level)}
+              className={cn(
+                'flex-1 py-1.5 text-xs font-mono rounded transition-all',
+                filters.autonomyLevels.includes(level)
+                  ? 'bg-purple-500 text-white'
+                  : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+              )}
             >
-              <input
-                type="checkbox"
-                checked={filters.autonomyLevels.includes(level)}
-                onChange={() => toggleAutonomyLevel(level)}
-                className="w-4 h-4 rounded border-zinc-700 bg-zinc-800 text-purple-500 focus:ring-purple-500/20 focus:ring-offset-0"
-              />
-              <span className="text-sm text-zinc-400 group-hover:text-zinc-200 transition-colors font-mono">
-                {level}
-              </span>
-            </label>
+              {level}
+            </button>
           ))}
         </div>
-      </div>
-
-      {/* 延迟滑块 */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h3 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">
-            Max Latency
-          </h3>
-          <span className="text-xs font-mono text-zinc-400">
-            {filters.maxLatency >= 2000 ? 'Any' : `${filters.maxLatency}ms`}
-          </span>
-        </div>
-        <input
-          type="range"
-          min={0}
-          max={2000}
-          step={100}
-          value={filters.maxLatency}
-          onChange={(e) => handleLatencyChange(Number(e.target.value))}
-          className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-purple-500"
-        />
-      </div>
-
-      {/* 成功率滑块 */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h3 className="text-xs font-mono text-zinc-500 uppercase tracking-wider">
-            Min Success Rate
-          </h3>
-          <span className="text-xs font-mono text-zinc-400">
-            {filters.minSuccessRate <= 0 ? 'Any' : `${filters.minSuccessRate}%`}
-          </span>
-        </div>
-        <input
-          type="range"
-          min={0}
-          max={100}
-          step={5}
-          value={filters.minSuccessRate}
-          onChange={(e) => handleSuccessRateChange(Number(e.target.value))}
-          className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-purple-500"
-        />
       </div>
 
       {/* 重置按钮 */}
       {hasFilters && (
         <button
           onClick={handleReset}
-          className="w-full py-2 px-3 text-sm font-mono text-zinc-400 bg-zinc-800/50 border border-zinc-700 rounded hover:bg-zinc-800 hover:text-zinc-200 transition-colors"
+          className="w-full py-2 text-xs font-mono text-zinc-400 bg-zinc-800/50 border border-zinc-700 rounded hover:bg-zinc-800 hover:text-zinc-200 transition-colors"
         >
           Reset Filters
         </button>
       )}
-
-      {/* 连接状态 */}
-      <div className="mt-auto pt-6 border-t border-zinc-800">
-        <div className="flex items-center gap-2 p-3 bg-zinc-800/50 rounded-lg border border-zinc-700/50">
-          <span
-            className={cn(
-              'w-2 h-2 rounded-full',
-              isConnected ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'
-            )}
-          />
-          <span className="text-xs font-mono text-zinc-400">
-            {isConnected ? 'Live Connection' : 'Disconnected'}
-          </span>
-        </div>
-      </div>
     </aside>
   )
 }
