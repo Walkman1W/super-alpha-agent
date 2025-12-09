@@ -299,24 +299,33 @@
     - 跟踪生成事件用于分析
     - _需求: 6.4, 6.8, 8.5_
 
-- [ ] 16. 检查点 - 确保所有测试通过
+- [x] 16. 检查点 - 确保所有测试通过
+
+
   - 确保所有测试通过，如有问题请询问用户。
 
 ## 阶段 5: 前端 - 扫描页面
 
-- [ ] 17. 创建扫描页面 UI
-  - [ ] 17.1 创建 app/scan/page.tsx，包含 URL 输入表单
+
+- [x] 17. 创建扫描页面 UI
+
+
+  - [x] 17.1 创建 app/scan/page.tsx，包含 URL 输入表单
     - 大型居中的 URL 输入框
     - 带加载状态的提交按钮
     - 无效 URL 的错误消息展示
+
     - _需求: 1.1, 1.4, 1.5_
-  - [ ] 17.2 创建 components/scanner/scan-results.tsx
+  - [x] 17.2 创建 components/scanner/scan-results.tsx
+
     - 醒目展示 SR 分数和等级徽章
     - 显示轨道类型（OpenSource, SaaS, Hybrid）
     - 展示红/绿诊断指示器
     - 显示失败指标的改进建议
     - _需求: 5.1-5.5_
-  - [ ] 17.3 创建 components/scanner/claim-optimize.tsx
+
+  - [x] 17.3 创建 components/scanner/claim-optimize.tsx
+
     - 未认领 Agent 的"认领并优化"按钮
     - 带复制按钮的 JSON-LD 代码块
     - 带复制按钮的徽章嵌入代码
