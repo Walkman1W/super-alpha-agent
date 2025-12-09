@@ -91,14 +91,12 @@ export default function RootLayout({
     <html lang="zh-CN" className={`${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <head>
         {/* 预连接到关键域名以减少 DNS 查询和连接时间 */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {process.env.NEXT_PUBLIC_SUPABASE_URL && (
           <link rel="preconnect" href={process.env.NEXT_PUBLIC_SUPABASE_URL} />
         )}
-        {/* DNS 预取 */}
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+        {/* DNS 预取 - 非 Google 域名 */}
       </head>
       <body className={`${inter.className} terminal-theme bg-terminal-bg min-h-screen`}>
         <ToastProvider>
