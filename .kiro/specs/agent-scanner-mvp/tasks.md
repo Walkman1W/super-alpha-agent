@@ -326,6 +326,7 @@
 
   - [x] 17.3 创建 components/scanner/claim-optimize.tsx
 
+
     - 未认领 Agent 的"认领并优化"按钮
     - 带复制按钮的 JSON-LD 代码块
     - 带复制按钮的徽章嵌入代码
@@ -335,22 +336,31 @@
 
 ## 阶段 6: 前端 - 索引页面
 
-- [ ] 18. 创建 Agent 索引页面
-  - [ ] 18.1 创建 app/agents/page.tsx，终端风格列表
+- [x] 18. 创建 Agent 索引页面
+
+
+  - [x] 18.1 创建 app/agents/page.tsx，终端风格列表
+
     - 获取按 SR 分数降序排列的 Agent
     - 每行显示名称、SR 分数、MCP 标签、I/O 类型
     - 使用 show-agentv3.0.html 参考的终端风格设计
     - _需求: 7.1-7.3_
-  - [ ] 18.2 创建 components/index/agent-row.tsx
+
+  - [x] 18.2 创建 components/index/agent-row.tsx
+
     - 带悬停操作的终端风格行
     - 为已认领 Agent 显示已验证徽章
     - 悬停时显示"复制 JSON-LD"和"查看文档"
+
     - _需求: 7.2, 7.5_
-  - [ ] 18.3 创建 components/index/verified-filter.tsx
+  - [x] 18.3 创建 components/index/verified-filter.tsx
+
     - "仅显示已验证"过滤器的切换开关
+
     - 按 is_verified 状态过滤 Agent
     - _需求: 7.4_
-  - [ ] 18.4 编写索引展示的属性测试
+  - [x] 18.4 编写索引展示的属性测试
+
     - **属性 22: Agent 索引排序**
     - **属性 23: 已验证过滤器正确性**
     - **验证: 需求 7.1, 7.4**
