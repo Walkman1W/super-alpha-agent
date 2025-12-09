@@ -5,14 +5,21 @@ export const revalidate = 3600
 
 export default async function AIStatsPage() {
   // 获取 AI 搜索统计
-  const { data: aiVisits } = await supabaseAdmin
+  const { data: aiVisitsRaw } = await (supabaseAdmin as any)
     .from('ai_visits')
     .select('ai_name, agent_id, visited_at, agents(name, slug)')
     .order('visited_at', { ascending: false })
     .limit(100)
 
+  const aiVisits = (aiVisitsRaw || []) as Array<{
+    ai_name: string
+    agent_id: string
+    visited_at: string
+    agents: { name: string; slug: string } | null
+  }>
+
   // 按 AI 分组统计
-  const aiStats = aiVisits?.reduce((acc, visit) => {
+  const aiStats = aiVisits.reduce((acc, visit) => {
     const aiName = visit.ai_name
     if (!acc[aiName]) {
       acc[aiName] = { count: 0, agents: new Set() }
@@ -23,19 +30,29 @@ export default async function AIStatsPage() {
   }, {} as Record<string, { count: number; agents: Set<string> }>)
 
   // 获取总统计
-  const { data: totalStats } = await supabaseAdmin
+  const { data: totalStatsRaw } = await (supabaseAdmin as any)
     .from('agents')
     .select('ai_search_count')
 
-  const totalAISearches = totalStats?.reduce((sum, agent) => sum + (agent.ai_search_count || 0), 0) || 0
+  const totalStats = (totalStatsRaw || []) as Array<{ ai_search_count: number }>
+  const totalAISearches = totalStats.reduce((sum, agent) => sum + (agent.ai_search_count || 0), 0)
 
   // 获取 Top Agents
-  const { data: topAgents } = await supabaseAdmin
+  const { data: topAgentsRaw } = await (supabaseAdmin as any)
     .from('agents')
     .select('id, slug, name, short_description, ai_search_count, platform')
     .gt('ai_search_count', 0)
     .order('ai_search_count', { ascending: false })
     .limit(20)
+
+  const topAgents = (topAgentsRaw || []) as Array<{
+    id: string
+    slug: string
+    name: string
+    short_description: string
+    ai_search_count: number
+    platform: string
+  }>
 
   return (
     <div className="container mx-auto px-4 py-12">

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        :root {
+            --bg: #050505;
+            --text-main: #E5E5E5;
+            --text-dim: #888;
+            --accent-green: #00FF94;
+            --accent-purple: #8B5CF6;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+        body { background: var(--bg); color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 40px; }
+        
+        /* 列表容器 */
+        .result-list { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+
+        /* 单个结果行 */
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #1A1A1A;
+            position: relative;
+        }
+
+        /* 左侧内容区 */
+        .content { display: flex; flex-direction: column; gap: 6px; }
+
+        /* 第一层：标题 */
+        .header { display: flex; align-items: center; gap: 8px; }
+        .title { font-size: 1.2rem; font-weight: 600; color: #4DA6FF; text-decoration: none; }
+        .title:hover { text-decoration: underline; }
+        .badge { width: 14px; height: 14px; fill: var(--accent-green); }
+
+        /* 第二层：技术参数 (核心差异化) */
+        .tech-line { font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent-green); display: flex; gap: 12px; align-items: center; }
+        .protocol-tag { background: rgba(139, 92, 246, 0.2); color: var(--accent-purple); padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; text-transform: uppercase; }
+
+        /* 第三层：能力摘要 */
+        .snippet { font-size: 0.9rem; color: var(--text-dim); line-height: 1.4; max-width: 600px; }
+        .io-tag { color: #AAA; font-family: var(--font-mono); font-size: 0.8rem; border: 1px solid #333; padding: 2px 6px; border-radius: 4px; margin-right: 6px; }
+
+        /* 右侧：评分区 */
+        .score-box { text-align: right; }
+        .sr-val { font-family: var(--font-mono); font-size: 1.8rem; font-weight: 700; color: var(--accent-green); letter-spacing: -1px; }
+        .sr-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; }
+        .trend { font-size: 0.7rem; color: var(--accent-green); display: block; margin-top: 2px; }
+
+        /* 隐藏的操作按钮 (Hover时出现) */
+        .actions {
+            position: absolute;
+            right: 0;
+            bottom: 24px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            display: flex;
+            gap: 10px;
+        }
+        .result-row:hover .actions { opacity: 1; }
+        .btn-mini { background: #222; border: 1px solid #444; color: #EEE; padding: 4px 10px; font-size: 0.8rem; cursor: pointer; border-radius: 4px; }
+        .btn-mini:hover { background: #333; }
+        
+    </style>
+</head>
+<body>
+
+    <div class="result-list">
+
+        <!-- 结果 1: 完美的 A2A 标杆 -->
+        <div class="result-row">
+            <div class="content">
+                <div class="header">
+                    <a href="#" class="title">Manus AI</a>
+                    <!-- Verified Icon -->
+                    <svg class="badge" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                </div>
+                
+                <div class="tech-line">
+                    <span>api.manus.ai/v2</span>
+                    <span class="protocol-tag">MCP-Ready</span>
+                </div>
+
+                <div class="snippet">
+                    <span class="io-tag">IN: Prompt</span> <span class="io-tag">OUT: Full-Article</span>
+                    Autonomous writing agent capable of long-form research. Supports streaming response and citation verification.
+                </div>
+            </div>
+
+            <div class="score-box">
+                <div class="sr-val">9.8</div>
+                <div class="sr-label">Signal Rank</div>
+                <span class="trend">▲ 0.1</span>
+            </div>
+
+            <div class="actions">
+                <button class="btn-mini">Copy JSON-LD</button>
+                <button class="btn-mini">View Docs</button>
+            </div>
+        </div>
+
+        <!-- 结果 2: 待认领的潜力股 -->
+        <div class="result-row">
+            <div class="content">
+                <div class="header">
+                    <a href="#" class="title" style="color: #E5E5E5;">DeepResearch Tool</a>
+                    <!-- Unverified (No Badge) -->
+                </div>
+                
+                <div class="tech-line">
+                    <span style="color: #666;">github.com/deep/research</span>
+                    <span class="protocol-tag" style="background:#222; color:#888;">No Protocol</span>
+                </div>
+
+                <div class="snippet">
+                    Open source web scraping utility. Good for raw data extraction but lacks structured API definitions.
+                </div>
+            </div>
+
+            <div class="score-box">
+                <div class="sr-val" style="color: #FFD000;">6.5</div>
+                <div class="sr-label">Signal Rank</div>
+            </div>
+
+            <div class="actions">
+                <button class="btn-mini" style="border-color: #8B5CF6; color: #8B5CF6;">⚡ Claim & Fix</button>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

@@ -1,18 +1,29 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import './performance.css'
 import { ToastProvider } from '@/components/toast-provider'
+import Header from '@/components/terminal/header'
+import Footer from '@/components/terminal/footer'
 
 // 优化字体加载：使用 display: 'swap' 避免阻塞渲染
 // 预加载字体以减少 CLS
 const inter = Inter({ 
   subsets: ['latin'],
-  display: 'swap', // 立即显示后备字体，字体加载完成后切换
-  preload: true, // 预加载字体文件
-  variable: '--font-inter', // CSS 变量
-  fallback: ['system-ui', 'arial'], // 后备字体
+  display: 'swap',
+  preload: true,
+  variable: '--font-inter',
+  fallback: ['system-ui', 'arial'],
+})
+
+// JetBrains Mono 等宽字体 - Terminal 主题核心字体
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+  variable: '--font-mono',
+  fallback: ['Fira Code', 'Consolas', 'monospace'],
 })
 
 export const metadata: Metadata = {
@@ -77,7 +88,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="zh-CN">
+    <html lang="zh-CN" className={`${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <head>
         {/* 预连接到关键域名以减少 DNS 查询和连接时间 */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -89,87 +100,11 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
       </head>
-      <body className={inter.className}>
+      <body className={`${inter.className} terminal-theme bg-terminal-bg min-h-screen`}>
         <ToastProvider>
-        <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <a href="/" className="flex items-center gap-3 group">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-xl group-hover:scale-110 transition-transform">
-                  A
-                </div>
-                <div>
-                  <div className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                    Agent Signals
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    The GEO Engine for AI Agents
-                  </div>
-                </div>
-              </a>
-              <div className="flex gap-6 items-center">
-                <a href="/#agents" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
-                  Agents
-                </a>
-                <a 
-                  href="https://github.com/yourusername/super-alpha-agent" 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors flex items-center gap-1"
-                >
-                  <span>🐱</span>
-                  <span className="hidden sm:inline">GitHub</span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </nav>
-        <main>{children}</main>
-        <footer className="bg-gray-900 text-white mt-20">
-          <div className="container mx-auto px-4 py-12">
-            <div className="grid md:grid-cols-3 gap-8 mb-8">
-              <div>
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center font-bold">
-                    A
-                  </div>
-                  <span className="font-bold text-lg">Agent Signals</span>
-                </div>
-                <p className="text-gray-400 text-sm leading-relaxed">
-                  专为 AI 搜索引擎优化的 Agent 聚合平台。
-                  发现、分析、对比最好的 AI Agents。
-                </p>
-              </div>
-              
-              <div>
-                <h3 className="font-bold mb-4">关于</h3>
-                <ul className="space-y-2 text-sm text-gray-400">
-                  <li>🚀 AI 优先设计</li>
-                  <li>⏱️ 每日自动更新</li>
-                  <li>📊 深度分析对比</li>
-                  <li>💯 完全免费使用</li>
-                </ul>
-              </div>
-              
-              <div>
-                <h3 className="font-bold mb-4">技术栈</h3>
-                <ul className="space-y-2 text-sm text-gray-400">
-                  <li>Next.js 14 + TypeScript</li>
-                  <li>Supabase + PostgreSQL</li>
-                  <li>OpenRouter AI</li>
-                  <li>Playwright 抓取</li>
-                </ul>
-              </div>
-            </div>
-            
-            <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
-              <p>© 2025 Agent Signals. 面向 AI 搜索引擎优化 · 开源项目</p>
-              <p className="mt-2">
-                Built with ❤️ for the AI community
-              </p>
-            </div>
-          </div>
-        </footer>
+          <Header />
+          <main>{children}</main>
+          <Footer />
         </ToastProvider>
         <Analytics />
       </body>

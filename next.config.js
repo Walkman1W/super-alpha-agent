@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // 使用 Turbopack 配置（Next.js 16+ 默认使用 Turbopack）
+  turbopack: {},
+  
   // 启用压缩以减少传输大小
   compress: true,
   

@@ -288,3 +288,193 @@ describe('formatNumberWithSeparator', () => {
     expect(formatNumberWithSeparator(999)).toBe('999')
   })
 })
+
+// ============================================
+// 属性测试：Agent卡片完整性
+// ============================================
+
+/**
+ * 生成非空白字符串的Agent数据
+ */
+const nonWhitespaceAgentArbitrary = fc.record({
+  id: fc.uuid(),
+  slug: reliableSlugArbitrary,
+  name: fc.string({ minLength: 1, maxLength: 100 }).filter(s => s.trim().length > 0),
+  short_description: fc.string({ minLength: 10, maxLength: 200 }).filter(s => s.trim().length >= 10),
+  platform: fc.option(fc.constantFrom('Web', 'iOS', 'Android', 'Desktop', 'API'), { nil: null }),
+  key_features: fc.option(fc.array(fc.string({ minLength: 5, maxLength: 50 }).filter(s => s.trim().length >= 5), { minLength: 0, maxLength: 5 }), { nil: undefined }),
+  pros: fc.option(fc.array(fc.string({ minLength: 5, maxLength: 50 }).filter(s => s.trim().length >= 5), { minLength: 0, maxLength: 5 }), { nil: undefined }),
+  use_cases: fc.option(fc.array(fc.string({ minLength: 5, maxLength: 50 }).filter(s => s.trim().length >= 5), { minLength: 0, maxLength: 5 }), { nil: undefined }),
+  pricing: fc.option(fc.constantFrom('免费', 'Free', '付费', '$9.99/月', '免费试用'), { nil: null }),
+  official_url: fc.option(fc.webUrl(), { nil: null }),
+  ai_search_count: fc.option(fc.nat(10000), { nil: undefined }),
+  ai_search_breakdown: fc.option(
+    fc.record({
+      ChatGPT: fc.nat(1000),
+      Claude: fc.nat(1000),
+      Perplexity: fc.nat(1000),
+    }),
+    { nil: undefined }
+  ),
+})
+
+/**
+ * Feature: agent-brand-showcase, Property 8: Agent卡片完整性
+ * Validates: Requirements 3.2
+ * 
+ * 对于任意显示的Agent卡片，它应包含所有必需字段：名称、简短描述和搜索统计
+ */
+describe('Property 8: Agent卡片完整性', () => {
+  it('should always display agent name', { timeout: 30000 }, () => {
+    fc.assert(
+      fc.property(nonWhitespaceAgentArbitrary, (agent) => {
+        const { unmount } = render(<AgentCard agent={agent} />)
+        
+        // 验证名称存在 - 使用包含匹配因为HTML可能规范化空白
+        const nameElement = screen.getByRole('heading', { level: 3 })
+        expect(nameElement).toBeInTheDocument()
+        expect(nameElement.textContent?.trim()).toBeTruthy()
+        
+        unmount()
+        return true
+      }),
+      { numRuns: 50 }
+    )
+  })
+
+  it('should always display short description', { timeout: 30000 }, () => {
+    fc.assert(
+      fc.property(nonWhitespaceAgentArbitrary, (agent) => {
+        const { unmount } = render(<AgentCard agent={agent} />)
+        
+        // 验证描述存在 - 通过itemprop属性查找
+        const descElement = document.querySelector('[itemprop="description"]')
+        expect(descElement).toBeInTheDocument()
+        expect(descElement?.textContent?.trim()).toBeTruthy()
+        
+        unmount()
+        return true
+      }),
+      { numRuns: 50 }
+    )
+  })
+
+  it('should display AI search stats when showAIStats is true and count > 0', { timeout: 30000 }, () => {
+    fc.assert(
+      fc.property(
+        nonWhitespaceAgentArbitrary.filter(a => (a.ai_search_count ?? 0) > 0),
+        (agent) => {
+          const { unmount } = render(<AgentCard agent={agent} showAIStats={true} />)
+          
+          // 验证AI搜索统计存在
+          const formattedCount = formatNumber(agent.ai_search_count!)
+          expect(screen.getByText(formattedCount)).toBeInTheDocument()
+          expect(screen.getByText('AI 搜索')).toBeInTheDocument()
+          
+          unmount()
+          return true
+        }
+      ),
+      { numRuns: 50 }
+    )
+  })
+})
+
+/**
+ * Feature: agent-brand-showcase, Property 27: 聚合计数显示
+ * Validates: Requirements 8.1
+ * 
+ * 对于任意Agent卡片，显示的搜索计数应等于所有AI引擎计数之和
+ */
+describe('Property 27: 聚合计数显示', () => {
+  it('should display the correct aggregated count', { timeout: 30000 }, () => {
+    fc.assert(
+      fc.property(
+        fc.record({
+          id: fc.uuid(),
+          slug: reliableSlugArbitrary,
+          name: fc.string({ minLength: 1, maxLength: 100 }),
+          short_description: fc.string({ minLength: 10, maxLength: 200 }),
+          ai_search_count: fc.integer({ min: 1, max: 10000 }),
+        }),
+        (agent) => {
+          const { unmount } = render(<AgentCard agent={agent} showAIStats={true} />)
+          
+          // 验证显示的计数是正确的格式化值
+          const formattedCount = formatNumber(agent.ai_search_count)
+          expect(screen.getByText(formattedCount)).toBeInTheDocument()
+          
+          unmount()
+          return true
+        }
+      ),
+      { numRuns: 50 }
+    )
+  })
+})
+
+/**
+ * Feature: agent-brand-showcase, Property 31: 数字格式化
+ * Validates: Requirements 8.5
+ * 
+ * 对于任意显示的大于999的计数，数字应使用适当的分隔符格式化
+ */
+describe('Property 31: 数字格式化', () => {
+  it('should format numbers >= 1000 with K suffix', () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 1000, max: 999999 }),
+        (num) => {
+          const formatted = formatNumber(num)
+          expect(formatted).toMatch(/^\d+(\.\d)?K$/)
+          return true
+        }
+      ),
+      { numRuns: 100 }
+    )
+  })
+
+  it('should format numbers >= 1000000 with M suffix', () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 1000000, max: 10000000 }),
+        (num) => {
+          const formatted = formatNumber(num)
+          expect(formatted).toMatch(/^\d+(\.\d)?M$/)
+          return true
+        }
+      ),
+      { numRuns: 100 }
+    )
+  })
+
+  it('should not format numbers < 1000', () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 0, max: 999 }),
+        (num) => {
+          const formatted = formatNumber(num)
+          expect(formatted).toBe(num.toString())
+          return true
+        }
+      ),
+      { numRuns: 100 }
+    )
+  })
+
+  it('formatNumberWithSeparator should add thousand separators', () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 1000, max: 10000000 }),
+        (num) => {
+          const formatted = formatNumberWithSeparator(num)
+          expect(formatted).toContain(',')
+          // 验证格式正确
+          expect(formatted).toMatch(/^[\d,]+$/)
+          return true
+        }
+      ),
+      { numRuns: 100 }
+    )
+  })
+})

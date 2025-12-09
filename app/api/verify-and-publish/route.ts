@@ -54,21 +54,21 @@ async function findOrCreateCategory(categoryName: string | undefined): Promise<s
   
   const slug = categoryMap[categoryName] || 'other'
   
-  const { data: existing } = await supabaseAdmin
+  const { data: existing } = await (supabaseAdmin as any)
     .from('categories')
     .select('id')
     .eq('slug', slug)
     .single()
   
-  if (existing) return existing.id
+  if (existing) return (existing as { id: string }).id
   
-  const { data: newCategory } = await supabaseAdmin
+  const { data: newCategory } = await (supabaseAdmin as any)
     .from('categories')
     .insert({ name: categoryName, slug, description: `${categoryName}类别的AI Agent` })
     .select('id')
     .single()
   
-  return newCategory?.id || null
+  return (newCategory as { id: string } | null)?.id || null
 }
 
 /**
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
     const { email, code } = validation.data
     
     // 查找待验证的提交
-    const { data: submission, error: fetchError } = await supabaseAdmin
+    const { data: submissionRaw, error: fetchError } = await (supabaseAdmin as any)
       .from('agent_submissions')
       .select('*')
       .eq('email', email)
@@ -100,11 +100,18 @@ export async function POST(request: NextRequest) {
       .eq('verified', false)
       .single()
     
-    if (fetchError || !submission) {
+    if (fetchError || !submissionRaw) {
       return NextResponse.json(
         { error: '验证码无效或已过期' },
         { status: 400 }
       )
+    }
+    
+    const submission = submissionRaw as { 
+      id: string
+      url: string
+      expires_at: string
+      email: string
     }
     
     // 检查是否过期
@@ -120,7 +127,7 @@ export async function POST(request: NextRequest) {
     
     if (!analysisResult.success || !analysisResult.data) {
       // 更新提交状态，记录分析失败
-      await supabaseAdmin
+      await (supabaseAdmin as any)
         .from('agent_submissions')
         .update({ 
           verified: true, 
@@ -139,7 +146,7 @@ export async function POST(request: NextRequest) {
     const categoryId = await findOrCreateCategory(agentData.category)
     
     // 创建Agent
-    const { data: agent, error: createError } = await supabaseAdmin
+    const { data: agentResult, error: createError } = await (supabaseAdmin as any)
       .from('agents')
       .insert({
         slug,
@@ -164,6 +171,8 @@ export async function POST(request: NextRequest) {
       .select('id, slug, name')
       .single()
     
+    const agent = agentResult as { id: string; slug: string; name: string } | null
+    
     if (createError || !agent) {
       console.error('Create agent error:', createError)
       return NextResponse.json(
@@ -173,7 +182,7 @@ export async function POST(request: NextRequest) {
     }
     
     // 更新提交记录
-    await supabaseAdmin
+    await (supabaseAdmin as any)
       .from('agent_submissions')
       .update({ 
         verified: true, 

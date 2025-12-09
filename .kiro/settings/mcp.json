@@ -1,4 +1,90 @@
 {
   "mcpServers": {
+    "fetch": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-fetch"
+      ],
+      "env": {},
+      "disabled": false,
+      "autoApprove": []
+    },
+    "playwright-extension": {
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest",
+        "--extension"
+      ],
+      "disabled": false,
+      "autoApprove": [
+        "browser_navigate",
+        "browser_take_screenshot",
+        "browser_click",
+        "browser_type",
+        "browser_snapshot",
+        "browser_evaluate",
+        "browser_wait_for",
+        "browser_press_key",
+        "browser_close",
+        "browser_navigate_back",
+        "browser_console_messages",
+        "browser_handle_dialog",
+        "browser_network_requests",
+        "browser_resize",
+        "browser_hover"
+      ],
+      "disabledTools": []
+    },
+    "worldquant-brain-platform": {
+      "command": "C:\\Users\\LENOVO\\miniconda3\\envs\\brain_backtest\\python.exe",
+      "args": [
+        "C:\\Users\\LENOVO\\miniconda3\\Lib\\site-packages\\cnhkmcp\\untracked\\platform_functions.py"
+      ],
+      "disabled": true,
+      "autoApprove": [
+        "authenticate",
+        "get_platform_setting_options",
+        "get_datasets",
+        "get_datafields",
+        "create_multiSim",
+        "get_SimError_detail",
+        "manage_config",
+        "create_simulation",
+        "get_user_profile",
+        "get_user_alphas",
+        "search_forum_posts",
+        "get_documentations",
+        "read_specific_documentation",
+        "get_pyramid_alphas",
+        "get_pyramid_multipliers",
+        "value_factor_trendScore"
+      ]
+    },
+    "langchain-docs": {
+      "command": "uvx",
+      "args": [
+        "docs-by-langchain-mcp"
+      ],
+      "disabled": true,
+      "autoApprove": [
+        "SearchDocsByLangChain"
+      ]
+    }
+  },
+  "powers": {
+    "mcpServers": {
+      "power-supabase-hosted-supabase": {
+        "url": "https://mcp.supabase.com/mcp",
+        "disabled": false,
+        "autoApprove": [
+          "list_projects",
+          "apply_migration",
+          "list_tables",
+          "execute_sql",
+          "get_advisors"
+        ]
+      }
+    }
   }
 }

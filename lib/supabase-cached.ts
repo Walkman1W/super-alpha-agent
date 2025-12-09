@@ -114,7 +114,7 @@ export async function getCachedAIVisitStats(agentId: string) {
   return getCachedData(
     cacheKey,
     async () => {
-      const { data, error } = await supabaseAdmin
+      const { data: dataRaw, error } = await (supabaseAdmin as any)
         .from('ai_visits')
         .select('ai_name, visited_at')
         .eq('agent_id', agentId)
@@ -123,16 +123,18 @@ export async function getCachedAIVisitStats(agentId: string) {
       
       if (error) throw error
       
+      const data = (dataRaw || []) as Array<{ ai_name: string; visited_at: string }>
+      
       // 聚合统计
       const breakdown: Record<string, number> = {}
-      data?.forEach((visit) => {
+      data.forEach((visit) => {
         breakdown[visit.ai_name] = (breakdown[visit.ai_name] || 0) + 1
       })
       
       return {
-        total: data?.length || 0,
+        total: data.length,
         breakdown,
-        recentVisits: data?.slice(0, 10) || [],
+        recentVisits: data.slice(0, 10),
       }
     },
     CACHE_TIMES.FIFTEEN_MINUTES

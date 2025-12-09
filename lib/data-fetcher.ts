@@ -96,16 +96,21 @@ export async function getCategories() {
     async () => {
       const { data, error } = await supabaseAdmin
         .from('categories')
-        .select('id, name, icon, description')
+        .select('id, name, slug, icon, description')
         .order('name')
-        .limit(6) // 首页只显示 6 个分类
       
       if (error) {
         console.error('Error fetching categories:', error)
         return []
       }
       
-      return data || []
+      return (data || []).map(cat => ({
+        id: cat.id,
+        name: cat.name,
+        slug: cat.slug,
+        icon: cat.icon || '📁',
+        description: cat.description
+      }))
     },
     CACHE_DURATION.CATEGORIES
   )
@@ -127,6 +132,66 @@ export async function getHomePageData() {
     agentCount: countResult.status === 'fulfilled' ? countResult.value : 0,
     categories: categoriesResult.status === 'fulfilled' ? categoriesResult.value : [],
   }
+}
+
+/**
+ * 获取 Terminal UI 用的 Agent 列表
+ * 包含扩展字段用于 Signal Card 显示
+ */
+export async function getTerminalAgents(limit = 50) {
+  return getCached(
+    `terminal:agents:${limit}`,
+    async () => {
+      const { data: dataRaw, error } = await (supabaseAdmin as any)
+        .from('agents')
+        .select(`
+          id, slug, name, short_description,
+          entity_type, autonomy_level, status, metrics,
+          framework, tags, rank, geo_score, official_url
+        `)
+        .order('geo_score', { ascending: false, nullsFirst: false })
+        .limit(limit)
+      
+      if (error) {
+        console.error('Error fetching terminal agents:', error)
+        return []
+      }
+      
+      const data = (dataRaw || []) as Array<{
+        id: string
+        slug: string
+        name: string
+        short_description: string
+        entity_type?: string
+        autonomy_level?: string
+        status?: string
+        metrics?: Record<string, unknown>
+        framework?: string
+        tags?: string[]
+        rank?: number
+        geo_score?: number
+        official_url?: string
+      }>
+      
+      // 为缺少新字段的数据提供默认值
+      return data.map((agent, index) => ({
+        id: agent.id,
+        slug: agent.slug,
+        name: agent.name,
+        short_description: agent.short_description || '',
+        entity_type: (agent.entity_type || 'saas') as 'repo' | 'saas' | 'app',
+        autonomy_level: (agent.autonomy_level || 'L2') as 'L1' | 'L2' | 'L3' | 'L4' | 'L5',
+        status: (agent.status || 'online') as 'online' | 'offline' | 'maintenance',
+        metrics: (agent.metrics || {}) as Record<string, number | string | undefined>,
+        framework: agent.framework || null,
+        tags: agent.tags || [],
+        rank: agent.rank || (index + 1),
+        geo_score: agent.geo_score || 5.0,
+        official_url: agent.official_url || null
+      }))
+    },
+    CACHE_DURATION.AGENTS
+  )
 }
 
 /**

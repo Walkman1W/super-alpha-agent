@@ -1,8 +1,10 @@
 import { supabaseAdmin } from '@/lib/supabase'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 import type { Metadata } from 'next'
 import dynamic from 'next/dynamic'
 import { AIRecommendationSnippets } from '@/components/ai-recommendation-snippets'
+import { shouldRedirectToHome } from '@/lib/ai-detector'
 
 // 动态导入客户端组件以实现代码分割 - 需求: 9.1
 const AIVisitTracker = dynamic(() => import('@/components/ai-visit-tracker').then(mod => ({ default: mod.AIVisitTracker })), {
@@ -28,7 +30,7 @@ export const revalidate = 3600
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://superalphaagent.com'
 
 type Props = {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 /**
@@ -68,10 +70,11 @@ function deriveKeywords(agent: {
  * 验证: 需求 4.4, 7.3
  */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
   const { data: agent } = await supabaseAdmin
     .from('agents')
     .select('*, categories(name, slug)')
-    .eq('slug', params.slug)
+    .eq('slug', slug)
     .single()
 
   if (!agent) {
@@ -81,17 +84,28 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
   }
 
-  const keywords = deriveKeywords(agent)
-  const pageUrl = `${SITE_URL}/agents/${agent.slug}`
+  // 类型断言确保 agent 有正确的类型
+  const agentData = agent as { 
+    slug: string
+    name: string
+    short_description?: string
+    platform?: string
+    pricing?: string
+    categories?: { name: string } | null
+    key_features?: string[] | null
+  }
+
+  const keywords = deriveKeywords(agentData)
+  const pageUrl = `${SITE_URL}/agents/${agentData.slug}`
   const siteName = 'Super Alpha Agent'
   
   // 构建完整的描述，包含关键信息
-  const fullDescription = agent.short_description 
-    ? `${agent.short_description} | 平台: ${agent.platform || '多平台'} | 定价: ${agent.pricing || '免费'}`
-    : `${agent.name} - 专业AI Agent工具，提供智能化解决方案`
+  const fullDescription = agentData.short_description 
+    ? `${agentData.short_description} | 平台: ${agentData.platform || '多平台'} | 定价: ${agentData.pricing || '免费'}`
+    : `${agentData.name} - 专业AI Agent工具，提供智能化解决方案`
 
   return {
-    title: `${agent.name} - AI Agent 详细介绍 | ${siteName}`,
+    title: `${agentData.name} - AI Agent 详细介绍 | ${siteName}`,
     description: fullDescription,
     keywords: keywords.join(', '),
     authors: [{ name: siteName }],
@@ -112,32 +126,32 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       canonical: pageUrl,
     },
     openGraph: {
-      title: `${agent.name} - AI Agent 详细介绍`,
-      description: agent.short_description || `了解${agent.name}的功能、特点和使用场景`,
+      title: `${agentData.name} - AI Agent 详细介绍`,
+      description: agentData.short_description || `了解${agentData.name}的功能、特点和使用场景`,
       type: 'article',
       url: pageUrl,
       siteName: siteName,
       locale: 'zh_CN',
-      images: agent.logo_url ? [
+      images: (agent as any).logo_url ? [
         {
-          url: agent.logo_url,
+          url: (agent as any).logo_url,
           width: 200,
           height: 200,
-          alt: `${agent.name} Logo`,
+          alt: `${agentData.name} Logo`,
         }
       ] : [],
-      publishedTime: agent.created_at,
-      modifiedTime: agent.updated_at,
-      section: agent.categories?.name || 'AI工具',
+      publishedTime: (agent as any).created_at,
+      modifiedTime: (agent as any).updated_at,
+      section: agentData.categories?.name || 'AI工具',
       tags: keywords,
     },
     twitter: {
       card: 'summary',
-      title: `${agent.name} - AI Agent`,
-      description: agent.short_description || `了解${agent.name}的功能和特点`,
-      images: agent.logo_url ? [agent.logo_url] : [],
+      title: `${agentData.name} - AI Agent`,
+      description: agentData.short_description || `了解${agentData.name}的功能和特点`,
+      images: (agent as any).logo_url ? [(agent as any).logo_url] : [],
     },
-    category: agent.categories?.name || 'AI工具',
+    category: agentData.categories?.name || 'AI工具',
   }
 }
 
@@ -282,27 +296,49 @@ function generateJsonLd(agent: {
 }
 
 export default async function AgentDetailPage({ params }: Props) {
-  const { data: agent } = await supabaseAdmin
+  // Next.js 16: params 和 headers 都是 Promise
+  const { slug } = await params
+  const headersList = await headers()
+  const userAgent = headersList.get('user-agent') || ''
+  
+  // 检查是否应该重定向人类用户到首页
+  // Bot 获得完整页面用于 SEO，人类用户重定向到首页并打开 Inspector Drawer
+  if (shouldRedirectToHome(userAgent)) {
+    redirect(`/?agent=${slug}`)
+  }
+
+  const { data: agentRaw } = await supabaseAdmin
     .from('agents')
     .select('*, categories(name, slug, icon)')
-    .eq('slug', params.slug)
+    .eq('slug', slug)
     .single()
 
-  if (!agent) notFound()
+  if (!agentRaw) notFound()
+
+  // 类型断言
+  const agent = agentRaw as any
 
   // 增加浏览量
-  await supabaseAdmin
+  await (supabaseAdmin as any)
     .from('agents')
-    .update({ view_count: agent.view_count + 1 })
+    .update({ view_count: (agent.view_count || 0) + 1 })
     .eq('id', agent.id)
 
   // 获取相似 Agents
-  const { data: similarAgents } = await supabaseAdmin
+  const { data: similarAgentsRaw } = await (supabaseAdmin as any)
     .from('agents')
     .select('id, slug, name, short_description, platform')
     .eq('category_id', agent.category_id)
     .neq('id', agent.id)
     .limit(3)
+  
+  const similarAgents = (similarAgentsRaw || []) as Array<{
+    id: string
+    slug: string
+    name: string
+    short_description: string
+    platform: string
+  }>
 
   // 生成结构化数据
   const jsonLdSchemas = generateJsonLd(agent)
@@ -359,7 +395,7 @@ export default async function AgentDetailPage({ params }: Props) {
       </nav>
 
       {/* AI 访问追踪 */}
-      <AIVisitTracker agentSlug={params.slug} />
+      <AIVisitTracker agentSlug={slug} />
 
       {/* 标题区域 - 语义化header元素 */}
       <header className="mb-8" role="banner">
