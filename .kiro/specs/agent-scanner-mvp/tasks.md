@@ -42,28 +42,39 @@
     - **属性 2: URL 类型检测准确性**
     - **验证: 需求 1.2, 1.3**
 
-- [-] 3. 检查点 - 确保所有测试通过
+- [x] 3. 检查点 - 确保所有测试通过
+
+
 
   - 确保所有测试通过，如有问题请询问用户。
 
 ## 阶段 2: SR 计算器核心
 
-- [ ] 4. 实现 SR 计算器 - Track A (GitHub)
-  - [ ] 4.1 创建 lib/scanner/github-scanner.ts
+
+- [x] 4. 实现 SR 计算器 - Track A (GitHub)
+
+
+
+  - [x] 4.1 创建 lib/scanner/github-scanner.ts
+
     - 从 GitHub API 获取仓库数据（stars, forks, 最后提交, 文件）
     - 检查 openapi.json, swagger.yaml, manifest.json, Dockerfile
     - 获取并分析 README 内容
     - 在 README 和描述中检测 MCP 关键词
     - 提取 homepage URL 用于混合检测
     - _需求: 2.1-2.9_
-  - [ ] 4.2 创建 lib/scanner/sr-calculator.ts，实现 Track A 评分逻辑
+
+  - [x] 4.2 创建 lib/scanner/sr-calculator.ts，实现 Track A 评分逻辑
+
     - 实现星标阶梯评分（>20k=2.0, >10k=1.5, >5k=1.0, >1k=0.5）
     - 实现 Fork 比率评分（forks > stars 的 10% = 1.0）
     - 实现活跃度评分（30 天内有提交 = 1.0, 有 license = 1.0）
     - 实现就绪度评分（openapi=1.5, dockerfile=0.5, readme=1.0）
     - 实现协议评分（MCP=2.0, 标准接口=1.0）
     - _需求: 2.1-2.7_
-  - [ ] 4.3 编写 Track A 评分的属性测试
+
+  - [x] 4.3 编写 Track A 评分的属性测试
+
     - **属性 3: 星标分数计算**
     - **属性 4: Fork 比率分数计算**
     - **属性 5: 活跃度分数计算**
@@ -72,8 +83,12 @@
     - **属性 8: README 质量评分**
     - **验证: 需求 2.1-2.7**
 
-- [ ] 5. 实现 SR 计算器 - Track B (SaaS)
-  - [ ] 5.1 使用 Playwright 创建 lib/scanner/saas-scanner.ts
+- [x] 5. 实现 SR 计算器 - Track B (SaaS)
+
+
+
+  - [x] 5.1 使用 Playwright 创建 lib/scanner/saas-scanner.ts
+
     - 验证 HTTPS 和 SSL 证书
     - 提取社交链接（Twitter, GitHub, Discord, LinkedIn）
     - 检测 JSON-LD 结构化数据
@@ -82,12 +97,16 @@
     - 扫描 API 文档路径（/docs, /api, /developers）
     - 检测集成关键词（SDK, Webhook, Zapier, Plugin）
     - _需求: 3.1-3.8_
-  - [ ] 5.2 在 sr-calculator.ts 中添加 Track B 评分逻辑
+  - [x] 5.2 在 sr-calculator.ts 中添加 Track B 评分逻辑
+
+
     - 实现信任评分（HTTPS=1.0, 社交链接>=2=1.0, 已认领=1.0）
     - 实现 AEO 评分（meta=1.0, JSON-LD=2.0, OG=1.0）
     - 实现互操作性评分（API 文档=1.5, 关键词=1.0, 登录=0.5）
     - _需求: 3.1-3.7_
-  - [ ] 5.3 编写 Track B 评分的属性测试
+  - [x] 5.3 编写 Track B 评分的属性测试
+
+
     - **属性 10: 社交链接检测**
     - **属性 11: JSON-LD 检测**
     - **属性 12: Meta 标签完整性**

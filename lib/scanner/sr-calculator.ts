@@ -188,8 +188,113 @@ export function calculateTrackAScore(scanResult: GitHubScanResult): {
 }
 
 // ============================================
-// Track B (SaaS) 评分函数 - 占位，后续实现
+// Track B (SaaS) 评分函数
 // ============================================
+
+/**
+ * 计算信任分数 (Trust Score)
+ * HTTPS = 1.0, 社交链接 >= 2 = 1.0, 已认领 = 1.0
+ * Requirements: 3.1, 3.2
+ * 
+ * @param httpsValid HTTPS 是否有效
+ * @param socialLinksCount 社交链接数量
+ * @param isClaimed 是否已认领
+ * @returns 信任分数 (0-3.0)
+ */
+export function calculateTrustScore(
+  httpsValid: boolean,
+  socialLinksCount: number,
+  isClaimed: boolean
+): number {
+  let score = 0
+  
+  // HTTPS 有效 +1.0
+  if (httpsValid) {
+    score += 1.0
+  }
+  
+  // 社交链接 >= 2 +1.0
+  if (socialLinksCount >= 2) {
+    score += 1.0
+  }
+  
+  // 已认领 +1.0
+  if (isClaimed) {
+    score += 1.0
+  }
+  
+  return score
+}
+
+/**
+ * 计算 AEO 可见性分数 (AEO Score)
+ * Meta 标签完整 = 1.0, JSON-LD = 2.0, OG 标签 = 1.0
+ * Requirements: 3.3, 3.4, 3.5
+ * 
+ * @param hasBasicMeta 是否有完整的基础 Meta 标签
+ * @param hasJsonLd 是否有 JSON-LD
+ * @param hasOgTags 是否有 OG 标签
+ * @returns AEO 分数 (0-4.0)
+ */
+export function calculateAeoScore(
+  hasBasicMeta: boolean,
+  hasJsonLd: boolean,
+  hasOgTags: boolean
+): number {
+  let score = 0
+  
+  // Meta 标签完整 +1.0
+  if (hasBasicMeta) {
+    score += 1.0
+  }
+  
+  // JSON-LD +2.0
+  if (hasJsonLd) {
+    score += 2.0
+  }
+  
+  // OG 标签 +1.0
+  if (hasOgTags) {
+    score += 1.0
+  }
+  
+  return score
+}
+
+/**
+ * 计算互操作性分数 (Interop Score)
+ * API 文档 = 1.5, 集成关键词 = 1.0, 登录按钮 = 0.5
+ * Requirements: 3.6, 3.7
+ * 
+ * @param hasApiDocsPath 是否有 API 文档路径
+ * @param hasIntegrationKeywords 是否有集成关键词
+ * @param hasLoginButton 是否有登录按钮
+ * @returns 互操作性分数 (0-3.0)
+ */
+export function calculateInteropScore(
+  hasApiDocsPath: boolean,
+  hasIntegrationKeywords: boolean,
+  hasLoginButton: boolean
+): number {
+  let score = 0
+  
+  // API 文档 +1.5
+  if (hasApiDocsPath) {
+    score += 1.5
+  }
+  
+  // 集成关键词 +1.0
+  if (hasIntegrationKeywords) {
+    score += 1.0
+  }
+  
+  // 登录按钮 +0.5
+  if (hasLoginButton) {
+    score += 0.5
+  }
+  
+  return score
+}
 
 /**
  * 计算 Track B (SaaS) 总分
@@ -206,13 +311,32 @@ export function calculateTrackBScore(
   score: number
   breakdown: Partial<SRScoreBreakdown>
 } {
-  // TODO: Task 5 实现
+  const trustScore = calculateTrustScore(
+    scanResult.httpsValid,
+    scanResult.socialLinks.length,
+    isClaimed
+  )
+  
+  const aeoScore = calculateAeoScore(
+    scanResult.hasBasicMeta,
+    scanResult.hasJsonLd,
+    scanResult.hasOgTags
+  )
+  
+  const interopScore = calculateInteropScore(
+    scanResult.hasApiDocsPath,
+    scanResult.hasIntegrationKeywords,
+    scanResult.hasLoginButton
+  )
+  
+  const totalScore = trustScore + aeoScore + interopScore
+  
   return {
-    score: 0,
+    score: totalScore,
     breakdown: {
-      trustScore: 0,
-      aeoScore: 0,
-      interopScore: 0
+      trustScore,
+      aeoScore,
+      interopScore
     }
   }
 }
