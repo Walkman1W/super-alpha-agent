@@ -361,19 +361,24 @@
     - _需求: 7.4_
   - [x] 18.4 编写索引展示的属性测试
 
+
     - **属性 22: Agent 索引排序**
     - **属性 23: 已验证过滤器正确性**
     - **验证: 需求 7.1, 7.4**
 
 ## 阶段 7: 前端 - 连接器
 
-- [ ] 19. 实现连接按钮
-  - [ ] 19.1 创建 components/connector/connect-button.tsx
+- [x] 19. 实现连接按钮
+
+  - [x] 19.1 创建 components/connector/connect-button.tsx
+
+
     - Agent 卡片/详情页上的"连接"按钮
     - 打开带生成的 Interface Prompt 的模态框
     - 复制到剪贴板并显示成功反馈
     - _需求: 8.1, 8.4_
-  - [ ] 19.2 创建 components/connector/prompt-modal.tsx
+
+  - [x] 19.2 创建 components/connector/prompt-modal.tsx
     - 在代码块中展示生成的提示词
     - 如需要则显示 API 密钥占位符
     - 带 toast 通知的复制按钮

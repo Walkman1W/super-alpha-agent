@@ -2,6 +2,7 @@
 
 import { memo } from 'react'
 import { cn } from '@/lib/utils'
+import { ConnectButton } from '@/components/connector'
 import type { ScanResponse, DiagnosticItem, SRTier } from '@/lib/types/scanner'
 
 interface ScanResultsProps {
@@ -131,9 +132,13 @@ function ScanResultsComponent({ result, onRescan, isRescanning }: ScanResultsPro
           </div>
         )}
 
-        {/* 重新扫描按钮 */}
-        {onRescan && (
-          <div className="mt-6 pt-6 border-t border-zinc-800 flex justify-end">
+        {/* 操作按钮区 */}
+        <div className="mt-6 pt-6 border-t border-zinc-800 flex items-center justify-between">
+          {/* Connect 按钮 */}
+          <ConnectButton agent={agent} variant="default" />
+          
+          {/* 重新扫描按钮 */}
+          {onRescan && (
             <button
               onClick={onRescan}
               disabled={isRescanning}
@@ -147,8 +152,8 @@ function ScanResultsComponent({ result, onRescan, isRescanning }: ScanResultsPro
             >
               {isRescanning ? '扫描中...' : '重新扫描'}
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* 诊断指标卡片 */}

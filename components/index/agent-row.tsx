@@ -3,6 +3,7 @@
 import { memo, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { ConnectButton } from '@/components/connector'
 import type { ScannerAgent, SRTier, IOModality } from '@/lib/types/scanner'
 import { BADGE_COLORS } from '@/lib/types/scanner'
 
@@ -205,6 +206,9 @@ function AgentRowComponent({ agent, className }: AgentRowProps) {
       {/* 悬停操作按钮 */}
       <div className="absolute right-4 bottom-5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-2 items-center">
         <CopyToast show={showCopyToast} />
+        
+        {/* Connect 按钮 - 所有 Agent 都显示 */}
+        <ConnectButton agent={agent} variant="compact" />
         
         {agent.isVerified ? (
           <>
