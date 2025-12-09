@@ -15,25 +15,35 @@
     - 存储 IP 地址、扫描次数、窗口开始时间
     - _需求: 10.1_
   - [x] 1.4 在 lib/types/agent.ts 中创建 TypeScript 类型
+
     - 定义 Agent, ScanRequest, ScanResponse, DiagnosticItem 接口
     - 定义 SRScoreBreakdown, IOModality 类型
     - _需求: 9.2_
 
-- [ ] 2. 实现 URL 检测器服务
-  - [ ] 2.1 创建 lib/scanner/url-detector.ts，实现 URL 验证和类型检测
+- [x] 2. 实现 URL 检测器服务
+
+
+
+
+  - [x] 2.1 创建 lib/scanner/url-detector.ts，实现 URL 验证和类型检测
+
     - 使用 URL 构造函数验证 URL 格式
     - 检测 GitHub URL（github.com/owner/repo 模式）
     - 从 GitHub URL 提取 owner/repo
     - 规范化 URL（移除尾部斜杠，确保 https）
     - _需求: 1.1, 1.2, 1.3_
-  - [ ] 2.2 编写 URL 验证的属性测试
+  - [x] 2.2 编写 URL 验证的属性测试
+
+
     - **属性 1: URL 验证正确性**
     - **验证: 需求 1.1**
-  - [ ] 2.3 编写 URL 类型检测的属性测试
+  - [x] 2.3 编写 URL 类型检测的属性测试
+
     - **属性 2: URL 类型检测准确性**
     - **验证: 需求 1.2, 1.3**
 
-- [ ] 3. 检查点 - 确保所有测试通过
+- [-] 3. 检查点 - 确保所有测试通过
+
   - 确保所有测试通过，如有问题请询问用户。
 
 ## 阶段 2: SR 计算器核心
