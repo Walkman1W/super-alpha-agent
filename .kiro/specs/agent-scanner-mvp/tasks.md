@@ -379,6 +379,7 @@
     - _需求: 8.1, 8.4_
 
   - [x] 19.2 创建 components/connector/prompt-modal.tsx
+
     - 在代码块中展示生成的提示词
     - 如需要则显示 API 密钥占位符
     - 带 toast 通知的复制按钮
@@ -386,20 +387,31 @@
 
 ## 阶段 8: 数据持久化集成
 
-- [ ] 20. 实现数据层
-  - [ ] 20.1 创建 lib/data/agent-repository.ts
+
+
+- [x] 20. 实现数据层
+
+
+  - [x] 20.1 创建 lib/data/agent-repository.ts
+
     - upsertAgent: 创建或更新 Agent 记录
     - getAgentBySlug: 获取单个 Agent
     - getAgents: 带过滤器获取（已验证、按 SR 排序）
     - updateClaimStatus: 将 is_claimed 设为 true
     - _需求: 9.1, 9.3, 9.5_
-  - [ ] 20.2 创建 lib/data/scan-history-repository.ts
+
+  - [x] 20.2 创建 lib/data/scan-history-repository.ts
+
     - createScanHistory: 记录扫描结果
     - getScoreHistory: 获取历史用于趋势展示
     - _需求: 9.4_
-  - [ ] 20.3 编写数据持久化的属性测试
+
+  - [x] 20.3 编写数据持久化的属性测试
+
     - **属性 27: 数据持久化完整性**
     - **验证: 需求 9.1, 9.2**
 
-- [ ] 21. 最终检查点 - 确保所有测试通过
+- [x] 21. 最终检查点 - 确保所有测试通过
+
+
   - 确保所有测试通过，如有问题请询问用户。
