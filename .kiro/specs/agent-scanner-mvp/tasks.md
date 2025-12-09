@@ -271,6 +271,7 @@
 
 
 
+
   - [x] 14.1 创建 lib/generators/prompt-generator.ts
 
     - 生成包含 Agent 名称、端点、能力的 Interface Prompt
@@ -284,6 +285,10 @@
     - **属性 25: API 密钥占位符**
     - **属性 26: 自然语言回退**
     - **验证: 需求 8.1-8.6**
+
+
+
+
 
 - [ ] 15. 创建生成器 API 路由
   - [ ] 15.1 创建 app/api/generate/route.ts
