@@ -120,6 +120,7 @@
 
 
 
+
   - [x] 6.1 在 sr-calculator.ts 中添加混合评分逻辑
 
     - 当适用时计算 Track A 和 Track B 两个分数
@@ -136,14 +137,20 @@
     - **属性 18: 等级分配**
     - **验证: 需求 4.1-4.5**
 
-- [ ] 7. 实现 I/O 提取器
-  - [ ] 7.1 创建 lib/scanner/io-extractor.ts
+- [x] 7. 实现 I/O 提取器
+
+
+
+  - [x] 7.1 创建 lib/scanner/io-extractor.ts
+
     - 为每种模态定义关键词模式（Text, Image, Audio, JSON, Code, File, Video）
     - 从内容中提取输入模态
     - 从内容中提取输出模态
     - 如果没有模式匹配则返回 'Unknown'
     - _需求: 2.8, 3.8_
-  - [ ] 7.2 编写 I/O 提取的属性测试
+
+  - [x] 7.2 编写 I/O 提取的属性测试
+
     - **属性 9: I/O 模态提取**
     - **验证: 需求 2.8, 3.8**
 
