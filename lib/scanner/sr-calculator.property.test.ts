@@ -1,7 +1,7 @@
 /**
  * SR Calculator 属性测试
  * 使用 fast-check 进行基于属性的测试
- * Requirements: 2.1-2.7
+ * Requirements: 2.1-2.7, 4.1-4.5
  */
 
 import { describe, it, expect } from 'vitest'
@@ -14,9 +14,14 @@ import {
   calculateProtocolScore,
   getTier,
   roundScore,
-  calculateHybridScore
+  calculateHybridScore,
+  calculateSRScore,
+  determineTrack,
+  isValidScore,
+  normalizeScore
 } from './sr-calculator'
 import { detectMCP, hasUsageCodeBlock } from './github-scanner'
+import type { GitHubScanResult, SaaSScanResult } from '@/lib/types/scanner'
 
 describe('SR Calculator - Track A 属性测试', () => {
   /**
@@ -377,6 +382,371 @@ Some random code
             } else {
               expect(score).toBe(0)
             }
+          }
+        ),
+        { numRuns: 100 }
+      )
+    })
+  })
+})
+
+/**
+ * 混合评分和最终计算属性测试
+ * Requirements: 4.1-4.5
+ */
+describe('SR Calculator - 混合评分属性测试', () => {
+  // 生成有效的 GitHub 扫描结果
+  const githubScanResultArb = fc.record({
+    stars: fc.nat(100000),
+    forks: fc.nat(50000),
+    lastCommitDate: fc.option(fc.date({ min: new Date('2020-01-01'), max: new Date() }), { nil: null }),
+    hasLicense: fc.boolean(),
+    hasOpenAPI: fc.boolean(),
+    hasDockerfile: fc.boolean(),
+    hasManifest: fc.boolean(),
+    readmeLength: fc.nat(1000),
+    hasUsageCodeBlock: fc.boolean(),
+    hasMCP: fc.boolean(),
+    hasStandardInterface: fc.boolean(),
+    homepage: fc.option(fc.webUrl(), { nil: null }),
+    description: fc.string({ minLength: 0, maxLength: 200 }),
+    topics: fc.array(fc.string({ minLength: 1, maxLength: 20 }), { maxLength: 10 }),
+    owner: fc.string({ minLength: 1, maxLength: 50 }),
+    repo: fc.string({ minLength: 1, maxLength: 50 })
+  }) as fc.Arbitrary<GitHubScanResult>
+
+  // 生成有效的 SaaS 扫描结果
+  const saasScanResultArb = fc.record({
+    httpsValid: fc.boolean(),
+    sslValidMonths: fc.nat(36),
+    socialLinks: fc.array(fc.webUrl(), { maxLength: 5 }),
+    hasJsonLd: fc.boolean(),
+    jsonLdContent: fc.constant(null),
+    hasBasicMeta: fc.boolean(),
+    metaTitle: fc.option(fc.string({ minLength: 1, maxLength: 100 }), { nil: null }),
+    metaDescription: fc.option(fc.string({ minLength: 1, maxLength: 200 }), { nil: null }),
+    hasH1: fc.boolean(),
+    hasOgTags: fc.boolean(),
+    ogImage: fc.option(fc.webUrl(), { nil: null }),
+    ogTitle: fc.option(fc.string({ minLength: 1, maxLength: 100 }), { nil: null }),
+    hasApiDocsPath: fc.boolean(),
+    apiDocsUrl: fc.option(fc.webUrl(), { nil: null }),
+    hasIntegrationKeywords: fc.boolean(),
+    integrationKeywords: fc.array(fc.constantFrom('sdk', 'webhook', 'zapier', 'plugin'), { maxLength: 4 }),
+    hasLoginButton: fc.boolean(),
+    pageContent: fc.string({ minLength: 0, maxLength: 500 })
+  }) as fc.Arbitrary<SaaSScanResult>
+
+  /**
+   * **功能: agent-scanner-mvp, 属性 16: 混合分数公式 (完整测试)**
+   * 对于任意两个分数（scoreA, scoreB），其中两者都是非负数，混合计算应返回 Max(scoreA, scoreB) + 0.5，封顶为 10.0。
+   * **验证: 需求 4.1, 4.2, 4.3**
+   */
+  describe('属性 16: 混合分数公式 (完整测试)', () => {
+    it('混合分数应始终 >= 单轨道最高分', () => {
+      fc.assert(
+        fc.property(
+          fc.float({ min: 0, max: 10, noNaN: true }),
+          fc.float({ min: 0, max: 10, noNaN: true }),
+          (scoreA, scoreB) => {
+            const hybrid = calculateHybridScore(scoreA, scoreB)
+            const maxSingle = Math.max(scoreA, scoreB)
+            
+            // 混合分数应 >= 单轨道最高分
+            expect(hybrid).toBeGreaterThanOrEqual(maxSingle)
+          }
+        ),
+        { numRuns: 100 }
+      )
+    })
+
+    it('混合奖励应恰好为 0.5 (除非封顶)', () => {
+      fc.assert(
+        fc.property(
+          fc.float({ min: Math.fround(0), max: Math.fround(9.4), noNaN: true }),
+          fc.float({ min: Math.fround(0), max: Math.fround(9.4), noNaN: true }),
+          (scoreA, scoreB) => {
+            const hybrid = calculateHybridScore(scoreA, scoreB)
+            const maxSingle = Math.max(scoreA, scoreB)
+            
+            // 当最高分 <= 9.5 时，混合奖励应恰好为 0.5
+            if (maxSingle <= 9.5) {
+              expect(hybrid - maxSingle).toBeCloseTo(0.5, 5)
+            }
+          }
+        ),
+        { numRuns: 100 }
+      )
+    })
+
+    it('分数应始终封顶为 10.0', () => {
+      fc.assert(
+        fc.property(
+          fc.float({ min: Math.fround(9.6), max: Math.fround(10), noNaN: true }),
+          fc.float({ min: Math.fround(9.6), max: Math.fround(10), noNaN: true }),
+          (scoreA, scoreB) => {
+            const hybrid = calculateHybridScore(scoreA, scoreB)
+            expect(hybrid).toBeLessThanOrEqual(10.0)
+          }
+        ),
+        { numRuns: 100 }
+      )
+    })
+
+    it('负数输入应被安全处理', () => {
+      fc.assert(
+        fc.property(
+          fc.float({ min: -100, max: 10, noNaN: true }),
+          fc.float({ min: -100, max: 10, noNaN: true }),
+          (scoreA, scoreB) => {
+            const hybrid = calculateHybridScore(scoreA, scoreB)
+            
+            // 结果应始终在有效范围内
+            expect(hybrid).toBeGreaterThanOrEqual(0)
+            expect(hybrid).toBeLessThanOrEqual(10.0)
+          }
+        ),
+        { numRuns: 100 }
+      )
+    })
+  })
+
+  /**
+   * **功能: agent-scanner-mvp, 属性 17: 分数四舍五入 (边界测试)**
+   * 对于任意计算出的分数，最终分数应使用标准四舍五入规则精确到一位小数。
+   * **验证: 需求 4.4**
+   */
+  describe('属性 17: 分数四舍五入 (边界测试)', () => {
+    it('边界值应正确四舍五入', () => {
+      // 测试关键边界值
+      expect(roundScore(7.45)).toBe(7.5)  // 四舍五入到 7.5
+      expect(roundScore(7.44)).toBe(7.4)  // 四舍五入到 7.4
+      expect(roundScore(8.95)).toBe(9.0)  // 四舍五入到 9.0 (S 级边界)
+      expect(roundScore(4.95)).toBe(5.0)  // 四舍五入到 5.0 (B 级边界)
+    })
+
+    it('负数应返回 0', () => {
+      fc.assert(
+        fc.property(
+          fc.float({ min: Math.fround(-100), max: Math.fround(-0.01), noNaN: true }),
+          (score) => {
+            expect(roundScore(score)).toBe(0)
+          }
+        ),
+        { numRuns: 100 }
+      )
+    })
+
+    it('NaN 和 Infinity 应返回 0', () => {
+      expect(roundScore(NaN)).toBe(0)
+      expect(roundScore(Infinity)).toBe(0)
+      expect(roundScore(-Infinity)).toBe(0)
+    })
+  })
+
+  /**
+   * **功能: agent-scanner-mvp, 属性 18: 等级分配 (边界测试)**
+   * 对于任意范围在 [0.0, 10.0] 的分数，等级分配应为：S 对应 [9.0-10.0]，A 对应 [7.5-8.9]，B 对应 [5.0-7.4]，C 对应 [0.0-5.0)。
+   * **验证: 需求 4.5**
+   */
+  describe('属性 18: 等级分配 (边界测试)', () => {
+    it('边界值应正确分配等级', () => {
+      // S 级边界
+      expect(getTier(9.0)).toBe('S')
+      expect(getTier(10.0)).toBe('S')
+      expect(getTier(8.99)).toBe('A')
+      
+      // A 级边界
+      expect(getTier(7.5)).toBe('A')
+      expect(getTier(8.9)).toBe('A')
+      expect(getTier(7.49)).toBe('B')
+      
+      // B 级边界
+      expect(getTier(5.0)).toBe('B')
+      expect(getTier(7.4)).toBe('B')
+      expect(getTier(4.99)).toBe('C')
+      
+      // C 级边界
+      expect(getTier(0)).toBe('C')
+      expect(getTier(4.9)).toBe('C')
+    })
+
+    it('负数和无效值应返回 C', () => {
+      expect(getTier(-1)).toBe('C')
+      expect(getTier(NaN)).toBe('C')
+      expect(getTier(Infinity)).toBe('C')
+    })
+  })
+
+  /**
+   * 轨道类型确定测试
+   */
+  describe('轨道类型确定', () => {
+    it('应正确确定轨道类型', () => {
+      fc.assert(
+        fc.property(
+          fc.boolean(),
+          fc.boolean(),
+          (hasGitHub, hasSaaS) => {
+            const track = determineTrack(hasGitHub, hasSaaS)
+            
+            if (hasGitHub && hasSaaS) {
+              expect(track).toBe('Hybrid')
+            } else if (hasGitHub) {
+              expect(track).toBe('OpenSource')
+            } else {
+              expect(track).toBe('SaaS')
+            }
+          }
+        ),
+        { numRuns: 100 }
+      )
+    })
+  })
+
+  /**
+   * 分数验证和规范化测试
+   */
+  describe('分数验证和规范化', () => {
+    it('isValidScore 应正确验证分数范围', () => {
+      fc.assert(
+        fc.property(
+          fc.float({ min: -100, max: 100, noNaN: true }),
+          (score) => {
+            const valid = isValidScore(score)
+            
+            if (score >= 0 && score <= 10) {
+              expect(valid).toBe(true)
+            } else {
+              expect(valid).toBe(false)
+            }
+          }
+        ),
+        { numRuns: 100 }
+      )
+    })
+
+    it('normalizeScore 应将分数限制在 [0, 10]', () => {
+      fc.assert(
+        fc.property(
+          fc.float({ min: -100, max: 100, noNaN: true }),
+          (score) => {
+            const normalized = normalizeScore(score)
+            
+            expect(normalized).toBeGreaterThanOrEqual(0)
+            expect(normalized).toBeLessThanOrEqual(10)
+            
+            if (score < 0) {
+              // 负数应返回 0 (使用 toEqual 处理 -0 情况)
+              expect(normalized).toEqual(0)
+            } else if (score > 10) {
+              expect(normalized).toBe(10)
+            } else {
+              // 处理 -0 的特殊情况
+              if (Object.is(score, -0)) {
+                expect(normalized).toEqual(0)
+              } else {
+                expect(normalized).toBe(score)
+              }
+            }
+          }
+        ),
+        { numRuns: 100 }
+      )
+    })
+  })
+
+  /**
+   * 综合 SR 计算测试
+   */
+  describe('综合 SR 计算', () => {
+    it('仅 GitHub 数据应返回 OpenSource 轨道', () => {
+      fc.assert(
+        fc.property(
+          githubScanResultArb,
+          fc.boolean(),
+          (github, isClaimed) => {
+            const result = calculateSRScore(github, null, isClaimed)
+            
+            expect(result.track).toBe('OpenSource')
+            expect(result.scoreB).toBe(0)
+            expect(result.finalScore).toBeGreaterThanOrEqual(0)
+            expect(result.finalScore).toBeLessThanOrEqual(10)
+          }
+        ),
+        { numRuns: 100 }
+      )
+    })
+
+    it('仅 SaaS 数据应返回 SaaS 轨道', () => {
+      fc.assert(
+        fc.property(
+          saasScanResultArb,
+          fc.boolean(),
+          (saas, isClaimed) => {
+            const result = calculateSRScore(null, saas, isClaimed)
+            
+            expect(result.track).toBe('SaaS')
+            expect(result.scoreA).toBe(0)
+            expect(result.finalScore).toBeGreaterThanOrEqual(0)
+            expect(result.finalScore).toBeLessThanOrEqual(10)
+          }
+        ),
+        { numRuns: 100 }
+      )
+    })
+
+    it('同时有 GitHub 和 SaaS 数据应返回 Hybrid 轨道', () => {
+      fc.assert(
+        fc.property(
+          githubScanResultArb,
+          saasScanResultArb,
+          fc.boolean(),
+          (github, saas, isClaimed) => {
+            const result = calculateSRScore(github, saas, isClaimed)
+            
+            expect(result.track).toBe('Hybrid')
+            // 混合分数应 >= 单轨道最高分
+            expect(result.finalScore).toBeGreaterThanOrEqual(
+              Math.max(result.scoreA, result.scoreB)
+            )
+            expect(result.finalScore).toBeLessThanOrEqual(10)
+          }
+        ),
+        { numRuns: 100 }
+      )
+    })
+
+    it('最终分数应始终是一位小数', () => {
+      fc.assert(
+        fc.property(
+          fc.option(githubScanResultArb, { nil: null }),
+          fc.option(saasScanResultArb, { nil: null }),
+          fc.boolean(),
+          (github, saas, isClaimed) => {
+            const result = calculateSRScore(github, saas, isClaimed)
+            
+            // 验证是一位小数
+            const decimalPlaces = (result.finalScore.toString().split('.')[1] || '').length
+            expect(decimalPlaces).toBeLessThanOrEqual(1)
+          }
+        ),
+        { numRuns: 100 }
+      )
+    })
+
+    it('等级应与分数一致', () => {
+      fc.assert(
+        fc.property(
+          fc.option(githubScanResultArb, { nil: null }),
+          fc.option(saasScanResultArb, { nil: null }),
+          fc.boolean(),
+          (github, saas, isClaimed) => {
+            const result = calculateSRScore(github, saas, isClaimed)
+            
+            // 验证等级与分数一致
+            const expectedTier = getTier(result.finalScore)
+            expect(result.tier).toBe(expectedTier)
           }
         ),
         { numRuns: 100 }

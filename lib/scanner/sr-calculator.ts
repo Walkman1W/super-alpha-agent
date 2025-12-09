@@ -343,6 +343,7 @@ export function calculateTrackBScore(
 
 // ============================================
 // 混合评分和最终计算
+// Requirements: 4.1-4.5
 // ============================================
 
 /**
@@ -350,10 +351,13 @@ export function calculateTrackBScore(
  * S: 9.0-10.0, A: 7.5-8.9, B: 5.0-7.4, C: <5.0
  * Requirements: 4.5
  * 
- * @param score 分数
+ * @param score 分数 (0.0 - 10.0)
  * @returns SR 等级
  */
 export function getTier(score: number): SRTier {
+  // 处理边界情况：负数或 NaN 返回 C
+  if (!Number.isFinite(score) || score < 0) return 'C'
+  
   if (score >= SR_TIER_THRESHOLDS.S) return 'S'
   if (score >= SR_TIER_THRESHOLDS.A) return 'A'
   if (score >= SR_TIER_THRESHOLDS.B) return 'B'
@@ -362,32 +366,50 @@ export function getTier(score: number): SRTier {
 
 /**
  * 四舍五入到一位小数
+ * 使用标准四舍五入规则 (银行家舍入的简化版)
  * Requirements: 4.4
  * 
  * @param score 原始分数
  * @returns 四舍五入后的分数
  */
 export function roundScore(score: number): number {
+  // 处理边界情况
+  if (!Number.isFinite(score)) return 0
+  if (score < 0) return 0
+  
   return Math.round(score * 10) / 10
 }
 
 /**
  * 计算混合分数
- * 公式: Max(Score_A, Score_B) + 0.5, 封顶 10.0
- * Requirements: 4.1-4.3
+ * 公式: Max(Score_A, Score_B) + 0.5 (混合奖励)
+ * 封顶为 10.0
+ * Requirements: 4.1, 4.2, 4.3
  * 
- * @param scoreA Track A 分数
- * @param scoreB Track B 分数
- * @returns 混合分数
+ * @param scoreA Track A (GitHub) 分数
+ * @param scoreB Track B (SaaS) 分数
+ * @returns 混合分数 (0.0 - 10.0)
  */
 export function calculateHybridScore(scoreA: number, scoreB: number): number {
-  const maxScore = Math.max(scoreA, scoreB)
+  // 处理边界情况：确保输入为有效数字
+  const safeScoreA = Number.isFinite(scoreA) && scoreA >= 0 ? scoreA : 0
+  const safeScoreB = Number.isFinite(scoreB) && scoreB >= 0 ? scoreB : 0
+  
+  // 取两个轨道的最高分
+  const maxScore = Math.max(safeScoreA, safeScoreB)
+  
+  // 添加混合奖励 +0.5
   const hybridScore = maxScore + 0.5
+  
+  // 封顶为 10.0
   return Math.min(hybridScore, 10.0)
 }
 
 /**
  * 确定轨道类型
+ * - Hybrid: 同时有 GitHub 和 SaaS 数据
+ * - OpenSource: 仅有 GitHub 数据
+ * - SaaS: 仅有 SaaS 数据或无数据
  * 
  * @param hasGitHub 是否有 GitHub 数据
  * @param hasSaaS 是否有 SaaS 数据
@@ -400,7 +422,29 @@ export function determineTrack(hasGitHub: boolean, hasSaaS: boolean): SRTrack {
 }
 
 /**
+ * 验证分数是否在有效范围内
+ * 
+ * @param score 分数
+ * @returns 是否有效
+ */
+export function isValidScore(score: number): boolean {
+  return Number.isFinite(score) && score >= 0 && score <= 10
+}
+
+/**
+ * 规范化分数到有效范围 [0, 10]
+ * 
+ * @param score 原始分数
+ * @returns 规范化后的分数
+ */
+export function normalizeScore(score: number): number {
+  if (!Number.isFinite(score)) return 0
+  return Math.max(0, Math.min(score, 10))
+}
+
+/**
  * 计算最终 SR 分数
+ * 综合 Track A (GitHub) 和 Track B (SaaS) 的评分
  * Requirements: 2.1-2.7, 3.1-3.7, 4.1-4.5
  * 
  * @param github GitHub 扫描结果 (可选)
@@ -418,7 +462,7 @@ export function calculateSRScore(
   let scoreB = 0
   let isMCP = false
   
-  // 计算 Track A 分数
+  // 计算 Track A 分数 (GitHub)
   if (github) {
     const trackAResult = calculateTrackAScore(github)
     scoreA = trackAResult.score
@@ -428,7 +472,7 @@ export function calculateSRScore(
     Object.assign(breakdown, trackAResult.breakdown)
   }
   
-  // 计算 Track B 分数
+  // 计算 Track B 分数 (SaaS)
   if (saas) {
     const trackBResult = calculateTrackBScore(saas, isClaimed)
     scoreB = trackBResult.score
@@ -441,27 +485,34 @@ export function calculateSRScore(
   const track = determineTrack(!!github, !!saas)
   
   // 计算最终分数
+  // Requirements: 4.1-4.3
   let finalScore: number
   if (track === 'Hybrid') {
+    // 混合型: Max(A, B) + 0.5 奖励
     finalScore = calculateHybridScore(scoreA, scoreB)
   } else if (track === 'OpenSource') {
+    // 纯开源: 使用 Track A 分数
     finalScore = scoreA
   } else {
+    // 纯 SaaS: 使用 Track B 分数
     finalScore = scoreB
   }
   
-  // 四舍五入并封顶
-  finalScore = roundScore(Math.min(finalScore, 10.0))
+  // 规范化分数到 [0, 10] 范围
+  finalScore = normalizeScore(finalScore)
   
-  // 确定等级
+  // 四舍五入到一位小数 (Requirements: 4.4)
+  finalScore = roundScore(finalScore)
+  
+  // 确定等级 (Requirements: 4.5)
   const tier = getTier(finalScore)
   
   return {
     finalScore,
     tier,
     track,
-    scoreA: roundScore(scoreA),
-    scoreB: roundScore(scoreB),
+    scoreA: roundScore(normalizeScore(scoreA)),
+    scoreB: roundScore(normalizeScore(scoreB)),
     breakdown,
     isMCP,
     isVerified: isClaimed
