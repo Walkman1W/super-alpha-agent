@@ -221,30 +221,48 @@
     - **属性 19: 诊断建议**
     - **验证: 需求 5.4**
 
-- [-] 11. 检查点 - 确保所有测试通过
+- [x] 11. 检查点 - 确保所有测试通过
+
+
 
   - 确保所有测试通过，如有问题请询问用户。
 
 ## 阶段 4: 生成器
 
-- [ ] 12. 实现 JSON-LD 生成器
-  - [ ] 12.1 创建 lib/generators/json-ld-generator.ts
+- [x] 12. 实现 JSON-LD 生成器
+
+
+
+
+  - [x] 12.1 创建 lib/generators/json-ld-generator.ts
+
     - 生成 SoftwareApplication schema
     - 包含 @type, name, description, url, provider 字段
     - 格式化为有效的 JSON 字符串
     - 生成部署说明
     - _需求: 6.1-6.5_
-  - [ ] 12.2 编写 JSON-LD 生成的属性测试
+
+  - [x] 12.2 编写 JSON-LD 生成的属性测试
+
     - **属性 20: JSON-LD 生成完整性**
     - **验证: 需求 6.1, 6.2, 6.3**
 
-- [ ] 13. 实现徽章生成器
-  - [ ] 13.1 创建 lib/generators/badge-generator.ts
+
+- [x] 13. 实现徽章生成器
+
+
+
+
+  - [x] 13.1 创建 lib/generators/badge-generator.ts
+
     - 生成带等级颜色的 SVG 徽章（绿色=S, 蓝色=A, 黄色=B, 灰色=C）
     - 生成链接到 Agent 报告页的嵌入代码
     - 在徽章中显示分数
     - _需求: 6.6, 6.7_
-  - [ ] 13.2 编写徽章颜色映射的属性测试
+
+  - [x] 13.2 编写徽章颜色映射的属性测试
+
+
     - **属性 21: 徽章颜色映射**
     - **验证: 需求 6.7**
 
