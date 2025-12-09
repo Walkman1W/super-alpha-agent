@@ -290,8 +290,10 @@
 
 
 
+
 - [ ] 15. 创建生成器 API 路由
-  - [ ] 15.1 创建 app/api/generate/route.ts
+  - [-] 15.1 创建 app/api/generate/route.ts
+
     - 接受 POST 请求，参数 { agentSlug, type: 'jsonld' | 'badge' | 'prompt' }
     - 根据类型返回生成的内容
     - 跟踪生成事件用于分析
