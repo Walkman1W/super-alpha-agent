@@ -253,6 +253,7 @@
 
 
 
+
   - [x] 13.1 创建 lib/generators/badge-generator.ts
 
     - 生成带等级颜色的 SVG 徽章（绿色=S, 蓝色=A, 黄色=B, 灰色=C）
@@ -266,13 +267,19 @@
     - **属性 21: 徽章颜色映射**
     - **验证: 需求 6.7**
 
-- [ ] 14. 实现提示词生成器
-  - [ ] 14.1 创建 lib/generators/prompt-generator.ts
+- [x] 14. 实现提示词生成器
+
+
+
+  - [x] 14.1 创建 lib/generators/prompt-generator.ts
+
     - 生成包含 Agent 名称、端点、能力的 Interface Prompt
     - 当需要 API 密钥时包含 <PASTE_YOUR_KEY_HERE> 占位符
     - 为没有 API 结构的 Track B 生成自然语言回退
     - _需求: 8.1-8.6_
-  - [ ] 14.2 编写提示词生成的属性测试
+
+  - [x] 14.2 编写提示词生成的属性测试
+
     - **属性 24: Interface Prompt 生成**
     - **属性 25: API 密钥占位符**
     - **属性 26: 自然语言回退**
