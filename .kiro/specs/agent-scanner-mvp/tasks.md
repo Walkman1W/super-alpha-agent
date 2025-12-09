@@ -2,19 +2,19 @@
 
 ## 阶段 1: 核心基础设施
 
-- [ ] 1. 设置数据库 Schema 和类型
-  - [ ] 1.1 创建 Supabase 迁移：agents 表及 SR 评分字段
+- [x] 1. 设置数据库 Schema 和类型
+  - [x] 1.1 创建 Supabase 迁移：agents 表及 SR 评分字段
     - 添加列：sr_score, sr_tier, sr_track, score_github, score_saas, score_breakdown (JSONB)
     - 添加列：is_mcp, is_claimed, is_verified, input_types, output_types
     - 添加索引：sr_score DESC, is_verified, slug
     - _需求: 9.1, 9.2_
-  - [ ] 1.2 创建 Supabase 迁移：scan_history 表
+  - [x] 1.2 创建 Supabase 迁移：scan_history 表
     - 跟踪分数随时间的变化用于趋势展示
     - _需求: 9.4_
-  - [ ] 1.3 创建 Supabase 迁移：rate_limits 表
+  - [x] 1.3 创建 Supabase 迁移：rate_limits 表
     - 存储 IP 地址、扫描次数、窗口开始时间
     - _需求: 10.1_
-  - [ ] 1.4 在 lib/types/agent.ts 中创建 TypeScript 类型
+  - [x] 1.4 在 lib/types/agent.ts 中创建 TypeScript 类型
     - 定义 Agent, ScanRequest, ScanResponse, DiagnosticItem 接口
     - 定义 SRScoreBreakdown, IOModality 类型
     - _需求: 9.2_

@@ -3,6 +3,9 @@
  * 扩展的 Agent 数据模型，支持 Bloomberg Terminal 风格界面
  */
 
+// 导出 Scanner 相关类型
+export * from './scanner'
+
 // 实体类型: Agent 的交付形态
 export type EntityType = 'repo' | 'saas' | 'app'
 
