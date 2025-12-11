@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage Design V1 - 统一输入框模式</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --bg-card: #0A0A0A;
+            --border: #1A1A1A;
+            --text-main: #E5E5E5;
+            --text-dim: #888;
+            --accent-green: #00FF94;
+            --accent-purple: #8B5CF6;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            background: var(--bg); 
+            color: var(--text-main); 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* ========== 设计说明标签 ========== */
+        .design-label {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-purple);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 1000;
+        }
+
+        /* ========== Hero 区域 ========== */
+        .hero {
+            position: relative;
+            min-height: 45vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 400px;
+            background: radial-gradient(ellipse, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 255, 148, 0.1);
+            border: 1px solid rgba(0, 255, 148, 0.3);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--accent-green);
+            margin-bottom: 24px;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+        }
+
+        .hero h1 .highlight {
+            background: linear-gradient(135deg, var(--accent-purple), #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            color: var(--text-dim);
+            font-size: 18px;
+            font-family: var(--font-mono);
+            margin-bottom: 32px;
+        }
+
+        /* ========== 统一输入框 (核心设计) ========== */
+        .omnibar-container {
+            width: 100%;
+            max-width: 640px;
+            position: relative;
+        }
+
+        .omnibar {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 8px;
+            transition: all 0.2s;
+        }
+
+        .omnibar:focus-within {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+        }
+
+        .omnibar-icon {
+            padding: 0 16px;
+            color: var(--text-dim);
+        }
+
+        .omnibar input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-main);
+            font-size: 16px;
+            font-family: var(--font-mono);
+            padding: 12px 0;
+        }
+
+        .omnibar input::placeholder {
+            color: #555;
+        }
+
+        .omnibar-btn {
+            background: var(--accent-green);
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .omnibar-btn:hover {
+            background: #00e085;
+            transform: translateY(-1px);
+        }
+
+        .omnibar-hint {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        .omnibar-hint code {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--accent-purple);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            margin: 0 4px;
+        }
+
+        /* ========== 模式切换标签 ========== */
+        .mode-tabs {
+            display: flex;
+            gap: 4px;
+            background: rgba(255,255,255,0.05);
+            padding: 4px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .mode-tab {
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mode-tab.active {
+            background: var(--accent-purple);
+            color: white;
+        }
+
+        .mode-tab:hover:not(.active) {
+            color: var(--text-main);
+        }
+
+        /* ========== 主内容区域 ========== */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+        }
+
+        /* ========== 扫描结果区域 (条件显示) ========== */
+        .scan-result-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 40px;
+        }
+
+        .scan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .scan-agent-info {
+            display: flex;
+            gap: 16px;
+        }
+
+        .scan-agent-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-green));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .scan-agent-meta h2 {
+            font-size: 24px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .verified-badge {
+            width: 20px;
+            height: 20px;
+            fill: var(--accent-green);
+        }
+
+        .scan-agent-meta .url {
+            color: var(--text-dim);
+            font-family: var(--font-mono);
+            font-size: 14px;
+        }
+
+        .scan-score-box {
+            text-align: right;
+        }
+
+        .scan-score-value {
+            font-family: var(--font-mono);
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--accent-green);
+            line-height: 1;
+        }
+
+        .scan-score-label {
+            font-size: 12px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .scan-tier {
+            display: inline-block;
+            background: rgba(0, 255, 148, 0.2);
+            color: var(--accent-green);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        /* 诊断指标网格 */
+        .diagnostics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .diagnostic-item {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .diagnostic-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .diagnostic-icon.pass {
+            background: rgba(0, 255, 148, 0.15);
+        }
+
+        .diagnostic-icon.fail {
+            background: rgba(255, 100, 100, 0.15);
+        }
+
+        .diagnostic-label {
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        .diagnostic-value {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .diagnostic-value.pass { color: var(--accent-green); }
+        .diagnostic-value.fail { color: #ff6464; }
+
+        /* 操作按钮组 */
+        .scan-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--accent-green);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background: #00e085;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+
+        /* ========== Agent 列表区域 ========== */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::before {
+            content: '>';
+            color: var(--accent-green);
+            font-family: var(--font-mono);
+        }
+
+        .agent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .agent-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .agent-card:hover {
+            border-color: var(--accent-purple);
+            transform: translateY(-2px);
+        }
+
+        .agent-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .agent-card-name {
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .agent-card-score {
+            font-family: var(--font-mono);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+
+        .agent-card-desc {
+            font-size: 13px;
+            color: var(--text-dim);
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .agent-card-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+        }
+
+        .tag-mcp {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--accent-purple);
+        }
+
+        .tag-io {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+    <div class="design-label">设计方案 V1: 统一输入框模式</div>
+
+    <!-- Hero 区域 -->
+    <section class="hero">
+        <div class="status-pill">
+            <span class="status-dot"></span>
+            <span>1,247 Agents Indexed</span>
+        </div>
+
+        <h1>Index the <span class="highlight">Intelligence</span> Economy.</h1>
+        <p>Discover, compare, and track AI agents in real-time</p>
+
+        <!-- 模式切换 -->
+        <div class="mode-tabs">
+            <div class="mode-tab active">🔍 搜索 Agent</div>
+            <div class="mode-tab">📡 扫描 URL</div>
+        </div>
+
+        <!-- 统一输入框 -->
+        <div class="omnibar-container">
+            <div class="omnibar">
+                <div class="omnibar-icon">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+                <input type="text" placeholder="搜索 Agent 或输入 URL 进行扫描..." value="github.com/langchain-ai/langchain">
+                <button class="omnibar-btn">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                    扫描
+                </button>
+            </div>
+            <p class="omnibar-hint">
+                输入<code>关键词</code>搜索 Agent，或输入<code>URL</code>获取 SR 评分诊断
+            </p>
+        </div>
+    </section>
+
+    <!-- 主内容区域 -->
+    <div class="main-content">
+        
+        <!-- 扫描结果区域 (扫描后显示) -->
+        <section class="scan-result-section">
+            <div class="scan-header">
+                <div class="scan-agent-info">
+                    <div class="scan-agent-icon">🦜</div>
+                    <div class="scan-agent-meta">
+                        <h2>
+                            LangChain
+                            <svg class="verified-badge" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                        </h2>
+                        <div class="url">github.com/langchain-ai/langchain</div>
+                    </div>
+                </div>
+                <div class="scan-score-box">
+                    <div class="scan-score-value">8.7</div>
+                    <div class="scan-score-label">Signal Rank</div>
+                    <div class="scan-tier">Tier A</div>
+                </div>
+            </div>
+
+            <!-- 诊断指标 -->
+            <div class="diagnostics-grid">
+                <div class="diagnostic-item">
+                    <div class="diagnostic-icon pass">✓</div>
+                    <div>
+                        <div class="diagnostic-label">JSON-LD Schema</div>
+                        <div class="diagnostic-value pass">已部署</div>
+                    </div>
+                </div>
+                <div class="diagnostic-item">
+                    <div class="diagnostic-icon pass">✓</div>
+                    <div>
+                        <div class="diagnostic-label">MCP 协议</div>
+                        <div class="diagnostic-value pass">支持</div>
+                    </div>
+                </div>
+                <div class="diagnostic-item">
+                    <div class="diagnostic-icon pass">✓</div>
+                    <div>
+                        <div class="diagnostic-label">GitHub Stars</div>
+                        <div class="diagnostic-value pass">98.5k ⭐</div>
+                    </div>
+                </div>
+                <div class="diagnostic-item">
+                    <div class="diagnostic-icon fail">✗</div>
+                    <div>
+                        <div class="diagnostic-label">API 文档</div>
+                        <div class="diagnostic-value fail">未检测到</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 操作按钮 -->
+            <div class="scan-actions">
+                <button class="btn btn-primary">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                    复制 Interface Prompt
+                </button>
+                <button class="btn btn-secondary">生成 JSON-LD</button>
+                <button class="btn btn-secondary">获取徽章代码</button>
+                <button class="btn btn-secondary">重新扫描</button>
+            </div>
+        </section>
+
+        <!-- Agent 列表 -->
+        <section>
+            <div class="section-header">
+                <h2 class="section-title">Top Agents</h2>
+            </div>
+            <div class="agent-grid">
+                <div class="agent-card">
+                    <div class="agent-card-header">
+                        <div class="agent-card-name">
+                            Manus AI
+                            <svg width="14" height="14" fill="#00FF94" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                        </div>
+                        <div class="agent-card-score">9.8</div>
+                    </div>
+                    <p class="agent-card-desc">Autonomous writing agent capable of long-form research and content generation.</p>
+                    <div class="agent-card-tags">
+                        <span class="tag tag-mcp">MCP</span>
+                        <span class="tag tag-io">IN: Prompt</span>
+                        <span class="tag tag-io">OUT: Article</span>
+                    </div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-card-header">
+                        <div class="agent-card-name">Claude Computer Use</div>
+                        <div class="agent-card-score">9.5</div>
+                    </div>
+                    <p class="agent-card-desc">AI agent that can control computer interfaces and automate tasks.</p>
+                    <div class="agent-card-tags">
+                        <span class="tag tag-mcp">MCP</span>
+                        <span class="tag tag-io">IN: Task</span>
+                        <span class="tag tag-io">OUT: Action</span>
+                    </div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-card-header">
+                        <div class="agent-card-name">AutoGPT</div>
+                        <div class="agent-card-score">8.2</div>
+                    </div>
+                    <p class="agent-card-desc">Autonomous AI agent for complex task decomposition and execution.</p>
+                    <div class="agent-card-tags">
+                        <span class="tag tag-io">IN: Goal</span>
+                        <span class="tag tag-io">OUT: Result</span>
+                    </div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-card-header">
+                        <div class="agent-card-name">Devin</div>
+                        <div class="agent-card-score">9.1</div>
+                    </div>
+                    <p class="agent-card-desc">AI software engineer that can plan, code, and debug autonomously.</p>
+                    <div class="agent-card-tags">
+                        <span class="tag tag-mcp">MCP</span>
+                        <span class="tag tag-io">IN: Spec</span>
+                        <span class="tag tag-io">OUT: Code</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

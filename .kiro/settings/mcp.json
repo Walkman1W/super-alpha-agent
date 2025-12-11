@@ -16,7 +16,7 @@
         "@playwright/mcp@latest",
         "--extension"
       ],
-      "disabled": true,
+      "disabled": false,
       "autoApprove": [
         "browser_navigate",
         "browser_take_screenshot",

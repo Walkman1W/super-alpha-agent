@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Agent Signals - The CoinMarketCap for AI Agents. Indexing the Intelligence Economy with Signal Rank (SR) visibility scores.">
+    <title>Agent Signals | Index the Intelligence Economy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- AI-READINESS: JSON-LD for LLMs -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Agent Signals",
+      "url": "https://agentsignals.com",
+      "description": "Index the Intelligence Economy. Search AI agents or scan URLs for visibility scores.",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://agentsignals.com/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <style>
+        :root {
+            --bg: #050505;
+            --bg-card: #0A0A0A;
+            --border: #1F1F1F;
+            --text-main: #FFFFFF;
+            --text-dim: #888888;
+            --accent-green: #00C853; /* Logo Green */
+            --accent-purple: #8B5CF6;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Background Grid */
+        .grid-bg {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            mask-image: radial-gradient(circle at center, black 30%, transparent 100%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Minimal Header */
+        .header {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 24px 32px;
+            display: flex;
+            gap: 24px;
+            z-index: 10;
+        }
+
+        .header a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .header a:hover { color: var(--text-main); }
+
+        /* Main Center Layout */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 80px; /* Space for footer */
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Logo Styling */
+        .logo-wrapper {
+            margin-bottom: 24px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        /* Slogan */
+        .slogan {
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 48px;
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+        }
+        
+        .slogan span {
+            background: linear-gradient(135deg, #fff 0%, #888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* V6 Search Box Style */
+        .search-wrapper {
+            width: 100%;
+            position: relative;
+            z-index: 20;
+        }
+
+        .search-pill {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 999px; /* Pill shape */
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+        }
+
+        .search-pill:focus-within {
+            border-color: #333;
+            box-shadow: 0 8px 32px rgba(0, 200, 83, 0.1);
+        }
+
+        .search-icon {
+            padding-left: 16px;
+            color: var(--text-dim);
+        }
+
+        .search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 16px;
+            font-family: var(--font-mono);
+            padding: 12px 16px;
+            outline: none;
+        }
+
+        .search-input::placeholder { color: #444; }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            padding-right: 4px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid transparent;
+        }
+        
+        .btn-ghost:hover { background: rgba(255,255,255,0.05); }
+
+        .btn-primary {
+            background: var(--accent-green);
+            color: #000;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary:hover {
+            background: #00e660;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3);
+        }
+
+        /* Dynamic Stats */
+        .stats-row {
+            display: flex;
+            gap: 48px;
+            margin-top: 48px;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 0.3s forwards;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-val {
+            font-family: var(--font-mono);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Process / Scanning UI Overlay */
+        .scan-overlay {
+            display: none; /* Hidden by default */
+            position: absolute;
+            top: 120%;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.9);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+        }
+
+        .scan-line {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+        }
+
+        .scan-line.active { opacity: 1; }
+        .scan-line.done { color: var(--text-dim); }
+        
+        .spinner {
+            width: 12px;
+            height: 12px;
+            border: 2px solid var(--accent-green);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .check { color: var(--accent-green); }
+
+        /* Bottom Ticker (The "Market" Feel) */
+        .bottom-ticker {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: rgba(5, 5, 5, 0.9);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            z-index: 100;
+        }
+
+        .ticker-content {
+            display: flex;
+            gap: 40px;
+            animation: scroll 30s linear infinite;
+            white-space: nowrap;
+            padding-left: 100%; /* Start from right */
+        }
+
+        .ticker-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .ticker-item:hover { color: var(--text-main); }
+        .t-name { font-weight: 600; color: var(--text-main); }
+        .t-score { font-family: var(--font-mono); color: var(--accent-green); }
+        .t-trend { color: var(--accent-green); font-size: 10px; }
+
+        /* Animations */
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+
+    <!-- 7. Minimal Header -->
+    <nav class="header">
+        <a href="#">About</a>
+        <a href="#">API</a>
+        <a href="https://github.com/agent-signals" target="_blank">GitHub ↗</a>
+        <a href="#" class="btn-ghost" style="padding: 6px 12px; border: 1px solid #333; border-radius: 6px;">Submit Agent</a>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        
+        <!-- 1. Logo (Fixed for Dark Mode) -->
+        <div class="logo-wrapper">
+            <svg width="120" height="120" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Changed fill to white/currentColor for dark mode visibility -->
+                <path d="M45 185H75L94 75C94 75 96 68 100 68C104 68 106 75 106 75L125 185H155L115 35C115 35 110 10 100 10C90 10 85 35 85 35L45 185Z" fill="#FFFFFF"/>
+                <!-- Green Laces -->
+                <path d="M86 90C86 90 93 87 100 87C107 87 114 90 114 90" stroke="#00C853" stroke-width="12" stroke-linecap="round"/>
+                <path d="M80 120C80 120 90 117 100 117C110 117 120 120 120 120" stroke="#00C853" stroke-width="12" stroke-linecap="round"/>
+                <path d="M74 150C74 150 87 146 100 146C113 146 126 150 126 150" stroke="#00C853" stroke-width="12" stroke-linecap="round"/>
+            </svg>
+        </div>
+
+        <!-- 2. Slogan -->
+        <h1 class="slogan">Index the <span>Intelligence Economy.</span></h1>
+
+        <!-- 6. V6 Search Box -->
+        <div class="search-wrapper">
+            <div class="search-pill">
+                <div class="search-icon">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </div>
+                <input type="text" class="search-input" id="mainInput" placeholder="https://aistudio.google.com/ or 'coding agent'" autocomplete="off">
+                <div class="btn-group">
+                    <button class="btn btn-ghost">Search</button>
+                    <button class="btn btn-primary" onclick="startScan()">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        Scan URL
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3. Process Visualization (Hidden by default) -->
+            <div class="scan-overlay" id="scanTerminal">
+                <div class="scan-line" id="step1">
+                    <div class="spinner"></div>
+                    <span>Initializing crawler...</span>
+                </div>
+                <div class="scan-line" id="step2">
+                    <div class="spinner"></div>
+                    <span>Detecting Model Context Protocol (MCP)...</span>
+                </div>
+                <div class="scan-line" id="step3">
+                    <div class="spinner"></div>
+                    <span>Verifying JSON-LD Schema...</span>
+                </div>
+                <div class="scan-line" id="step4">
+                    <div class="spinner"></div>
+                    <span>Calculating Signal Rank (SR)...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Dynamic Stats -->
+        <div class="stats-row">
+            <div class="stat-item">
+                <div class="stat-val">1,247</div>
+                <div class="stat-label">Indexed</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-val" style="color: var(--accent-green);">842</div>
+                <div class="stat-label">Verified</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-val">12,403</div>
+                <div class="stat-label">Scans</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 4. Bottom Ticker (The "Market" Feel) -->
+    <footer class="bottom-ticker">
+        <div class="ticker-content">
+            <!-- Repeated items for infinite scroll effect -->
+            <div class="ticker-item">
+                <span class="t-name">Manus AI</span>
+                <span class="t-score">9.8</span>
+                <span class="t-trend">▲</span>
+            </div>
+            <div class="ticker-item">
+                <span class="t-name">Claude Computer Use</span>
+                <span class="t-score">9.5</span>
+                <span class="t-trend">▲</span>
+            </div>
+            <div class="ticker-item">
+                <span class="t-name">Devin</span>
+                <span class="t-score">9.1</span>
+                <span class="t-trend">▲</span>
+            </div>
+            <div class="ticker-item">
+                <span class="t-name">LangChain</span>
+                <span class="t-score">8.7</span>
+                <span class="t-trend">▬</span>
+            </div>
+            <div class="ticker-item">
+                <span class="t-name">AutoGPT</span>
+                <span class="t-score">8.2</span>
+                <span class="t-trend">▼</span>
+            </div>
+             <div class="ticker-item">
+                <span class="t-name">BabyAGI</span>
+                <span class="t-score">7.9</span>
+                <span class="t-trend">▼</span>
+            </div>
+             <div class="ticker-item">
+                <span class="t-name">OpenAI Swarm</span>
+                <span class="t-score">8.5</span>
+                <span class="t-trend">▲</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 3. Simple Process Simulation Logic
+        function startScan() {
+            const inputVal = document.getElementById('mainInput').value;
+            if(!inputVal) return;
+
+            const terminal = document.getElementById('scanTerminal');
+            terminal.style.display = 'block';
+
+            // Reset lines
+            ['step1', 'step2', 'step3', 'step4'].forEach(id => {
+                document.getElementById(id).classList.remove('active', 'done');
+                document.getElementById(id).querySelector('.spinner').style.display = 'block';
+                const oldCheck = document.getElementById(id).querySelector('.check');
+                if(oldCheck) oldCheck.remove();
+            });
+
+            // Sequence
+            runStep('step1', 500, () => {
+                runStep('step2', 800, () => {
+                    runStep('step3', 800, () => {
+                        runStep('step4', 1000, () => {
+                            // After Scan Complete -> Redirect or Show Result Card
+                            alert("Scan Complete! Redirecting to Result Page...");
+                            // window.location.href = '/result?url=' + encodeURIComponent(inputVal);
+                        });
+                    });
+                });
+            });
+        }
+
+        function runStep(id, delay, callback) {
+            const el = document.getElementById(id);
+            el.classList.add('active');
+            
+            setTimeout(() => {
+                el.classList.add('done');
+                el.querySelector('.spinner').style.display = 'none';
+                el.innerHTML = '<span class="check">✓</span>' + el.innerText;
+                if(callback) callback();
+            }, delay);
+        }
+    </script>
+</body>
+</html>

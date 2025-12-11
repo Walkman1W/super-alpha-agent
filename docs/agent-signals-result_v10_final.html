@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Signals | Index the Intelligence Economy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg: #050505;
+            --bg-card: #0A0A0A;
+            --border: #1F1F1F;
+            --text-main: #FFFFFF;
+            --text-dim: #888888;
+            --accent-green: #00C853; 
+            --accent-purple: #8B5CF6;
+            --accent-blue: #3B82F6;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Grid Background */
+        .grid-bg {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* 1. BRANDING: Agent + Signals */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .brand-logo svg {
+            width: 32px;
+            height: 32px;
+            /* The 'A' Shape */
+        }
+
+        .brand-text {
+            font-family: var(--font-sans);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+
+        .user-limit {
+            font-size: 12px;
+            font-family: var(--font-mono);
+            color: var(--text-dim);
+            background: rgba(255,255,255,0.05);
+            padding: 6px 12px;
+            border-radius: 99px;
+            border: 1px solid var(--border);
+        }
+
+        /* SEARCH AREA */
+        .search-section {
+            padding: 40px 0 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .search-box {
+            width: 100%;
+            max-width: 680px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 6px 6px 6px 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            transition: all 0.2s;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+        }
+
+        .search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 15px;
+            font-family: var(--font-mono);
+            outline: none;
+        }
+
+        .scan-btn {
+            background: var(--accent-green);
+            color: #000;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 999px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        
+        .scan-btn:hover { background: #00e085; }
+
+        .privacy-note {
+            margin-top: 12px;
+            font-size: 11px;
+            color: #555;
+        }
+
+        /* 6 & 7. RESULT LIST (The Core Layout) */
+        .results-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px 40px;
+            width: 100%;
+        }
+
+        .result-item {
+            display: grid;
+            grid-template-columns: 1fr 240px; /* Left Info | Right Actions */
+            gap: 20px;
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+
+        /* Left Side */
+        .res-main { display: flex; gap: 16px; }
+        
+        .res-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .res-info h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .verified-badge { width: 16px; height: 16px; fill: var(--accent-green); }
+        
+        .res-url {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Tech Badges (Left Side) */
+        .tech-badges {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .t-badge {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 3px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .tb-mcp { background: rgba(139, 92, 246, 0.15); color: var(--accent-purple); border: 1px solid rgba(139, 92, 246, 0.2); }
+        .tb-json { background: rgba(0, 200, 83, 0.1); color: var(--accent-green); border: 1px solid rgba(0, 200, 83, 0.2); }
+        .tb-api { background: rgba(59, 130, 246, 0.1); color: var(--accent-blue); border: 1px solid rgba(59, 130, 246, 0.2); }
+        .tb-gray { background: rgba(255,255,255,0.05); color: #666; }
+
+        .res-desc {
+            font-size: 13px;
+            color: var(--text-dim);
+            line-height: 1.5;
+            margin-bottom: 10px;
+            max-width: 500px;
+        }
+
+        .io-tags { display: flex; gap: 8px; }
+        .io-tag { 
+            font-family: var(--font-mono); 
+            font-size: 11px; 
+            color: #666; 
+            border: 1px solid #222; 
+            padding: 2px 6px; 
+            border-radius: 4px; 
+        }
+
+        /* Right Side (Score & Actions) */
+        .res-actions-col {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: space-between;
+        }
+
+        .sr-block { text-align: right; }
+        .sr-val { font-family: var(--font-mono); font-size: 32px; font-weight: 700; color: var(--accent-green); line-height: 1; }
+        .sr-label { font-size: 11px; color: var(--accent-green); opacity: 0.8; letter-spacing: 1px; }
+
+        /* Action Buttons Group */
+        .action-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-end;
+            width: 100%;
+        }
+
+        /* 5. Split Button (Copy Prompt) */
+        .split-btn-wrapper {
+            display: flex;
+            width: 100%;
+            max-width: 180px;
+        }
+
+        .btn-copy-main {
+            flex: 1;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: 6px 0 0 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        
+        .btn-copy-main:hover { border-color: var(--accent-purple); color: var(--accent-purple); background: rgba(139, 92, 246, 0.05); }
+
+        .btn-copy-arrow {
+            width: 28px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-left: none;
+            color: var(--text-dim);
+            border-radius: 0 6px 6px 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+
+        .btn-copy-arrow:hover { color: var(--text-main); background: #111; }
+
+        .btn-secondary {
+            font-size: 11px;
+            color: var(--text-dim);
+            text-decoration: underline;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-secondary:hover { color: var(--text-main); }
+
+        /* 3. Ticker (Pause on Hover) */
+        .ticker-wrap {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: #000;
+            border-top: 1px solid #222;
+            height: 36px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        .ticker {
+            display: flex;
+            white-space: nowrap;
+            animation: scroll 40s linear infinite;
+        }
+
+        .ticker:hover { animation-play-state: paused; } /* Interaction Requirement */
+
+        .t-item {
+            padding: 0 24px;
+            font-size: 12px;
+            color: #888;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .t-score { color: var(--accent-green); font-family: var(--font-mono); }
+
+        @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+
+    </style>
+</head>
+<body>
+
+    <div class="grid-bg"></div>
+
+    <!-- HEADER: Branding + User Limit -->
+    <header class="header">
+        <a href="#" class="brand-wrapper">
+            <div class="brand-logo">
+                <!-- White Logo for Dark Mode -->
+                <svg viewBox="0 0 200 200" fill="none">
+                    <path d="M45 185H75L94 75C94 75 96 68 100 68C104 68 106 75 106 75L125 185H155L115 35C115 35 110 10 100 10C90 10 85 35 85 35L45 185Z" fill="white"/>
+                    <path d="M86 90C114 90 114 90 114 90" stroke="#00C853" stroke-width="12" stroke-linecap="round"/>
+                    <path d="M80 120C120 120 120 120 120 120" stroke="#00C853" stroke-width="12" stroke-linecap="round"/>
+                    <path d="M74 150C126 150 126 150 126 150" stroke="#00C853" stroke-width="12" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <!-- The "Signals" Text separate from logo -->
+            <span class="brand-text">SIGNALS</span>
+        </a>
+
+        <div class="user-limit">
+            Daily Scans: <span style="color: var(--text-main); font-weight: 700;">3</span>/10
+        </div>
+    </header>
+
+    <!-- SEARCH: V6 Style with Privacy Note -->
+    <section class="search-section">
+        <div class="search-box">
+            <svg width="18" height="18" fill="none" stroke="#666" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input type="text" class="search-input" placeholder="Search agents or paste URL to scan..." value="github.com/langchain-ai/langgraph">
+            <button class="scan-btn">Scan URL</button>
+        </div>
+        <div class="privacy-note">
+            Publicly accessible agents are automatically indexed. Owners can claim verified status.
+        </div>
+    </section>
+
+    <!-- RESULTS: 3.5 Density Layout -->
+    <div class="results-container">
+
+        <!-- Result 1: Perfect Score -->
+        <div class="result-item">
+            <!-- Left: Info -->
+            <div class="res-main">
+                <div class="res-icon">🦜</div>
+                <div class="res-content">
+                    <h3>
+                        LangGraph
+                        <svg class="verified-badge" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                    </h3>
+                    <div class="res-url">github.com/langchain-ai/langgraph</div>
+                    
+                    <!-- Tech Badges -->
+                    <div class="tech-badges">
+                        <span class="t-badge tb-mcp">MCP-Ready</span>
+                        <span class="t-badge tb-json">JSON-LD</span>
+                        <span class="t-badge tb-api">API v1</span>
+                    </div>
+
+                    <p class="res-desc">
+                        Build stateful, multi-actor applications with LLMs. Extends LangChain with cyclic computational capabilities.
+                    </p>
+                    
+                    <div class="io-tags">
+                        <span class="io-tag">IN: State</span>
+                        <span class="io-tag">OUT: Graph</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Score & Actions -->
+            <div class="res-actions-col">
+                <div class="sr-block">
+                    <div class="sr-val">9.8</div>
+                    <div class="sr-label">TIER S</div>
+                </div>
+                
+                <div class="action-group">
+                    <!-- Split Button -->
+                    <div class="split-btn-wrapper">
+                        <button class="btn-copy-main">
+                            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                            Copy Prompt
+                        </button>
+                        <button class="btn-copy-arrow">▼</button>
+                    </div>
+                    
+                    <button class="btn-secondary">View JSON-LD</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result 2: Average Score (Unverified) -->
+        <div class="result-item">
+            <div class="res-main">
+                <div class="res-icon" style="filter: grayscale(1);">⚡</div>
+                <div class="res-content">
+                    <h3>AutoGPT</h3>
+                    <div class="res-url">github.com/significant-gravitas/auto-gpt</div>
+                    
+                    <div class="tech-badges">
+                        <span class="t-badge tb-gray">No MCP</span>
+                        <span class="t-badge tb-json">JSON-LD</span>
+                    </div>
+
+                    <p class="res-desc">An experimental open-source attempt to make GPT-4 fully autonomous.</p>
+                    
+                    <div class="io-tags">
+                        <span class="io-tag">IN: Goal</span>
+                        <span class="io-tag">OUT: Task</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="res-actions-col">
+                <div class="sr-block">
+                    <div class="sr-val" style="color: #FFD600;">8.2</div>
+                    <div class="sr-label" style="color: #FFD600;">TIER A</div>
+                </div>
+                
+                <div class="action-group">
+                    <div class="split-btn-wrapper">
+                        <button class="btn-copy-main">Copy Prompt</button>
+                        <button class="btn-copy-arrow">▼</button>
+                    </div>
+                    <button class="btn-secondary" style="color: var(--accent-purple);">Claim this Agent</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result 3 -->
+        <div class="result-item">
+            <div class="res-main">
+                <div class="res-icon">🤖</div>
+                <div class="res-content">
+                    <h3>Manus AI</h3>
+                    <div class="res-url">manus.ai</div>
+                    <div class="tech-badges">
+                        <span class="t-badge tb-mcp">MCP</span>
+                        <span class="t-badge tb-api">SaaS</span>
+                    </div>
+                    <p class="res-desc">Autonomous writing agent capable of long-form research and content generation.</p>
+                </div>
+            </div>
+            <div class="res-actions-col">
+                <div class="sr-block">
+                    <div class="sr-val">9.5</div>
+                    <div class="sr-label">TIER S</div>
+                </div>
+                <div class="action-group">
+                     <div class="split-btn-wrapper">
+                        <button class="btn-copy-main">Copy Prompt</button>
+                        <button class="btn-copy-arrow">▼</button>
+                    </div>
+                    <button class="btn-secondary">View JSON-LD</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TICKER: Pauses on Hover -->
+    <div class="ticker-wrap">
+        <div class="ticker">
+            <div class="t-item"><span>Manus AI</span> <span class="t-score">9.8 ▲</span></div>
+            <div class="t-item"><span>Devin</span> <span class="t-score">9.1 ▲</span></div>
+            <div class="t-item"><span>LangChain</span> <span class="t-score">8.7 ▬</span></div>
+            <div class="t-item"><span>AutoGPT</span> <span class="t-score">8.2 ▼</span></div>
+            <div class="t-item"><span>BabyAGI</span> <span class="t-score">7.5 ▬</span></div>
+            <div class="t-item"><span>Claude Computer Use</span> <span class="t-score">9.5 ▲</span></div>
+            <!-- Duplicate for infinite scroll -->
+             <div class="t-item"><span>Manus AI</span> <span class="t-score">9.8 ▲</span></div>
+            <div class="t-item"><span>Devin</span> <span class="t-score">9.1 ▲</span></div>
+            <div class="t-item"><span>LangChain</span> <span class="t-score">8.7 ▬</span></div>
+            <div class="t-item"><span>AutoGPT</span> <span class="t-score">8.2 ▼</span></div>
+        </div>
+    </div>
+
+</body>
+</html>

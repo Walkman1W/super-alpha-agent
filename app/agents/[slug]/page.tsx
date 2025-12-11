@@ -2,28 +2,13 @@ import { supabaseAdmin } from '@/lib/supabase'
 import { notFound, redirect } from 'next/navigation'
 import { headers } from 'next/headers'
 import type { Metadata } from 'next'
-import dynamic from 'next/dynamic'
 import { AIRecommendationSnippets } from '@/components/ai-recommendation-snippets'
 import { shouldRedirectToHome } from '@/lib/ai-detector'
+import { AIVisitTracker } from '@/components/ai-visit-tracker'
+import { AISearchStats } from '@/components/ai-search-stats'
 
-// 动态导入客户端组件以实现代码分割 - 需求: 9.1
-const AIVisitTracker = dynamic(() => import('@/components/ai-visit-tracker').then(mod => ({ default: mod.AIVisitTracker })), {
-  ssr: false, // 客户端追踪组件，不需要 SSR
-})
 
-const AISearchStats = dynamic(() => import('@/components/ai-search-stats').then(mod => ({ default: mod.AISearchStats })), {
-  loading: () => (
-    <div className="border rounded-lg p-6 animate-pulse">
-      <div className="h-6 bg-gray-200 rounded w-1/2 mb-4"></div>
-      <div className="space-y-3">
-        <div className="h-4 bg-gray-200 rounded"></div>
-        <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-        <div className="h-4 bg-gray-200 rounded w-4/6"></div>
-      </div>
-    </div>
-  ),
-  ssr: false, // 统计图表不需要 SSR
-})
+
 
 export const revalidate = 3600
 

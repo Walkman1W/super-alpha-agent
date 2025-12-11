@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage Design V5 - Google 搜索风格</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --bg-card: #0A0A0A;
+            --bg-hover: #111;
+            --border: #1A1A1A;
+            --text-main: #E5E5E5;
+            --text-dim: #888;
+            --text-link: #4DA6FF;
+            --accent-green: #00FF94;
+            --accent-purple: #8B5CF6;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            background: var(--bg); 
+            color: var(--text-main); 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+        }
+
+        .design-label {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--text-link);
+            color: #000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 1000;
+        }
+
+        /* ========== Header (类 Google) ========== */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .logo {
+            font-family: var(--font-mono);
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-green));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        /* 搜索框 (Google 风格) */
+        .search-container {
+            flex: 1;
+            max-width: 720px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 4px 8px 4px 20px;
+            transition: all 0.2s;
+        }
+
+        .search-box:focus-within {
+            background: var(--bg-hover);
+            border-color: var(--accent-purple);
+            box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15);
+        }
+
+        .search-icon {
+            color: var(--text-dim);
+            margin-right: 12px;
+        }
+
+        .search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-main);
+            font-size: 16px;
+            padding: 12px 0;
+        }
+
+        .search-input::placeholder {
+            color: #555;
+        }
+
+        .search-divider {
+            width: 1px;
+            height: 28px;
+            background: var(--border);
+            margin: 0 8px;
+        }
+
+        .search-btn {
+            background: transparent;
+            border: none;
+            padding: 10px 16px;
+            cursor: pointer;
+            color: var(--accent-green);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+
+        .search-btn:hover {
+            background: rgba(0, 255, 148, 0.1);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .header-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .header-btn.secondary {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .header-btn.secondary:hover {
+            background: var(--bg-hover);
+        }
+
+        .header-btn.primary {
+            background: var(--accent-green);
+            border: none;
+            color: #000;
+        }
+
+        .header-btn.primary:hover {
+            background: #00e085;
+        }
+
+        /* ========== 主内容区 ========== */
+        .main-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* 结果统计 */
+        .results-meta {
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .results-meta strong {
+            color: var(--text-main);
+        }
+
+        /* ========== 搜索结果列表 (Google 风格) ========== */
+        .result-list {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .result-item {
+            position: relative;
+            padding-bottom: 28px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        /* 结果头部: URL + 评分 */
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 4px;
+        }
+
+        .result-url-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-favicon {
+            width: 28px;
+            height: 28px;
+            background: var(--bg-card);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            border: 1px solid var(--border);
+        }
+
+        .result-url-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-site {
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        .result-breadcrumb {
+            font-size: 12px;
+            color: var(--text-dim);
+            font-family: var(--font-mono);
+        }
+
+        /* 评分徽章 */
+        .result-score-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 255, 148, 0.1);
+            border: 1px solid rgba(0, 255, 148, 0.2);
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
+
+        .score-value {
+            font-family: var(--font-mono);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+
+        .score-tier {
+            font-size: 11px;
+            color: var(--accent-green);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* 结果标题 */
+        .result-title {
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--text-link);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .result-title:hover {
+            text-decoration: underline;
+        }
+
+        .verified-icon {
+            width: 18px;
+            height: 18px;
+            fill: var(--accent-green);
+            flex-shrink: 0;
+        }
+
+        /* 技术标签行 */
+        .result-tech-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+        }
+
+        .tech-endpoint {
+            color: var(--accent-green);
+        }
+
+        .tech-tag {
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--accent-purple);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .tech-tag.inactive {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-dim);
+        }
+
+        /* 结果描述 */
+        .result-snippet {
+            font-size: 14px;
+            color: var(--text-dim);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        /* I/O 标签 */
+        .result-io-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .io-tag {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: #AAA;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+
+        /* Hover 操作按钮 */
+        .result-actions {
+            position: absolute;
+            right: 0;
+            bottom: 28px;
+            display: flex;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .result-item:hover .result-actions {
+            opacity: 1;
+        }
+
+        .action-btn-mini {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .action-btn-mini:hover {
+            background: var(--bg-hover);
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+
+        .action-btn-mini.claim {
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+
+        .action-btn-mini.claim:hover {
+            background: rgba(139, 92, 246, 0.15);
+        }
+
+        /* ========== 扫描结果卡片 (搜索后显示) ========== */
+        .scan-result-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(0, 255, 148, 0.05) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .scan-result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .scan-agent-info {
+            display: flex;
+            gap: 16px;
+        }
+
+        .scan-avatar {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-green));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+        }
+
+        .scan-meta h3 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .scan-meta .scan-url {
+            font-size: 13px;
+            color: var(--text-dim);
+            font-family: var(--font-mono);
+        }
+
+        .scan-score-box {
+            text-align: right;
+        }
+
+        .scan-score-value {
+            font-family: var(--font-mono);
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--accent-green);
+            line-height: 1;
+        }
+
+        .scan-score-label {
+            font-size: 11px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .scan-tier-badge {
+            display: inline-block;
+            background: rgba(0, 255, 148, 0.15);
+            color: var(--accent-green);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+
+        /* 诊断指标 */
+        .scan-diagnostics {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .diag-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .diag-icon {
+            font-size: 14px;
+        }
+
+        .diag-label {
+            color: var(--text-dim);
+        }
+
+        .diag-value {
+            font-weight: 600;
+            font-family: var(--font-mono);
+        }
+
+        .diag-value.pass { color: var(--accent-green); }
+        .diag-value.fail { color: #ff6464; }
+
+        /* 操作按钮 */
+        .scan-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .scan-btn {
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .scan-btn.primary {
+            background: var(--accent-green);
+            color: #000;
+            border: none;
+        }
+
+        .scan-btn.primary:hover {
+            background: #00e085;
+        }
+
+        .scan-btn.secondary {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .scan-btn.secondary:hover {
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+
+        /* 分页 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .page-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .page-btn:hover {
+            background: var(--bg-hover);
+        }
+
+        .page-btn.active {
+            background: var(--accent-purple);
+            border-color: var(--accent-purple);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="design-label">V5: Google 搜索风格</div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">⚡</div>
+            Agent Signals
+        </div>
+
+        <div class="search-container">
+            <div class="search-box">
+                <svg class="search-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                <input class="search-input" type="text" placeholder="Search agents or paste URL to scan..." value="langchain">
+                <div class="search-divider"></div>
+                <button class="search-btn">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    Scan
+                </button>
+            </div>
+        </div>
+
+        <div class="header-actions">
+            <button class="header-btn secondary">Docs</button>
+            <button class="header-btn primary">Submit Agent</button>
+        </div>
+    </header>
+
+    <!-- 主内容 -->
+    <main class="main-content">
+        <!-- 结果统计 -->
+        <div class="results-meta">
+            About <strong>1,247</strong> agents found for "<strong>langchain</strong>" (0.42 seconds)
+        </div>
+
+        <!-- 扫描结果卡片 (URL 扫描后显示) -->
+        <!--
+        <div class="scan-result-card">
+            <div class="scan-result-header">
+                <div class="scan-agent-info">
+                    <div class="scan-avatar">🦜</div>
+                    <div class="scan-meta">
+                        <h3>
+                            LangChain
+                            <svg class="verified-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                        </h3>
+                        <div class="scan-url">github.com/langchain-ai/langchain</div>
+                    </div>
+                </div>
+                <div class="scan-score-box">
+                    <div class="scan-score-value">8.7</div>
+                    <div class="scan-score-label">Signal Rank</div>
+                    <div class="scan-tier-badge">Tier A</div>
+                </div>
+            </div>
+            <div class="scan-diagnostics">
+                <div class="diag-item">
+                    <span class="diag-icon">✓</span>
+                    <span class="diag-label">JSON-LD:</span>
+                    <span class="diag-value pass">Deployed</span>
+                </div>
+                <div class="diag-item">
+                    <span class="diag-icon">✓</span>
+                    <span class="diag-label">MCP:</span>
+                    <span class="diag-value pass">Supported</span>
+                </div>
+                <div class="diag-item">
+                    <span class="diag-icon">⭐</span>
+                    <span class="diag-label">Stars:</span>
+                    <span class="diag-value pass">98.5k</span>
+                </div>
+                <div class="diag-item">
+                    <span class="diag-icon">✗</span>
+                    <span class="diag-label">API Docs:</span>
+                    <span class="diag-value fail">Missing</span>
+                </div>
+            </div>
+            <div class="scan-actions">
+                <button class="scan-btn primary">Copy Interface Prompt</button>
+                <button class="scan-btn secondary">JSON-LD</button>
+                <button class="scan-btn secondary">Badge</button>
+                <button class="scan-btn secondary">Rescan</button>
+            </div>
+        </div>
+        -->
+
+        <!-- 搜索结果列表 -->
+        <div class="result-list">
+            <!-- 结果 1 -->
+            <div class="result-item">
+                <div class="result-header">
+                    <div class="result-url-line">
+                        <div class="result-favicon">🦜</div>
+                        <div class="result-url-info">
+                            <span class="result-site">github.com</span>
+                            <span class="result-breadcrumb">langchain-ai › langchain</span>
+                        </div>
+                    </div>
+                    <div class="result-score-badge">
+                        <div>
+                            <div class="score-value">8.7</div>
+                            <div class="score-tier">Tier A</div>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="#" class="result-title">
+                    LangChain
+                    <svg class="verified-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                </a>
+
+                <div class="result-tech-line">
+                    <span class="tech-endpoint">api.langchain.com/v1</span>
+                    <span class="tech-tag">MCP-Ready</span>
+                </div>
+
+                <p class="result-snippet">
+                    Building applications with LLMs through composability. LangChain is a framework for developing applications powered by language models, enabling context-aware reasoning applications.
+                </p>
+
+                <div class="result-io-tags">
+                    <span class="io-tag">IN: Prompt</span>
+                    <span class="io-tag">OUT: Response</span>
+                    <span class="io-tag">OUT: Structured Data</span>
+                </div>
+
+                <div class="result-actions">
+                    <button class="action-btn-mini">Copy Prompt</button>
+                    <button class="action-btn-mini">JSON-LD</button>
+                    <button class="action-btn-mini">View Docs</button>
+                </div>
+            </div>
+
+            <!-- 结果 2 -->
+            <div class="result-item">
+                <div class="result-header">
+                    <div class="result-url-line">
+                        <div class="result-favicon">🔗</div>
+                        <div class="result-url-info">
+                            <span class="result-site">github.com</span>
+                            <span class="result-breadcrumb">langchain-ai › langgraph</span>
+                        </div>
+                    </div>
+                    <div class="result-score-badge">
+                        <div>
+                            <div class="score-value">8.2</div>
+                            <div class="score-tier">Tier A</div>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="#" class="result-title">
+                    LangGraph
+                    <svg class="verified-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                </a>
+
+                <div class="result-tech-line">
+                    <span class="tech-endpoint">github.com/langchain-ai/langgraph</span>
+                    <span class="tech-tag">MCP-Ready</span>
+                </div>
+
+                <p class="result-snippet">
+                    Build stateful, multi-actor applications with LLMs. LangGraph extends LangChain with cyclic computational capabilities for building agent and multi-agent workflows.
+                </p>
+
+                <div class="result-io-tags">
+                    <span class="io-tag">IN: State</span>
+                    <span class="io-tag">OUT: Graph</span>
+                </div>
+
+                <div class="result-actions">
+                    <button class="action-btn-mini">Copy Prompt</button>
+                    <button class="action-btn-mini">JSON-LD</button>
+                </div>
+            </div>
+
+            <!-- 结果 3: 未认领 -->
+            <div class="result-item">
+                <div class="result-header">
+                    <div class="result-url-line">
+                        <div class="result-favicon">📚</div>
+                        <div class="result-url-info">
+                            <span class="result-site">github.com</span>
+                            <span class="result-breadcrumb">hwchase17 › langchain-hub</span>
+                        </div>
+                    </div>
+                    <div class="result-score-badge" style="background: rgba(255, 208, 0, 0.1); border-color: rgba(255, 208, 0, 0.2);">
+                        <div>
+                            <div class="score-value" style="color: #FFD000;">6.5</div>
+                            <div class="score-tier" style="color: #FFD000;">Tier B</div>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="#" class="result-title" style="color: var(--text-main);">
+                    LangChain Hub
+                </a>
+
+                <div class="result-tech-line">
+                    <span class="tech-endpoint" style="color: var(--text-dim);">github.com/hwchase17/langchain-hub</span>
+                    <span class="tech-tag inactive">No Protocol</span>
+                </div>
+
+                <p class="result-snippet">
+                    Collection of prompts, chains, and agents for LangChain. Community-driven repository for sharing reusable LangChain components.
+                </p>
+
+                <div class="result-actions">
+                    <button class="action-btn-mini claim">⚡ Claim & Optimize</button>
+                </div>
+            </div>
+
+            <!-- 结果 4 -->
+            <div class="result-item">
+                <div class="result-header">
+                    <div class="result-url-line">
+                        <div class="result-favicon">🤖</div>
+                        <div class="result-url-info">
+                            <span class="result-site">langchain.com</span>
+                            <span class="result-breadcrumb">docs › introduction</span>
+                        </div>
+                    </div>
+                    <div class="result-score-badge">
+                        <div>
+                            <div class="score-value">7.8</div>
+                            <div class="score-tier">Tier A</div>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="#" class="result-title">
+                    LangChain Documentation
+                </a>
+
+                <div class="result-tech-line">
+                    <span class="tech-endpoint">docs.langchain.com</span>
+                    <span class="tech-tag">JSON-LD</span>
+                </div>
+
+                <p class="result-snippet">
+                    Official documentation for LangChain framework. Comprehensive guides, API references, and tutorials for building LLM applications.
+                </p>
+
+                <div class="result-actions">
+                    <button class="action-btn-mini">Copy Prompt</button>
+                    <button class="action-btn-mini">View Docs</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 分页 -->
+        <div class="pagination">
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn">4</button>
+            <button class="page-btn">5</button>
+            <button class="page-btn">→</button>
+        </div>
+    </main>
+</body>
+</html>

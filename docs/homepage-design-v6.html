@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage Design V6 - Google 首页风格 + 结果页</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --bg-card: #0A0A0A;
+            --bg-hover: #111;
+            --border: #1A1A1A;
+            --text-main: #E5E5E5;
+            --text-dim: #888;
+            --text-link: #4DA6FF;
+            --accent-green: #00FF94;
+            --accent-purple: #8B5CF6;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: var(--bg); 
+            color: var(--text-main); 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+        }
+        .design-label {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-green));
+            color: #000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="design-label">V6: Google 首页 + 结果页</div>
+
+    <style>
+        /* ========== 首页状态 (类 Google 首页) ========== */
+        .home-state {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        .home-bg {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+
+        .home-bg::before {
+            content: '';
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 400px;
+            background: radial-gradient(ellipse, rgba(139, 92, 246, 0.1) 0%, transparent 60%);
+        }
+
+        /* Logo 大标题 */
+        .home-logo {
+            font-family: var(--font-mono);
+            font-size: 56px;
+            font-weight: 800;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .home-logo-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-green));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .home-logo-text {
+            background: linear-gradient(135deg, var(--text-main) 0%, var(--text-dim) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* 首页搜索框 */
+        .home-search {
+            width: 100%;
+            max-width: 640px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .home-search-box {
+            display: flex;
+            align-items: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 6px 8px 6px 24px;
+            transition: all 0.3s;
+        }
+
+        .home-search-box:hover {
+            background: var(--bg-hover);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .home-search-box:focus-within {
+            border-color: var(--accent-purple);
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.2);
+        }
+
+        .home-search-icon {
+            color: var(--text-dim);
+            margin-right: 16px;
+        }
+
+        .home-search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-main);
+            font-size: 18px;
+            padding: 16px 0;
+        }
+
+        .home-search-input::placeholder {
+            color: #555;
+        }
+
+        .home-search-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .home-search-btn {
+            padding: 14px 24px;
+            border-radius: 22px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .home-search-btn.scan {
+            background: var(--accent-green);
+            color: #000;
+            border: none;
+        }
+
+        .home-search-btn.scan:hover {
+            background: #00e085;
+        }
+
+        .home-search-btn.search {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .home-search-btn.search:hover {
+            background: var(--bg-hover);
+        }
+
+        /* 快捷提示 */
+        .home-hints {
+            margin-top: 24px;
+            display: flex;
+            gap: 32px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .home-hint {
+            font-size: 13px;
+            color: var(--text-dim);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .home-hint code {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-main);
+        }
+
+        /* 底部统计 */
+        .home-stats {
+            position: absolute;
+            bottom: 40px;
+            display: flex;
+            gap: 40px;
+        }
+
+        .home-stat {
+            text-align: center;
+        }
+
+        .home-stat-value {
+            font-family: var(--font-mono);
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+
+        .home-stat-label {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+    </style>
+
+    <style>
+        /* ========== 结果页状态 ========== */
+        .results-state {
+            min-height: 100vh;
+        }
+
+        /* 顶部搜索栏 */
+        .results-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .results-logo {
+            font-family: var(--font-mono);
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .results-logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-green));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .results-search-box {
+            flex: 1;
+            max-width: 600px;
+            display: flex;
+            align-items: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 4px 6px 4px 16px;
+        }
+
+        .results-search-box:focus-within {
+            border-color: var(--accent-purple);
+        }
+
+        .results-search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-main);
+            font-size: 15px;
+            padding: 10px 0;
+        }
+
+        .results-search-btn {
+            background: var(--accent-green);
+            color: #000;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 18px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* 主内容区 */
+        .results-main {
+            max-width: 800px;
+            padding: 24px;
+        }
+
+        .results-meta {
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+        }
+
+        /* 扫描结果卡片 */
+        .scan-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(0, 255, 148, 0.05) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 28px;
+        }
+
+        .scan-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .scan-card-agent {
+            display: flex;
+            gap: 14px;
+        }
+
+        .scan-card-avatar {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-green));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .scan-card-meta h3 {
+            font-size: 20px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .scan-card-url {
+            font-size: 13px;
+            color: var(--text-dim);
+            font-family: var(--font-mono);
+        }
+
+        .scan-card-score {
+            text-align: right;
+        }
+
+        .scan-card-score-val {
+            font-family: var(--font-mono);
+            font-size: 40px;
+            font-weight: 700;
+            color: var(--accent-green);
+            line-height: 1;
+        }
+
+        .scan-card-tier {
+            font-size: 12px;
+            color: var(--accent-green);
+            background: rgba(0, 255, 148, 0.15);
+            padding: 4px 10px;
+            border-radius: 6px;
+            margin-top: 6px;
+            display: inline-block;
+        }
+
+        /* 诊断网格 */
+        .scan-diag-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .scan-diag-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .scan-diag-icon {
+            font-size: 18px;
+            margin-bottom: 6px;
+        }
+
+        .scan-diag-label {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 2px;
+        }
+
+        .scan-diag-value {
+            font-size: 13px;
+            font-weight: 600;
+            font-family: var(--font-mono);
+        }
+
+        .scan-diag-value.pass { color: var(--accent-green); }
+        .scan-diag-value.fail { color: #ff6464; }
+
+        /* 操作按钮 */
+        .scan-card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .scan-action-btn {
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .scan-action-btn.primary {
+            background: var(--accent-green);
+            color: #000;
+            border: none;
+        }
+
+        .scan-action-btn.secondary {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .verified-icon {
+            width: 18px;
+            height: 18px;
+            fill: var(--accent-green);
+        }
+    </style>
+
+    <style>
+        /* ========== 搜索结果列表 ========== */
+        .result-list {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .result-item {
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 6px;
+        }
+
+        .result-url-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-favicon {
+            width: 26px;
+            height: 26px;
+            background: var(--bg-card);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            border: 1px solid var(--border);
+        }
+
+        .result-url-text {
+            font-size: 12px;
+            color: var(--text-dim);
+            font-family: var(--font-mono);
+        }
+
+        .result-score-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 255, 148, 0.1);
+            border: 1px solid rgba(0, 255, 148, 0.2);
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .result-score-num {
+            font-family: var(--font-mono);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+
+        .result-score-tier {
+            font-size: 10px;
+            color: var(--accent-green);
+        }
+
+        .result-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--text-link);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .result-title:hover {
+            text-decoration: underline;
+        }
+
+        .result-tech {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+        }
+
+        .result-endpoint {
+            color: var(--accent-green);
+        }
+
+        .result-tag {
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--accent-purple);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+
+        .result-tag.inactive {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-dim);
+        }
+
+        .result-desc {
+            font-size: 14px;
+            color: var(--text-dim);
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .result-io {
+            display: flex;
+            gap: 6px;
+        }
+
+        .io-pill {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: #AAA;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        /* Hover 操作 */
+        .result-hover-actions {
+            position: absolute;
+            right: 0;
+            bottom: 24px;
+            display: flex;
+            gap: 6px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .result-item:hover .result-hover-actions {
+            opacity: 1;
+        }
+
+        .hover-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .hover-btn:hover {
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+
+        .hover-btn.claim {
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+    </style>
+
+    <!-- ==================== 首页状态 ==================== -->
+    <section class="home-state">
+        <div class="home-bg"></div>
+
+        <div class="home-logo">
+            <div class="home-logo-icon">⚡</div>
+            <span class="home-logo-text">Agent Signals</span>
+        </div>
+
+        <div class="home-search">
+            <div class="home-search-box">
+                <svg class="home-search-icon" width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                <input class="home-search-input" type="text" placeholder="Search agents or paste URL to scan...">
+                <div class="home-search-actions">
+                    <button class="home-search-btn search">Search</button>
+                    <button class="home-search-btn scan">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        Scan URL
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="home-hints">
+            <div class="home-hint">
+                <code>github.com/...</code>
+                <span>扫描 GitHub 仓库</span>
+            </div>
+            <div class="home-hint">
+                <code>example.com</code>
+                <span>扫描 SaaS 网站</span>
+            </div>
+            <div class="home-hint">
+                <code>关键词</code>
+                <span>搜索 Agent</span>
+            </div>
+        </div>
+
+        <div class="home-stats">
+            <div class="home-stat">
+                <div class="home-stat-value">1,247</div>
+                <div class="home-stat-label">Agents Indexed</div>
+            </div>
+            <div class="home-stat">
+                <div class="home-stat-value">847</div>
+                <div class="home-stat-label">Verified</div>
+            </div>
+            <div class="home-stat">
+                <div class="home-stat-value">12.4k</div>
+                <div class="home-stat-label">Scans Today</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 结果页状态 (搜索/扫描后) ==================== -->
+    <section class="results-state" style="display: none;">
+        <!-- 顶部搜索栏 -->
+        <header class="results-header">
+            <div class="results-logo">
+                <div class="results-logo-icon">⚡</div>
+                <span>Agent Signals</span>
+            </div>
+
+            <div class="results-search-box">
+                <svg width="18" height="18" fill="none" stroke="#888" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                <input class="results-search-input" type="text" value="github.com/langchain-ai/langchain">
+                <button class="results-search-btn">Scan</button>
+            </div>
+        </header>
+
+        <!-- 主内容 -->
+        <main class="results-main">
+            <div class="results-meta">
+                Scanned URL • Results from <strong>github.com</strong>
+            </div>
+
+            <!-- 扫描结果卡片 -->
+            <div class="scan-card">
+                <div class="scan-card-header">
+                    <div class="scan-card-agent">
+                        <div class="scan-card-avatar">🦜</div>
+                        <div class="scan-card-meta">
+                            <h3>
+                                LangChain
+                                <svg class="verified-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                            </h3>
+                            <div class="scan-card-url">github.com/langchain-ai/langchain</div>
+                        </div>
+                    </div>
+                    <div class="scan-card-score">
+                        <div class="scan-card-score-val">8.7</div>
+                        <div class="scan-card-tier">Tier A</div>
+                    </div>
+                </div>
+
+                <div class="scan-diag-grid">
+                    <div class="scan-diag-item">
+                        <div class="scan-diag-icon">✓</div>
+                        <div class="scan-diag-label">JSON-LD</div>
+                        <div class="scan-diag-value pass">Deployed</div>
+                    </div>
+                    <div class="scan-diag-item">
+                        <div class="scan-diag-icon">✓</div>
+                        <div class="scan-diag-label">MCP</div>
+                        <div class="scan-diag-value pass">Supported</div>
+                    </div>
+                    <div class="scan-diag-item">
+                        <div class="scan-diag-icon">⭐</div>
+                        <div class="scan-diag-label">Stars</div>
+                        <div class="scan-diag-value pass">98.5k</div>
+                    </div>
+                    <div class="scan-diag-item">
+                        <div class="scan-diag-icon">✗</div>
+                        <div class="scan-diag-label">API Docs</div>
+                        <div class="scan-diag-value fail">Missing</div>
+                    </div>
+                </div>
+
+                <div class="scan-card-actions">
+                    <button class="scan-action-btn primary">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                        Copy Interface Prompt
+                    </button>
+                    <button class="scan-action-btn secondary">JSON-LD</button>
+                    <button class="scan-action-btn secondary">Badge</button>
+                    <button class="scan-action-btn secondary">Rescan</button>
+                </div>
+            </div>
+
+            <!-- 相关结果 -->
+            <div style="font-size: 13px; color: #888; margin-bottom: 16px;">Related agents</div>
+
+            <div class="result-list">
+                <!-- 结果 1 -->
+                <div class="result-item">
+                    <div class="result-top">
+                        <div class="result-url-row">
+                            <div class="result-favicon">🔗</div>
+                            <span class="result-url-text">github.com › langchain-ai › langgraph</span>
+                        </div>
+                        <div class="result-score-pill">
+                            <span class="result-score-num">8.2</span>
+                            <span class="result-score-tier">A</span>
+                        </div>
+                    </div>
+                    <a href="#" class="result-title">
+                        LangGraph
+                        <svg class="verified-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                    </a>
+                    <div class="result-tech">
+                        <span class="result-endpoint">github.com/langchain-ai/langgraph</span>
+                        <span class="result-tag">MCP-Ready</span>
+                    </div>
+                    <p class="result-desc">Build stateful, multi-actor applications with LLMs. Extends LangChain with cyclic computational capabilities.</p>
+                    <div class="result-io">
+                        <span class="io-pill">IN: State</span>
+                        <span class="io-pill">OUT: Graph</span>
+                    </div>
+                    <div class="result-hover-actions">
+                        <button class="hover-btn">Copy Prompt</button>
+                        <button class="hover-btn">JSON-LD</button>
+                    </div>
+                </div>
+
+                <!-- 结果 2: 未认领 -->
+                <div class="result-item">
+                    <div class="result-top">
+                        <div class="result-url-row">
+                            <div class="result-favicon">📚</div>
+                            <span class="result-url-text">github.com › hwchase17 › langchain-hub</span>
+                        </div>
+                        <div class="result-score-pill" style="background: rgba(255, 208, 0, 0.1); border-color: rgba(255, 208, 0, 0.2);">
+                            <span class="result-score-num" style="color: #FFD000;">6.5</span>
+                            <span class="result-score-tier" style="color: #FFD000;">B</span>
+                        </div>
+                    </div>
+                    <a href="#" class="result-title" style="color: #E5E5E5;">LangChain Hub</a>
+                    <div class="result-tech">
+                        <span class="result-endpoint" style="color: #666;">github.com/hwchase17/langchain-hub</span>
+                        <span class="result-tag inactive">No Protocol</span>
+                    </div>
+                    <p class="result-desc">Collection of prompts, chains, and agents for LangChain. Community-driven repository.</p>
+                    <div class="result-hover-actions">
+                        <button class="hover-btn claim">⚡ Claim & Optimize</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </section>
+
+</body>
+</html>

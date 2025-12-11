@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Signals - The AI Economy Index</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --bg-card: #0A0A0A;
+            --bg-card-hover: #111;
+            --border: #1F1F1F;
+            --border-hover: #333;
+            --text-main: #EDEDED;
+            --text-dim: #888;
+            --accent-green: #00FF94;
+            --accent-purple: #8B5CF6;
+            --accent-blue: #3B82F6;
+            
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ========== V3 Soul: Grid Background ========== */
+        .grid-bg {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* ========== Utilities ========== */
+        .container { max-width: 840px; margin: 0 auto; padding: 0 24px; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 8px; }
+        .gap-4 { gap: 16px; }
+        .font-mono { font-family: var(--font-mono); }
+        .text-dim { color: var(--text-dim); }
+        .text-green { color: var(--accent-green); }
+        .text-purple { color: var(--accent-purple); }
+        
+        /* Badges */
+        .badge {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            text-transform: uppercase;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        .badge-purple { background: rgba(139, 92, 246, 0.15); color: var(--accent-purple); }
+        .badge-green { background: rgba(0, 255, 148, 0.15); color: var(--accent-green); }
+        .badge-outline { border: 1px solid var(--border); color: var(--text-dim); }
+
+        /* ========== Component: The Omni-Box (Hybrid V3/V6) ========== */
+        .omnibar-wrapper {
+            position: relative;
+            width: 100%;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .omnibar {
+            display: flex;
+            align-items: center;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 12px; /* Slightly tighter than V6 */
+            padding: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            transition: all 0.2s;
+        }
+
+        .omnibar:focus-within {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.15), 0 8px 40px rgba(0,0,0,0.6);
+            transform: scale(1.01);
+        }
+
+        .omnibar-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dim);
+            transition: color 0.2s;
+        }
+
+        .omnibar:focus-within .omnibar-icon { color: var(--text-main); }
+
+        /* V3 Intelligent Tag inside Input */
+        .omnibar-mode-tag {
+            display: none; /* Hidden by default */
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            margin-right: 12px;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(-5px); } to { opacity: 1; transform: translateX(0); } }
+
+        .mode-scan {
+            display: flex;
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--accent-purple);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .omnibar input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 16px;
+            font-family: var(--font-mono);
+            outline: none;
+            height: 40px;
+        }
+        
+        .omnibar input::placeholder { color: #444; }
+
+        .omnibar-action {
+            background: var(--text-main);
+            color: #000;
+            border: none;
+            height: 36px;
+            padding: 0 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            font-family: var(--font-mono);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .omnibar-action:hover {
+            background: var(--accent-green);
+            transform: translateY(-1px);
+        }
+
+        /* ========== View 1: Home State (Google Style) ========== */
+        #view-home {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding-bottom: 10vh;
+        }
+
+        .logo-large {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .logo-icon-lg {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.3));
+        }
+
+        .logo-text-lg {
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        /* ========== View 2: Results State (List Style) ========== */
+        #view-results {
+            display: none; /* Hidden initially */
+            padding-top: 0;
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            background: rgba(5, 5, 5, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 0;
+            z-index: 100;
+            margin-bottom: 32px;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .logo-small {
+            font-weight: 700;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-main);
+            text-decoration: none;
+        }
+
+        /* ========== Result Cards (High Density) ========== */
+        .scan-alert {
+            background: linear-gradient(180deg, rgba(139, 92, 246, 0.05) 0%, rgba(5, 5, 5, 0) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .results-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1px; /* Separation for border effect if needed, or use margin */
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+            position: relative;
+        }
+        
+        .result-item:hover .action-prompt {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .res-left { display: flex; gap: 16px; align-items: flex-start; max-width: 70%; }
+        
+        .res-avatar {
+            width: 44px;
+            height: 44px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .res-content h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .res-content h3 a { color: var(--text-main); text-decoration: none; }
+        .res-content h3 a:hover { color: var(--accent-blue); }
+
+        .res-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        .res-right {
+            text-align: right;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .score-block {
+            text-align: right;
+        }
+
+        .sr-score {
+            font-family: var(--font-mono);
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .sr-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        /* The "Action" Button - V3 Soul */
+        .action-prompt {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            opacity: 0.6; /* Subtle by default */
+        }
+
+        .action-prompt:hover {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+            background: rgba(0, 255, 148, 0.05);
+            opacity: 1;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="grid-bg"></div>
+
+    <!-- VIEW 1: HOME (Centered Google Style) -->
+    <main id="view-home">
+        <div class="container" style="width: 100%; max-width: 700px;">
+            <div class="logo-large">
+                <div class="logo-icon-lg">⚡</div>
+                <h1 class="logo-text-lg">Agent Signals</h1>
+                <p class="text-dim" style="margin-top: 12px; font-size: 16px;">The Infrastructure for the AI Economy</p>
+            </div>
+
+            <div class="omnibar-wrapper">
+                <div class="omnibar">
+                    <div class="omnibar-icon">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                    
+                    <!-- Smart Tag (Hidden by default, shown via JS) -->
+                    <div id="home-scan-tag" class="omnibar-mode-tag mode-scan">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        SCAN URL
+                    </div>
+
+                    <input type="text" id="home-input" placeholder="Search agents (e.g. 'coding') or paste URL..." autocomplete="off">
+                    
+                    <button class="omnibar-action" id="home-btn" onclick="goToResults()">
+                        Search
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex gap-4 justify-between" style="margin-top: 32px; width: 100%; padding: 0 20px; opacity: 0.6;">
+                <div style="text-align: center;">
+                    <div class="font-mono text-main" style="font-size: 18px; font-weight: 700;">1,247</div>
+                    <div class="text-dim" style="font-size: 12px;">Indexed</div>
+                </div>
+                <div style="text-align: center;">
+                    <div class="font-mono text-green" style="font-size: 18px; font-weight: 700;">842</div>
+                    <div class="text-dim" style="font-size: 12px;">Verified</div>
+                </div>
+                <div style="text-align: center;">
+                    <div class="font-mono text-purple" style="font-size: 18px; font-weight: 700;">12k</div>
+                    <div class="text-dim" style="font-size: 12px;">Scans</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- VIEW 2: RESULTS (Top Bar + List) -->
+    <main id="view-results">
+        <header class="sticky-header">
+            <div class="container header-content">
+                <a href="#" class="logo-small" onclick="location.reload()">
+                    <span style="color: var(--accent-green);">⚡</span> Agent Signals
+                </a>
+                
+                <div class="omnibar-wrapper" style="max-width: 500px;">
+                    <div class="omnibar" style="padding: 4px 8px;">
+                        <input type="text" value="coding agent" style="font-size: 14px; height: 32px; padding-left: 8px;">
+                        <div class="text-dim font-mono" style="font-size: 10px; padding-right: 8px;">⌘K</div>
+                    </div>
+                </div>
+                
+                <div style="margin-left: auto; display: flex; gap: 16px;">
+                    <a href="#" class="text-dim" style="font-size: 14px; text-decoration: none;">Docs</a>
+                    <a href="#" class="text-main" style="font-size: 14px; text-decoration: none;">Login</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <!-- Example: If it were a scan result (Hidden for this demo search view, but structurally here) -->
+            <!-- <div class="scan-alert">...Diagnostic Data...</div> -->
+
+            <div style="margin-bottom: 16px; font-size: 13px; color: var(--text-dim);">
+                Showing results for <strong class="text-main">coding agent</strong>
+            </div>
+
+            <div class="results-list">
+                
+                <!-- Result Item 1: High Score -->
+                <div class="result-item">
+                    <div class="res-left">
+                        <div class="res-avatar">👨‍💻</div>
+                        <div class="res-content">
+                            <h3>
+                                <a href="#">Devin</a>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent-green)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                            </h3>
+                            <div class="res-meta" style="margin-bottom: 6px;">
+                                <span>cognition.ai</span>
+                                <span class="badge badge-purple">MCP-Ready</span>
+                            </div>
+                            <div class="res-meta">
+                                <span class="badge badge-outline">IN: Spec</span>
+                                <span class="badge badge-outline">OUT: Codebase</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="res-right">
+                        <button class="action-prompt">
+                            <span>>_</span> Connect
+                        </button>
+                        <div class="score-block">
+                            <div class="sr-score text-green">9.8</div>
+                            <div class="sr-label text-green">TIER S</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Item 2 -->
+                <div class="result-item">
+                    <div class="res-left">
+                        <div class="res-avatar">🦜</div>
+                        <div class="res-content">
+                            <h3>
+                                <a href="#">LangChain</a>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent-green)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                            </h3>
+                            <div class="res-meta" style="margin-bottom: 6px;">
+                                <span>github.com/langchain-ai</span>
+                                <span class="badge badge-purple">Framework</span>
+                            </div>
+                            <div class="res-meta">
+                                <span class="badge badge-outline">Stars: 98k</span>
+                                <span class="badge badge-outline">JSON-LD</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="res-right">
+                        <button class="action-prompt">
+                            <span>>_</span> Connect
+                        </button>
+                        <div class="score-block">
+                            <div class="sr-score text-green" style="opacity: 0.9;">8.7</div>
+                            <div class="sr-label text-green" style="opacity: 0.9;">TIER A</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Item 3 -->
+                <div class="result-item">
+                    <div class="res-left">
+                        <div class="res-avatar">⚡</div>
+                        <div class="res-content">
+                            <h3>
+                                <a href="#">AutoGPT</a>
+                            </h3>
+                            <div class="res-meta" style="margin-bottom: 6px;">
+                                <span>github.com/significant-gravitas</span>
+                                <span class="badge badge-outline">Open Source</span>
+                            </div>
+                            <div class="res-meta">
+                                <span class="badge badge-outline">IN: Goal</span>
+                                <span class="badge badge-outline">OUT: Task</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="res-right">
+                        <button class="action-prompt">
+                            <span>>_</span> Connect
+                        </button>
+                        <div class="score-block">
+                            <div class="sr-score text-dim">8.2</div>
+                            <div class="sr-label text-dim">TIER A</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Logic to simulate V3 Smart Omnibar + V6 Layout switching
+        const homeInput = document.getElementById('home-input');
+        const scanTag = document.getElementById('home-scan-tag');
+        const homeBtn = document.getElementById('home-btn');
+
+        homeInput.addEventListener('input', (e) => {
+            const val = e.target.value;
+            // Simulate "Intelligence": if contains dot, assume URL -> Scan Mode
+            if (val.includes('.') || val.includes('/')) {
+                scanTag.style.display = 'flex';
+                homeBtn.innerText = 'Scan';
+                homeBtn.style.background = 'var(--accent-purple)';
+                homeBtn.style.color = '#fff';
+            } else {
+                scanTag.style.display = 'none';
+                homeBtn.innerText = 'Search';
+                homeBtn.style.background = 'var(--text-main)';
+                homeBtn.style.color = '#000';
+            }
+        });
+
+        function goToResults() {
+            document.getElementById('view-home').style.display = 'none';
+            document.getElementById('view-results').style.display = 'block';
+        }
+
+        // Allow Enter key to trigger
+        homeInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                goToResults();
+            }
+        });
+    </script>
+</body>
+</html>

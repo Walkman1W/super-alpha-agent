@@ -399,6 +399,74 @@ html {
   }
 }
 
+/* Bottom Ticker Animation */
+@keyframes ticker {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-ticker {
+  animation: ticker 40s linear infinite;
+}
+
+.ticker-content {
+  padding-left: 100%;
+}
+
+/* Homepage specific styles */
+.home-stats {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  margin-top: 48px;
+}
+
+.home-slogan {
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin-bottom: 48px;
+  text-align: center;
+}
+
+.home-search-box {
+  background-color: #18181b;
+  border: 1px solid #27272a;
+  border-radius: 9999px;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+.btn-scan {
+  padding: 10px 20px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #000000;
+  background-color: #22c55e;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-scan:hover:not(:disabled) {
+  background-color: #4ade80;
+}
+
+.btn-scan:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 /* Terminal 网格背景 */
 .terminal-grid-bg {
   background-image: 

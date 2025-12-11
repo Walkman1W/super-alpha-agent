@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage Design V4 - Spotlight 聚焦模式</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #000;
+            --bg-card: #0A0A0A;
+            --bg-elevated: #111;
+            --border: #222;
+            --text-main: #FFF;
+            --text-dim: #666;
+            --accent-green: #00FF94;
+            --accent-purple: #8B5CF6;
+            --accent-cyan: #00D4FF;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            background: var(--bg); 
+            color: var(--text-main); 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .design-label {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-cyan);
+            color: #000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 1000;
+        }
+
+        /* ========== 极简 Header ========== */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
+        }
+
+        .logo {
+            font-family: var(--font-mono);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-green));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+        }
+
+        .nav-link {
+            font-size: 14px;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: var(--text-main);
+        }
+
+        /* ========== 全屏 Spotlight 区域 ========== */
+        .spotlight-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 20px 60px;
+            position: relative;
+        }
+
+        /* 聚光灯效果 */
+        .spotlight-effect {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .spotlight-effect::before {
+            content: '';
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.08) 0%, transparent 50%);
+        }
+
+        .spotlight-effect::after {
+            content: '';
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            filter: blur(40px);
+        }
+
+        /* 极简标题 */
+        .spotlight-title {
+            font-size: 16px;
+            color: var(--text-dim);
+            font-family: var(--font-mono);
+            margin-bottom: 24px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        /* ========== Omnibar Spotlight 版 ========== */
+        .omnibar-spotlight {
+            width: 100%;
+            max-width: 800px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .omnibar-main {
+            width: 100%;
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .omnibar-main:focus-within {
+            background: rgba(20, 20, 20, 0.9);
+            border-color: var(--accent-cyan);
+            box-shadow: 
+                0 0 0 1px var(--accent-cyan),
+                0 0 80px rgba(0, 212, 255, 0.15),
+                0 20px 60px rgba(0, 0, 0, 0.5);
+            transform: scale(1.02);
+        }
+
+        .omnibar-inner {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .omnibar-icon {
+            color: var(--accent-cyan);
+            margin-right: 16px;
+            opacity: 0.8;
+        }
+
+        .omnibar-input-main {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-main);
+            font-size: 20px;
+            font-family: var(--font-mono);
+            padding: 20px 0;
+            font-weight: 500;
+        }
+
+        .omnibar-input-main::placeholder {
+            color: #444;
+            font-weight: 400;
+        }
+
+        /* 类型指示器 */
+        .type-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 12px;
+            margin-right: 12px;
+        }
+
+        .type-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.4); }
+            50% { opacity: 0.8; box-shadow: 0 0 0 8px rgba(0, 212, 255, 0); }
+        }
+
+        .type-text {
+            font-size: 13px;
+            color: var(--accent-cyan);
+            font-family: var(--font-mono);
+            font-weight: 500;
+        }
+
+        .omnibar-action {
+            background: var(--text-main);
+            color: var(--bg);
+            border: none;
+            padding: 18px 32px;
+            border-radius: 18px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            font-family: var(--font-mono);
+        }
+
+        .omnibar-action:hover {
+            background: var(--accent-green);
+            transform: scale(1.02);
+        }
+
+        /* 快捷键提示 */
+        .shortcut-hints {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 32px;
+            opacity: 0.6;
+        }
+
+        .shortcut {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        .shortcut kbd {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* ========== 结果展示区 (扫描后) ========== */
+        .result-spotlight {
+            width: 100%;
+            max-width: 800px;
+            margin-top: 40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .result-card-main {
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 32px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-header-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 28px;
+        }
+
+        .result-agent-main {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .result-avatar {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .result-meta-main h2 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .verified-badge-main {
+            width: 24px;
+            height: 24px;
+            fill: var(--accent-green);
+        }
+
+        .result-meta-main .url-main {
+            font-size: 14px;
+            color: var(--text-dim);
+            font-family: var(--font-mono);
+        }
+
+        .result-score-main {
+            text-align: right;
+        }
+
+        .score-value-main {
+            font-family: var(--font-mono);
+            font-size: 64px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .score-label-main {
+            font-size: 12px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 4px;
+        }
+
+        .tier-badge-main {
+            display: inline-block;
+            background: rgba(0, 255, 148, 0.15);
+            color: var(--accent-green);
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: var(--font-mono);
+            margin-top: 8px;
+        }
+
+        /* 诊断网格 */
+        .diagnostics-main {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .diag-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .diag-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .diag-card.pass {
+            border-color: rgba(0, 255, 148, 0.2);
+        }
+
+        .diag-card.fail {
+            border-color: rgba(255, 100, 100, 0.2);
+        }
+
+        .diag-icon-main {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .diag-label-main {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .diag-value-main {
+            font-size: 14px;
+            font-weight: 600;
+            font-family: var(--font-mono);
+        }
+
+        .diag-value-main.pass { color: var(--accent-green); }
+        .diag-value-main.fail { color: #ff6464; }
+
+        /* 操作按钮组 */
+        .actions-main {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn-main {
+            flex: 1;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+            font-family: var(--font-mono);
+        }
+
+        .action-btn-main.primary {
+            background: var(--text-main);
+            color: var(--bg);
+            border: none;
+        }
+
+        .action-btn-main.primary:hover {
+            background: var(--accent-green);
+            transform: translateY(-2px);
+        }
+
+        .action-btn-main.secondary {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+        }
+
+        .action-btn-main.secondary:hover {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        /* ========== 底部统计 ========== */
+        .stats-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px 40px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        .stat-value {
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            font-weight: 600;
+        }
+
+        .stat-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent-green);
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="design-label">V4: Spotlight 聚焦模式</div>
+
+    <!-- 极简 Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">⚡</div>
+            Agent Signals
+        </div>
+        <nav class="nav-links">
+            <a href="#" class="nav-link">Index</a>
+            <a href="#" class="nav-link">Docs</a>
+            <a href="#" class="nav-link">API</a>
+        </nav>
+    </header>
+
+    <!-- Spotlight 主区域 -->
+    <div class="spotlight-container">
+        <div class="spotlight-effect"></div>
+
+        <div class="spotlight-title">Signal Scanner</div>
+
+        <!-- Omnibar Spotlight 版 -->
+        <div class="omnibar-spotlight">
+            <div class="omnibar-main">
+                <div class="omnibar-inner">
+                    <div class="omnibar-icon">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                    <input class="omnibar-input-main" type="text" placeholder="Paste any URL to scan..." value="github.com/langchain-ai/langchain">
+                </div>
+                
+                <div class="type-indicator">
+                    <span class="type-dot"></span>
+                    <span class="type-text">GitHub</span>
+                </div>
+
+                <button class="omnibar-action">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    Analyze
+                </button>
+            </div>
+
+            <div class="shortcut-hints">
+                <div class="shortcut">
+                    <kbd>⌘</kbd><kbd>K</kbd>
+                    <span>Quick access</span>
+                </div>
+                <div class="shortcut">
+                    <kbd>↵</kbd>
+                    <span>Scan URL</span>
+                </div>
+                <div class="shortcut">
+                    <kbd>Esc</kbd>
+                    <span>Clear</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 扫描结果 -->
+        <div class="result-spotlight">
+            <div class="result-card-main">
+                <div class="result-header-main">
+                    <div class="result-agent-main">
+                        <div class="result-avatar">🦜</div>
+                        <div class="result-meta-main">
+                            <h2>
+                                LangChain
+                                <svg class="verified-badge-main" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                            </h2>
+                            <div class="url-main">github.com/langchain-ai/langchain</div>
+                        </div>
+                    </div>
+                    <div class="result-score-main">
+                        <div class="score-value-main">8.7</div>
+                        <div class="score-label-main">Signal Rank</div>
+                        <div class="tier-badge-main">TIER A</div>
+                    </div>
+                </div>
+
+                <div class="diagnostics-main">
+                    <div class="diag-card pass">
+                        <div class="diag-icon-main">✓</div>
+                        <div class="diag-label-main">JSON-LD</div>
+                        <div class="diag-value-main pass">Deployed</div>
+                    </div>
+                    <div class="diag-card pass">
+                        <div class="diag-icon-main">✓</div>
+                        <div class="diag-label-main">MCP</div>
+                        <div class="diag-value-main pass">Supported</div>
+                    </div>
+                    <div class="diag-card pass">
+                        <div class="diag-icon-main">⭐</div>
+                        <div class="diag-label-main">Stars</div>
+                        <div class="diag-value-main pass">98.5k</div>
+                    </div>
+                    <div class="diag-card fail">
+                        <div class="diag-icon-main">✗</div>
+                        <div class="diag-label-main">API Docs</div>
+                        <div class="diag-value-main fail">Missing</div>
+                    </div>
+                </div>
+
+                <div class="actions-main">
+                    <button class="action-btn-main primary">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                        Copy Interface Prompt
+                    </button>
+                    <button class="action-btn-main secondary">JSON-LD</button>
+                    <button class="action-btn-main secondary">Badge</button>
+                    <button class="action-btn-main secondary">Rescan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部统计 -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <span class="stat-dot"></span>
+            <span class="stat-value">1,247</span>
+            <span>Agents Indexed</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">847</span>
+            <span>Verified</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">12.4k</span>
+            <span>Scans Today</span>
+        </div>
+    </div>
+</body>
+</html>
