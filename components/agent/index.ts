@@ -1,2 +1,5 @@
 export { default as ResultsPage } from './results-page'
 export { default as AgentResultItem } from './agent-result-item'
+export { AIVisitTracker } from './insights/ai-visit-tracker'
+export { AISearchStats } from './insights/ai-search-stats'
+export { AIRecommendationSnippets } from './insights/ai-recommendation-snippets'

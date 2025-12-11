@@ -5,14 +5,8 @@
  */
 
 import { supabaseAdmin } from '@/lib/supabase'
-import type {
-  ScannerAgent,
-  SRTier,
-  SRTrack,
-  SRScoreBreakdown,
-  IOModality,
-  createDefaultScoreBreakdown
-} from '@/lib/types/scanner'
+import type { ScannerAgent, SRTier, SRTrack, SRScoreBreakdown, IOModality } from '@/lib/types/scanner'
+import { createDefaultScoreBreakdown } from '@/lib/types/scanner'
 
 // ============================================
 // 数据库行类型 (snake_case)
@@ -90,6 +84,7 @@ export interface AgentQueryFilter {
   isMcp?: boolean
   srTier?: SRTier
   srTrack?: SRTrack
+  searchQuery?: string
   limit?: number
   offset?: number
   orderBy?: 'sr_score' | 'created_at' | 'updated_at'
@@ -117,16 +112,7 @@ function rowToScannerAgent(row: AgentRow): ScannerAgent {
     srTrack: (row.sr_track as SRTrack) || 'SaaS',
     scoreGithub: Number(row.score_github) || 0,
     scoreSaas: Number(row.score_saas) || 0,
-    scoreBreakdown: row.score_breakdown || {
-      starsScore: 0,
-      forksScore: 0,
-      vitalityScore: 0,
-      readinessScore: 0,
-      protocolScore: 0,
-      trustScore: 0,
-      aeoScore: 0,
-      interopScore: 0
-    },
+    scoreBreakdown: row.score_breakdown || createDefaultScoreBreakdown(),
     isMcp: row.is_mcp || false,
     isClaimed: row.is_claimed || false,
     isVerified: row.is_verified || false,
@@ -277,17 +263,45 @@ export async function getAgents(filter?: AgentQueryFilter): Promise<ScannerAgent
     query = query.eq('sr_track', filter.srTrack)
   }
 
+  if (filter?.searchQuery) {
+    const searchTerm = filter.searchQuery.trim()
+    if (searchTerm) {
+      const escapedSearch = searchTerm.replace(/,/g, ' ')
+      query = query.or([
+        `name.ilike.%${escapedSearch}%`,
+        `short_description.ilike.%${escapedSearch}%`,
+        `detailed_description.ilike.%${escapedSearch}%`,
+        `official_url.ilike.%${escapedSearch}%`,
+        `homepage_url.ilike.%${escapedSearch}%`
+      ].join(','))
+    }
+  }
+
+  if (filter?.searchQuery) {
+    const searchTerm = filter.searchQuery.trim()
+    if (searchTerm) {
+      const escapedSearch = searchTerm.replace(/,/g, ' ')
+      query = query.or([
+        `name.ilike.%${escapedSearch}%`,
+        `short_description.ilike.%${escapedSearch}%`,
+        `detailed_description.ilike.%${escapedSearch}%`,
+        `official_url.ilike.%${escapedSearch}%`,
+        `homepage_url.ilike.%${escapedSearch}%`
+      ].join(','))
+    }
+  }
+
   // 应用排序
   const orderBy = filter?.orderBy || 'sr_score'
   const orderDirection = filter?.orderDirection || 'desc'
   query = query.order(orderBy, { ascending: orderDirection === 'asc' })
 
   // 应用分页
-  if (filter?.limit) {
+  if (filter?.limit !== undefined) {
     query = query.limit(filter.limit)
   }
   
-  if (filter?.offset) {
+  if (filter?.offset !== undefined) {
     query = query.range(filter.offset, filter.offset + (filter.limit || 10) - 1)
   }
 
@@ -365,7 +379,9 @@ export async function updateJsonLd(
 /**
  * 获取 Agent 总数
  */
-export async function getAgentCount(filter?: Pick<AgentQueryFilter, 'isVerified' | 'isMcp' | 'srTier' | 'srTrack'>): Promise<number> {
+export async function getAgentCount(
+  filter?: Pick<AgentQueryFilter, 'isVerified' | 'isMcp' | 'srTier' | 'srTrack' | 'searchQuery'>
+): Promise<number> {
   let query = supabaseAdmin.from('agents').select('id', { count: 'exact', head: true })
 
   if (filter?.isVerified !== undefined) {

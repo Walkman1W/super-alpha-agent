@@ -142,7 +142,7 @@ async function persistScanResult(
   // Upsert: 如果 slug 存在则更新，否则插入
   const { data, error } = await supabaseAdmin
     .from('agents')
-    .upsert(agentData, { 
+    .upsert(agentData as any, { 
       onConflict: 'slug',
       ignoreDuplicates: false 
     })
@@ -153,12 +153,17 @@ async function persistScanResult(
     console.error('Failed to persist scan result:', error)
     throw new Error(`数据库错误: ${error.message}`)
   }
+
+  const agentId = (data as any)?.id
+  if (!agentId) {
+    throw new Error('Failed to persist scan result: missing agent id')
+  }
   
   // 记录扫描历史
   await supabaseAdmin
     .from('scan_history')
     .insert({
-      agent_id: data.id,
+      agent_id: agentId,
       sr_score: srResult.finalScore,
       sr_tier: srResult.tier,
       sr_track: srResult.track,
@@ -166,7 +171,7 @@ async function persistScanResult(
       score_saas: srResult.scoreB,
       score_breakdown: srResult.breakdown,
       scan_type: 'manual'
-    })
+    } as any)
     .catch(err => console.warn('Failed to record scan history:', err))
   
   // 转换为 ScannerAgent 类型

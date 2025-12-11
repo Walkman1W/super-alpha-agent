@@ -2,10 +2,8 @@ import { supabaseAdmin } from '@/lib/supabase'
 import { notFound, redirect } from 'next/navigation'
 import { headers } from 'next/headers'
 import type { Metadata } from 'next'
-import { AIRecommendationSnippets } from '@/components/ai-recommendation-snippets'
+import { AIRecommendationSnippets, AIVisitTracker, AISearchStats } from '@/components/agent'
 import { shouldRedirectToHome } from '@/lib/ai-detector'
-import { AIVisitTracker } from '@/components/ai-visit-tracker'
-import { AISearchStats } from '@/components/ai-search-stats'
 
 
 
