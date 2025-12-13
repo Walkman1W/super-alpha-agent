@@ -11,21 +11,32 @@ import { AgentGridSkeleton } from '@/components/agent-card-skeleton'
 export const revalidate = 3600
 
 export default async function HomePage() {
-  const { data: allAgents } = await supabaseAdmin
-    .from('agents')
-    .select('id, slug, name, short_description, platform, key_features, pros, cons, use_cases, pricing, official_url, ai_search_count, created_at')
-    .order('ai_search_count', { ascending: false, nullsFirst: false })
-    .order('created_at', { ascending: false })
-    .limit(100)
-  
-  const { count: agentCount } = await supabaseAdmin
-    .from('agents')
-    .select('*', { count: 'exact', head: true })
-  
-  const { data: categories } = await supabaseAdmin
-    .from('categories')
-    .select('*')
-    .order('name')
+  let allAgents = [];
+  let agentCount = 0;
+  let categories = [];
+
+  // 只有当supabaseAdmin可用时才查询数据
+  if (supabaseAdmin) {
+    const { data: agentsData } = await supabaseAdmin
+      .from('agents')
+      .select('id, slug, name, short_description, platform, key_features, pros, cons, use_cases, pricing, official_url, ai_search_count, created_at')
+      .order('ai_search_count', { ascending: false, nullsFirst: false })
+      .order('created_at', { ascending: false })
+      .limit(100)
+    
+    const { count: countData } = await supabaseAdmin
+      .from('agents')
+      .select('*', { count: 'exact', head: true })
+    
+    const { data: categoriesData } = await supabaseAdmin
+      .from('categories')
+      .select('*')
+      .order('name')
+      
+    allAgents = agentsData || [];
+    agentCount = countData || 0;
+    categories = categoriesData || [];
+  }
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">

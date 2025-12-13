@@ -4,6 +4,39 @@ import Link from 'next/link'
 export const revalidate = 3600
 
 export default async function AIStatsPage() {
+  // 检查 supabaseAdmin 是否可用
+  if (!supabaseAdmin) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h1 className="text-5xl font-bold mb-4 flex items-center justify-center gap-3">
+              <span>🤖</span>
+              <span>AI 搜索统计</span>
+            </h1>
+            <p className="text-xl text-gray-600">
+              追踪 AI 搜索引擎如何发现和推荐 Agents
+            </p>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-md p-8">
+            <div className="text-center">
+              <div className="text-3xl mb-4">⚠️</div>
+              <h2 className="text-2xl font-bold mb-2">Supabase 未配置</h2>
+              <p className="text-gray-600 mb-4">请检查您的环境变量配置</p>
+              <Link
+                href="/"
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                返回首页
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   // 获取 AI 搜索统计
   const { data: aiVisits } = await supabaseAdmin
     .from('ai_visits')

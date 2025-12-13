@@ -17,6 +17,11 @@ import { extractAIBotFromHeaders, getClientIP, validateAIVisit, isKnownAIBot } f
  */
 export async function POST(request: NextRequest) {
   try {
+    // 检查 supabaseAdmin 是否可用
+    if (!supabaseAdmin) {
+      return NextResponse.json({ error: 'Supabase not configured' }, { status: 503 })
+    }
+
     const body = await request.json()
     const { agent_slug, manual_report, ai_name: reportedAIName, search_query } = body
 
@@ -177,6 +182,11 @@ export async function POST(request: NextRequest) {
  */
 export async function GET(request: NextRequest) {
   try {
+    // 检查 supabaseAdmin 是否可用
+    if (!supabaseAdmin) {
+      return NextResponse.json({ error: 'Supabase not configured' }, { status: 503 })
+    }
+
     const { searchParams } = new URL(request.url)
     const agentSlug = searchParams.get('agent_slug')
 

@@ -3,6 +3,108 @@ import { supabaseAdmin } from '@/lib/supabase'
 export const revalidate = 3600 // 每小时重新生成
 
 export default async function HeroPage() {
+  // 检查 supabaseAdmin 是否可用
+  if (!supabaseAdmin) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <section className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700"></div>
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDQgMS43OSA0IDQgNCA0LTEuNzkgNC00em0wLTEwYzAtMi4yMS0xLjc5LTQtNC00cy00IDEuNzktNCA0IDEuNzkgNCA0IDQgNC0xLjc5IDQtNHptMC0xMGMwLTIuMjEtMS43OS00LTQtNHMtNCAxLjc5LTQgNCAxLjc5IDQgNCA0IDQtMS43OSA0LTR6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-20"></div>
+
+          <div className="relative container mx-auto px-4 py-24 text-center text-white">
+            <div className="inline-block mb-6 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">
+              🤖 GEO 数据基座 · AI 搜索 & Agent 发现
+            </div>
+
+            <h1 className="text-5xl md:text-6xl font-black mb-6 leading-tight">
+              <span className="block mb-2">
+                赢下每一次 AI Agent 搜索
+              </span>
+              <span className="block text-2xl md:text-3xl text-blue-100">
+                Win Every AI Agent Search
+              </span>
+            </h1>
+
+            <p className="text-lg md:text-2xl mb-6 max-w-4xl mx-auto text-blue-100 leading-relaxed">
+              <span className="block mb-3">
+                Superalphaagent 是面向 AI 搜索引擎和 Agent 开发者的 GEO 数据基座，
+                让你的 Agent 在 ChatGPT、Claude、Perplexity 等生成式引擎中被准确发现、深度理解，并持续被推荐。
+              </span>
+              <span className="block text-base md:text-lg text-blue-100/90">
+                Superalphaagent is the GEO data layer for AI search engines and agent builders,
+                making your agents easier to discover, understand, and recommend across ChatGPT,
+                Claude, Perplexity, and beyond.
+              </span>
+            </p>
+
+            <p className="text-sm md:text-base mb-10 max-w-2xl mx-auto text-blue-100/90">
+              当前已收录{' '}
+              <span className="font-bold text-white">
+                0+
+              </span>{' '}
+              个 AI Agents · 深度分析 · 实时更新 · 为 AI 搜索优化
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <a
+                href="#agents"
+                className="bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-all shadow-2xl hover:shadow-3xl hover:scale-105 transform"
+              >
+                🚀 浏览 Agent 目录
+              </a>
+              <a
+                href="/ai-stats"
+                className="px-8 py-4 rounded-xl font-semibold text-sm md:text-base border border-white/60 text-white/90 hover:bg-white/10 transition-all"
+              >
+                📊 查看 AI 搜索信号 / View AI Signals
+              </a>
+            </div>
+          </div>
+
+          {/* 波浪分隔 */}
+          <div className="absolute bottom-0 left-0 right-0">
+            <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="rgb(248 250 252)" />
+            </svg>
+          </div>
+        </section>
+
+        <div className="container mx-auto px-4 py-12">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-1 h-8 bg-gradient-to-b from-blue-600 to-purple-600 rounded-full"></div>
+            <h2 className="text-3xl font-bold text-gray-900">按分类浏览</h2>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div className="col-span-1">
+              <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all">
+                <div className="text-3xl mb-4">🔍</div>
+                <h3 className="text-lg font-semibold mb-2">所有分类</h3>
+                <p className="text-sm text-gray-600">暂无分类数据</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <section id="agents" className="container mx-auto px-4 py-12">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-1 h-8 bg-gradient-to-b from-blue-600 to-purple-600 rounded-full"></div>
+            <h2 className="text-3xl font-bold text-gray-900">最新 Agent</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all">
+              <div className="p-6">
+                <h3 className="text-xl font-bold mb-2">暂无 Agent 数据</h3>
+                <p className="text-gray-600 mb-4">请检查 Supabase 配置</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    )
+  }
+
   // 获取所有 Agents（按创建时间排序）
   const { data: allAgents } = await supabaseAdmin
     .from('agents')

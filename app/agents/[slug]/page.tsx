@@ -49,6 +49,14 @@ function deriveKeywords(agent: {
  * 验证: 需求 4.4, 7.3
  */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  // 检查 supabaseAdmin 是否可用
+  if (!supabaseAdmin) {
+    return {
+      title: 'Agent Details | Super Alpha Agent',
+      description: 'AI Agent 详细介绍页面'
+    }
+  }
+
   const { data: agent } = await supabaseAdmin
     .from('agents')
     .select('*, categories(name, slug)')
@@ -263,6 +271,16 @@ function generateJsonLd(agent: {
 }
 
 export default async function AgentDetailPage({ params }: Props) {
+  // 检查 supabaseAdmin 是否可用
+  if (!supabaseAdmin) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <h1 className="text-3xl font-bold mb-4">Agent Details</h1>
+        <p className="text-gray-600">Supabase not configured. Please check your environment variables.</p>
+      </div>
+    )
+  }
+
   const { data: agent } = await supabaseAdmin
     .from('agents')
     .select('*, categories(name, slug, icon)')
